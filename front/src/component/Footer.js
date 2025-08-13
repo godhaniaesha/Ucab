@@ -18,9 +18,9 @@ export default function Footer() {
             <div className="x_footer-pattern"></div>
 
             <div className="x_container">
-                <div className="x_footer-row row">
+                <div className="x_footer-row">
                     {/* Col 1 - Logo & Description */}
-                    <div className="x_footer-col col-lg-4 col-md-6 col-12">
+                    <div className="x_footer-col">
                         <div className="x_footer-logo">
                             <img src={require("../image/img.png")} alt="Taxi Logo" />
                         </div>
@@ -36,7 +36,7 @@ export default function Footer() {
                     </div>
 
                     {/* Col 2 - Quick Links */}
-                    <div className="x_footer-col col-lg-2 col-md-6 col-12">
+                    <div className="x_footer-col">
                         <h3>Quick Links</h3>
                         <ul>
                             <li><FaCaretRight color="#199675" /> About Us</li>
@@ -49,7 +49,7 @@ export default function Footer() {
                     </div>
 
                     {/* Col 3 - Support Center */}
-                    <div className="x_footer-col col-lg-2 col-md-6 col-sm-12">
+                    <div className="x_footer-col">
                         <h3>Support Center</h3>
                         <ul>
                             <li><FaCaretRight color="#199675" /> FAQ's</li>
@@ -62,7 +62,7 @@ export default function Footer() {
                     </div>
 
                     {/* Col 4 - Newsletter */}
-                    <div className="x_footer-col col-lg-3 col-md-6 col-sm-12">
+                    <div className="x_footer-col">
                         <div className="x_footer-ls">
                             <h3>Newsletter</h3>
                             <p>Subscribe our newsletter to get latest update and news.</p>
@@ -74,17 +74,23 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
+            <div class="running-taxi">
+                <div class="taxi"></div>
+                <div class="taxi-2"></div>
+                <div class="taxi-3"></div>
+            </div>
 
             {/* Bottom Bar */}
-            <div className="x_footer-bottom">
-                <p>© Copyright 2025 <span>Taxica</span> All Rights Reserved.</p>
-                <div className="x_footer-social">
-                    <a href="#"><FaFacebookF /></a>
-                    <a href="#"><FaTwitter /></a>
-                    <a href="#"><FaLinkedinIn /></a>
-                    <a href="#"><FaYoutube /></a>
+            <div class="copyright-area no-menu-set">
+                <div class="container">
+                    <div class="copyright-inner">
+                        <div class="site-info">
+                            © Copyright 2025 <a href="https://themeforest.net/user/dynamiclayers">DynamicLayers</a>. All Rights Reserved. </div>
+                    </div>
                 </div>
             </div>
+
+            
         </footer>
     );
 }

@@ -3,7 +3,7 @@ import Header from '../component/Header'
 
 export default function Main({ children }) {
   return (
-    <div>
+    <div className='x_main'>
       <Header />
       <main>
         {children}
