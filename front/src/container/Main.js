@@ -1,7 +1,13 @@
 import React from 'react'
+import Header from '../component/Header'
 
-export default function Main() {
+export default function Main({ children }) {
   return (
-    <div>Main</div>
+    <div>
+      <Header />
+      <main>
+        {children}
+      </main>
+    </div>
   )
 }
