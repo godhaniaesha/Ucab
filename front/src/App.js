@@ -10,6 +10,7 @@ import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import "./App.css";
 import Footer from "./component/Footer";
+import HomeSlide from "./component/HomeSlide";
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
         <Route path="/blog" element={<Main><Blog /></Main>} />
         <Route path="/contact" element={<Main><Contact /></Main>} />
         <Route path="/footer" element={<Footer />} />
+        <Route path="/HomeSlide" element={<HomeSlide />} />
+
       </Routes>
     </Router>
   );
