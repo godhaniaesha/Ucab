@@ -1,15 +1,26 @@
 const User = require('../models/User');
-const Vehicle = require('../models/Vehicle'); // <-- Add Vehicle model
+const Vehicle = require('../models/Vehicle');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role, phone, vehicle } = req.body;
+    const { 
+      name, 
+      email, 
+      password, 
+      role, 
+      phone, 
+      vehicle, 
+      bankDetails, 
+      paymentMethods // array of { provider, customerId, paymentMethodId, methodType, last4 }
+    } = req.body;
 
     // Check if email exists
     const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ message: 'Email exists' });
+    if (existing) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
 
     // Hash password
     const hash = await bcrypt.hash(password, 12);
@@ -20,7 +31,9 @@ exports.register = async (req, res) => {
       email,
       password: hash,
       role: role || 'passenger',
-      phone
+      phone,
+      bankDetails: bankDetails || undefined,
+      paymentMethods: Array.isArray(paymentMethods) ? paymentMethods : []
     });
 
     // If driver, create vehicle
@@ -32,18 +45,15 @@ exports.register = async (req, res) => {
         year: vehicle.year,
         plate: vehicle.plate,
         type: vehicle.type || 'standard',
-        
         taxiDoors: vehicle.taxiDoors,
         passengers: vehicle.passengers,
         luggageCarry: vehicle.luggageCarry,
         airCondition: vehicle.airCondition,
         gpsNavigation: vehicle.gpsNavigation,
-        
         perKmRate: vehicle.perKmRate,
         extraKmRate: vehicle.extraKmRate
       });
 
-      // Link vehicle to user
       user.vehicle = newVehicle._id;
       await user.save();
     }
@@ -53,29 +63,26 @@ exports.register = async (req, res) => {
         id: user._id,
         email: user.email,
         role: user.role,
-        vehicle: user.vehicle || null
+        vehicle: user.vehicle || null,
+        bankDetails: user.bankDetails || null,
+        paymentMethods: user.paymentMethods || []
       }
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email,password);
-    
 
     const user = await User.findOne({ email });
-    console.log(user,"user");
-    
-    if (!user) return res.status(401).json({ message: 'Invalid' });
+    if (!user) return res.status(401).json({ message: 'Invalid email or password' });
 
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(401).json({ message: 'Invalid' });
+    if (!ok) return res.status(401).json({ message: 'Invalid email or password' });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -85,10 +92,16 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
-      user: { id: user._id, role: user.role, vehicle: user.vehicle || null }
+      user: { 
+        id: user._id, 
+        role: user.role, 
+        vehicle: user.vehicle || null,
+        bankDetails: user.bankDetails || null,
+        paymentMethods: user.paymentMethods || []
+      }
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

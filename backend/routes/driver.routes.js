@@ -8,6 +8,7 @@ const { validate } = require('../middlewares/validation.middleware');
 router.post('/location', authMiddleware(['driver']), locationSchema, validate, driverController.updateLocation);
 
 // Active booking
+router.get('/checkNewRequests', authMiddleware(['driver']), driverController.checkNewRequests);
 router.get('/active-booking', authMiddleware(['driver']), driverController.getActiveBooking);
 
 // Set availability
@@ -15,6 +16,7 @@ router.post('/set-availability', authMiddleware(['driver']), driverController.se
 
 // Accept booking
 router.post('/accept/:id', authMiddleware(['driver']), driverController.acceptBooking);
+router.post('/start-trip/:id', authMiddleware(['driver']), driverController.startTrip);
 
 // Complete booking
 router.post('/complete/:id', authMiddleware(['driver']), driverController.completeBooking);
@@ -22,7 +24,7 @@ router.post('/complete/:id', authMiddleware(['driver']), driverController.comple
 // Booking history
 router.get('/history', authMiddleware(['driver']), driverController.getHistory);
 
-router.post('/update-profile', authMiddleware(['driver']), driverController.updateProfile);
+router.post('/update-profile', authMiddleware(['driver','passenger']), driverController.updateProfile);
 
 
 module.exports = router;
