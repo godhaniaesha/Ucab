@@ -34,19 +34,7 @@
   margin-bottom: 20px;
 }
 
-.z_about_btn {
-  background: linear-gradient(90deg, #0f6e55, #199675);
-  color: #fff;
-  padding: 10px 25px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-}
 
-.z_about_btn:hover {
-  background: linear-gradient(135deg, #199675, #0f6e55);
-  transform: scale(1.05);
-}
 
 /* Responsive */
 @media (max-width: 768px) {

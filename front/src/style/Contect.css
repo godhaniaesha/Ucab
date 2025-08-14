@@ -47,10 +47,7 @@
   padding: 50px 20px;
 }
 
-.z_cntct_overlay {
-  background: rgba(0, 0, 0, 0.6);
-  /* padding: 50px; */
-}
+
 
 .z_cntct_container {
   display: flex;

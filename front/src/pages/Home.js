@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { TbArrowMoveRightFilled } from "react-icons/tb";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import {
   FaCalendarAlt,
   FaClock,
@@ -22,7 +23,17 @@ import "swiper/css/navigation";
 import "../style/z_app.css";
 import Footer from "../component/Footer";
 
-export default function Home() {
+export default function Home({ car }) {
+  const [show, setShow] = useState(false);
+
+  const handleShow = () => setShow(true);
+  const handleClose = () => setShow(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Cab booked successfully!");
+    handleClose();
+  };
 
   const slides = [
     {
@@ -190,7 +201,7 @@ export default function Home() {
                   className="z_slide_image"
                 />
                 <div className="z_slide_overlay">
-                  <p className="z_slide_welcome">WELCOME TO UCAB!</p>
+                  <p className="z_slide_welcome">WELCOME TO UCAB! </p>
                   <h2 className="z_slide_title">
                     {slide.title.split(" ").map((word, i) =>
                       word.toLowerCase() === "taxi" ? (
@@ -302,100 +313,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Our Best Services For You */}
-      <section class="z_service_section">
-        <div class="container">
-          <div class="z_service_heading">
-            <h2 class="z_service_title">
-              Our Best <span className="z_default_txt">Services</span> For You
-            </h2>
-            <p class="z_service_subtitle">
-              We provide comprehensive car rental services with the best quality
-              and competitive prices for all your transportation needs.
-            </p>
-          </div>
 
-          <div class="z_service_grid">
-            {/* <!-- Service Card 1 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Deals For Every Budget</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-
-            {/* <!-- Service Card 2 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Cleanliness & Comfort</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-
-            {/* <!-- Service Card 3 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Best Prices Garanteed</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-
-            {/* <!-- Service Card 4 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">24/7 Order Available</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-
-            {/* <!-- Service Card 5 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Professional Drivers</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-
-            {/* <!-- Service Card 6 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Fast Car Delivery</h3>
-              <p class="z_service_card_description">
-                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
-                conset? Et harum quidem est.
-              </p>
-              <a href="#" class="z_service_view_more">
-                View More
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
       {/* Our Cab Let's Check Available Cars*/}
       <section className="z_avlbl_section py-5">
         <div className="container">
           <div className="text-center mb-4">
             <h2 className="z_avlbl_title">
-              Our Cab — Let's Check Available Cars
+              Our Cab — <span className="z_default_txt"> Let's Check Available Cars</span>
             </h2>
             <p className="z_avlbl_subtitle">
               Choose your perfect ride from our fleet of clean, comfortable, and
@@ -485,14 +409,13 @@ export default function Home() {
                       </div>
                     </div>
 
+                    {/* Book Taxi Button */}
                     <button
-                      className={`z_car_book_button ${hoveredButton === car.id
-                          ? "z_car_book_button_hover"
-                          : ""
+                      className={`z_car_book_button ${hoveredButton === car.id ? "z_car_book_button_hover" : ""
                         }`}
                       onMouseEnter={() => setHoveredButton(car.id)}
                       onMouseLeave={() => setHoveredButton(null)}
-                      onClick={() => alert(`Booking ${car.name}...`)}
+                      onClick={handleShow}
                     >
                       Book Taxi Now →
                     </button>
@@ -503,6 +426,192 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+    {/* Booking Form Modal */}
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Your Cab</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleSubmit}>
+          <Modal.Body>
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group controlId="name">
+                  <Form.Label>Full Name</Form.Label>
+                  <Form.Control type="text" placeholder="Enter your name" required />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="phone">
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control type="tel" placeholder="Enter phone number" required />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group controlId="pickup">
+                  <Form.Label>Pickup Location</Form.Label>
+                  <Form.Control type="text" placeholder="Enter pickup location" required />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="drop">
+                  <Form.Label>Drop Location</Form.Label>
+                  <Form.Control type="text" placeholder="Enter drop location" required />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group controlId="date">
+                  <Form.Label>Pickup Date</Form.Label>
+                  <Form.Control type="date" required />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="time">
+                  <Form.Label>Pickup Time</Form.Label>
+                  <Form.Control type="time" required />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Form.Group controlId="passengers" className="mb-3">
+              <Form.Label>Number of Passengers</Form.Label>
+              <Form.Control type="number" min="1" placeholder="Enter passengers" required />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="success" type="submit">
+              Confirm Booking
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      
+      {/* Video */}
+      <section className="x_hero_section">
+        <div className="x_video_background">
+          <video autoPlay muted loop playsInline>
+            <source src="https://max-themes.net/demos/limoking/upload/service-video-bg-n.webm" type="video/webm" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="x_video_overlay"></div>
+        </div>
+
+        <div className="x_hero_content">
+          <div className="x_hero_text">
+            <h1 className="x_hero_title">OR ANYWHERE YOU NEED US TO TAKE</h1>
+            <p className="x_hero_subtitle">
+              Not only taking to night parties, weddings, casinos, birthdays but we also take you to anywhere you want to go.
+            </p>
+            <div className="x_hero_phone">
+              CALL NOW (1)-212-333-4343
+            </div>
+            <div className="x_hero_separator">
+              <span className="x_separator_line"></span>
+              <span className="x_or_text">OR</span>
+              <span className="x_separator_line"></span>
+            </div>
+            <button className="x_book_online_btn">Book Online</button>
+          </div>
+        </div>
+      </section>
+      {/* Our Best Services For You */}
+      <section class="z_service_section">
+        <div class="container">
+          <div class="z_service_heading">
+            <h2 class="z_service_title">
+              Our Best <span className="z_default_txt">Services</span> For You
+            </h2>
+            <p class="z_service_subtitle">
+              We provide comprehensive car rental services with the best quality
+              and competitive prices for all your transportation needs.
+            </p>
+          </div>
+
+          <div class="z_service_grid">
+            {/* <!-- Service Card 1 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Deals For Every Budget</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+
+            {/* <!-- Service Card 2 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Cleanliness & Comfort</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+
+            {/* <!-- Service Card 3 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Best Prices Garanteed</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+
+            {/* <!-- Service Card 4 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">24/7 Order Available</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+
+            {/* <!-- Service Card 5 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Professional Drivers</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+
+            {/* <!-- Service Card 6 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Fast Car Delivery</h3>
+              <p class="z_service_card_description">
+                Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
+                conset? Et harum quidem est.
+              </p>
+              <a href="#" class="z_service_view_more">
+                View More
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="z_testi_section">
         {/* Background Cars */}
@@ -525,7 +634,7 @@ export default function Home() {
         </div>
 
         <div className="container-fluid">
-          <h2 className="z_testi_title">What Our Customers Say</h2>
+          <h2 className="z_testi_title">What <span className="z_default_txt"> Our Customers</span> Say</h2>
 
           <Swiper
             modules={[Pagination, Autoplay]}

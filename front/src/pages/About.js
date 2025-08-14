@@ -16,7 +16,7 @@ export default function About() {
       >
         <div className="z_about_hero_overlay">
           <div className="z_about_hero_content">
-            <h1>About UCAB</h1>
+            <h1>About  <span className="z_default_txt"> UCAB </span></h1>
             <p>Your trusted partner for safe, reliable, and premium cab services.</p>
             <a href="/booking" className="z_about_btn">
               Book Now
@@ -74,7 +74,7 @@ export default function About() {
         <div className="about-container">
           {/* Header Section */}
           <div className="about-header">
-            <h1>Image Gallery that we like to share</h1>
+            <h2>  <span className="z_default_txt">Image Gallery </span> that we like to share</h2>
             <p>Who are in extremely love with eco friendly system</p>
           </div>
 

@@ -1,0 +1,67 @@
+.z_info_card {
+  background: #fff;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+.z_info_card:hover {
+  border-color: #0f6e55;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+.z_info_icon {
+  font-size: 28px;
+  color: #0f6e55;
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+.z_info_card:hover .z_info_icon {
+  color: #199675;
+}
+
+.z_car_img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Icon Circle in Theme Colors */
+.z_icon_circle {
+  background-color: #0f6e55; /* Dark theme color */
+  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.z_icon_circle:hover {
+  background-color: #199675; /* Hover theme color */
+}
+
+.z_btn_taxi {
+  background: linear-gradient(90deg, #0f6e55, #199675);
+  color: white;
+  border: none;
+  padding: 12px 31px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 4px;
+}
+.z_btn_taxi:hover {
+ background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
+}
+
+.z_text-warning{
+    color: #199675;
+}
+
+
+@media (max-width: 768px) {
+  .z_car_img {
+    max-height: 250px;
+    object-fit: contain;
+  }
+}
