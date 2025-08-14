@@ -1,20 +1,28 @@
 const Booking = require('../models/Booking');
 const Payment = require('../models/Payment') || null;
 const calculateFare = require('../utils/fareCalculator');
-const { tryAssignDriver } = require('../sockets/booking.socket');
+const { tryAssignDriver, assignDriverToBookingSync } = require('../sockets/booking.socket');
 const { BOOKING_STATUS } = require('../utils/constants');
 const Vehicle = require('../models/Vehicle');
 const User = require('../models/User');
+const logger = require('../utils/logger');
 
 exports.createBooking = async (req, res) => {
   try {
-    const {
-      pickup,
-      drop,
-      vehicleType = 'standard',
-      preferredVehicleModel,
-      preferredVehicleId
-    } = req.body;
+    const { pickup, drop, vehicleType = 'standard', preferredVehicleModel, preferredVehicleId } = req.body;
+
+    // Fetch passenger
+    const passenger = await User.findById(req.user.id).lean();
+    if (!passenger) {
+      return res.status(404).json({ message: 'Passenger not found' });
+    }
+
+    // Validate payment info
+    if (!passenger.bankDetails || !passenger.paymentMethods || passenger.paymentMethods.length === 0) {
+      return res.status(400).json({
+        message: 'Please complete your bank and payment details before creating a booking'
+      });
+    }
 
     // Validate coordinates
     if (!pickup?.coordinates || pickup.coordinates.length < 2) {
@@ -25,46 +33,56 @@ exports.createBooking = async (req, res) => {
     }
 
     // Check for active booking
-    const active = await Booking.findOne({
+    const activeBooking = await Booking.findOne({
       passenger: req.user.id,
       status: { $in: ['pending', 'assigned', 'accepted', 'on_trip'] }
     });
-    if (active) {
-      return res.status(400).json({ message: 'Active booking exists', bookingId: active._id });
+    if (activeBooking) {
+      return res.status(400).json({
+        message: 'Active booking exists',
+        bookingId: activeBooking._id
+      });
     }
 
-    // Get vehicle pricing if provided
+    // Find vehicle pricing
     let vehiclePricing = null;
     if (preferredVehicleId) {
-      vehiclePricing = await Vehicle.findById(preferredVehicleId);
+      vehiclePricing = await Vehicle.findOne({ _id: preferredVehicleId, type: vehicleType });
     } else if (preferredVehicleModel) {
-      vehiclePricing = await Vehicle.findOne({ model: preferredVehicleModel });
+      vehiclePricing = await Vehicle.findOne({
+        type: vehicleType,
+        $or: [
+          { model: { $regex: preferredVehicleModel, $options: 'i' } },
+          { make: { $regex: preferredVehicleModel, $options: 'i' } },
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $concat: ["$make", " ", "$model"] },
+                regex: preferredVehicleModel,
+                options: "i"
+              }
+            }
+          }
+        ]
+      });
     }
 
-    // Fare calculation
+    if (!vehiclePricing) {
+      return res.status(400).json({ message: 'No vehicle available for the selected type/model' });
+    }
+
+    // Calculate fare
     const fareDetails = calculateFare(
       pickup.coordinates,
       drop.coordinates,
-      vehiclePricing || { type: vehicleType }
+      vehiclePricing
     );
 
-    // Create booking in GeoJSON format
+    // Create booking
     const booking = await Booking.create({
       passenger: req.user.id,
-      pickup: {
-        address: pickup.address,
-        location: {
-          type: 'Point',
-          coordinates: pickup.coordinates
-        }
-      },
-      drop: {
-        address: drop.address,
-        location: {
-          type: 'Point',
-          coordinates: drop.coordinates
-        }
-      },
+      pickup: { address: pickup.address, location: { type: 'Point', coordinates: pickup.coordinates } },
+      drop: { address: drop.address, location: { type: 'Point', coordinates: drop.coordinates } },
       vehicleType,
       preferredVehicleModel,
       preferredVehicleId,
@@ -72,7 +90,7 @@ exports.createBooking = async (req, res) => {
       fareDetails
     });
 
-    // Optional: create payment record
+    // Create pending payment
     if (Payment) {
       await Payment.create({
         booking: booking._id,
@@ -82,20 +100,22 @@ exports.createBooking = async (req, res) => {
     }
 
     // Assign driver
-    try {
-      await tryAssignDriver(booking._id);
-    } catch (assignErr) {
-      console.error('Driver assignment failed:', assignErr.message);
-    }
+    await assignDriverToBookingSync(booking._id);
+    const updatedBooking = await Booking.findById(booking._id).lean();
 
-    return res.status(201).json({ message: 'Booking created', booking });
+    return res.status(201).json({
+      message:
+        updatedBooking.status === BOOKING_STATUS.ASSIGNED
+          ? 'Booking created and driver assigned'
+          : 'Booking created',
+      booking: updatedBooking
+    });
 
   } catch (err) {
     console.error('createBooking error:', err);
     return res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 
 
 exports.getBooking = async (req, res) => {
@@ -122,9 +142,9 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -157,7 +177,7 @@ async function findNearestDriver(UserModel, pickupCoords, vehicleType) {
         bestDist = dist;
         best = { driver: d, dist };
       }
-    } catch (e) {}
+    } catch (e) { }
   });
   return best;
 }
@@ -194,26 +214,26 @@ exports.createBookingWithMatch = async (req, res) => {
       vehiclePricing || { type: vehicleType }
     );
 
-   const booking = new Booking({
-  passenger: passengerId,
-  pickup: {
-    address: pickup.address,
-    location: { type: 'Point', coordinates: pickup.coordinates }
-  },
-  drop: {
-    address: drop.address,
-    location: { type: 'Point', coordinates: drop.coordinates }
-  },
-  vehicleType,
-  preferredVehicleId,
-  fareDetails
-});
+    const booking = new Booking({
+      passenger: passengerId,
+      pickup: {
+        address: pickup.address,
+        location: { type: 'Point', coordinates: pickup.coordinates }
+      },
+      drop: {
+        address: drop.address,
+        location: { type: 'Point', coordinates: drop.coordinates }
+      },
+      vehicleType,
+      preferredVehicleId,
+      fareDetails
+    });
 
 
     // Try to find nearest driver with vehicle filter
     const nearest = await findNearestDriver(User, pickup.coordinates, vehicleType);
     if (nearest) {
-     booking.driver = nearest.driver._id; 
+      booking.driver = nearest.driver._id;
       booking.status = BOOKING_STATUS.ASSIGNED;
       booking.distanceKm = nearest.dist;
       // Reserve driver

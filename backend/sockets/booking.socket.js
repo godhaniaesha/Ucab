@@ -14,11 +14,24 @@ async function findNearbyDrivers(coordinates, vehicleType='standard', radiusMete
     const baseQuery = {
       role: 'driver',
       status: USER_STATUS.AVAILABLE,
-      // isActive: true, // REMOVE THIS LINE
-      documentsVerified: true,
-      location: { $near: { $geometry: { type:'Point', coordinates }, $maxDistance: radiusMeters } }
+      // documentsVerified: true,  // Comment this line for testing
+      location: { 
+        $near: { 
+          $geometry: { type: 'Point', coordinates }, 
+          $maxDistance: radiusMeters 
+        } 
+      }
     };
 
+    // Add vehicleType to base query if provided
+    if (vehicleType && vehicleType !== 'standard') {
+      const vehicles = await Vehicle.find({ type: vehicleType });
+      const vehicleIds = vehicles.map(v => v._id);
+      baseQuery.vehicle = { $in: vehicleIds };
+    }
+
+    // Add debug logging
+    console.log('Finding drivers with query:', JSON.stringify(baseQuery));
     // If preferredVehicleId provided, prefer drivers with that vehicle
     if(preferredVehicleId){
       const drivers = await User.find({ ...baseQuery, vehicle: preferredVehicleId }).populate('vehicle').limit(20);
@@ -47,50 +60,47 @@ async function findNearbyDrivers(coordinates, vehicleType='standard', radiusMete
   }
 }
 
-async function assignDriverToBooking(bookingId){
+async function assignDriverToBooking(bookingId) {
   try {
     const booking = await Booking.findById(bookingId).populate('passenger');
-    if(!booking || booking.status !== BOOKING_STATUS.PENDING) return;
-    if(new Date() > booking.expiresAt){ booking.status = BOOKING_STATUS.EXPIRED; await booking.save(); return; }
+    if (!booking || booking.status !== BOOKING_STATUS.PENDING) return null;
 
-   const pickupCoords =
-  booking.pickup.location?.coordinates || booking.pickup.coordinates;
-    // pass preferredVehicleModel and preferredVehicleId to finder
-    const drivers = await findNearbyDrivers(pickupCoords, booking.vehicleType, parseInt(process.env.DRIVER_SEARCH_RADIUS||5000), booking.preferredVehicleModel, booking.preferredVehicleId);
-
-    if(!drivers || drivers.length===0){
-      booking.status = BOOKING_STATUS.NO_DRIVERS; await booking.save();
-      const passengerSocket = passengerSockets.get(booking.passenger._id.toString());
-      if(passengerSocket) passengerSocket.emit('no_drivers_available', { bookingId: booking._id });
-      return;
-    }
-
-    for(let i = booking.attempts; i < Math.min(drivers.length, booking.maxAttempts); i++){
-      const driver = drivers[i];
-      booking.attempts = i+1;
-      booking.status = BOOKING_STATUS.ASSIGNED;
-      booking.assignedAt = new Date();
-      booking.driver = driver._id;
+    const pickupCoords = booking.pickup.location?.coordinates;
+    const drivers = await findNearbyDrivers(pickupCoords, booking.vehicleType, 5000, booking.preferredVehicleModel, booking.preferredVehicleId);
+    if (!drivers.length) {
+      booking.status = BOOKING_STATUS.NO_DRIVERS;
       await booking.save();
-
-      await User.findByIdAndUpdate(driver._id, { status: USER_STATUS.BUSY });
-
-      const driverSocket = driverSockets.get(driver._id.toString());
-      if(driverSocket){
-        driverSocket.emit('ride_request', { bookingId: booking._id, bookingNumber: booking.bookingId, pickup: booking.pickup, drop: booking.drop, fareDetails: booking.fareDetails, preferredVehicleModel: booking.preferredVehicleModel });
-        const accepted = await waitForDriverResponse(booking._id, driver._id, 25000);
-        if(accepted) return;
-      }
-      await User.findByIdAndUpdate(driver._id, { status: USER_STATUS.AVAILABLE });
+      return booking;
     }
 
-    booking.status = BOOKING_STATUS.NO_DRIVERS; await booking.save();
-    const passengerSocket = passengerSockets.get(booking.passenger._id.toString());
-    if(passengerSocket) passengerSocket.emit('no_drivers_available', { bookingId: booking._id });
-  } catch(err){
-    logger.error('assignDriverToBooking error', err);
+    const driver = drivers[0];
+    booking.status = BOOKING_STATUS.ASSIGNED;
+    booking.assignedAt = new Date();
+    booking.assignedDriver = driver._id;
+    await booking.save();
+
+    await User.findByIdAndUpdate(driver._id, { status: USER_STATUS.BUSY });
+
+    // Emit to driver socket
+    const driverSocket = driverSockets.get(driver._id.toString());
+    if (driverSocket) {
+      driverSocket.emit('ride_request', {
+        bookingId: booking._id,
+        pickup: booking.pickup,
+        drop: booking.drop,
+        fareDetails: booking.fareDetails
+      });
+    }
+
+    return booking; // <--- Return the updated booking
+  } catch (err) {
+    console.error('assignDriverToBooking error', err);
+    return null;
   }
 }
+
+
+
 
 function waitForDriverResponse(bookingId, driverId, timeout=30000){
   return new Promise((resolve) => {
@@ -143,9 +153,11 @@ function initSockets(io){
     });
   });
 }
-
+async function assignDriverToBookingSync(bookingId) {
+  return await assignDriverToBooking(bookingId); // just await the same logic
+}
 async function tryAssignDriver(bookingId){
   setImmediate(()=> assignDriverToBooking(bookingId).catch(err=>console.error(err)));
 }
 
-module.exports = { initSockets, tryAssignDriver, driverSockets, passengerSockets };
+module.exports = { initSockets, tryAssignDriver, driverSockets, passengerSockets,assignDriverToBookingSync  };

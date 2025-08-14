@@ -23,7 +23,11 @@ const BookingSchema = new Schema({
   vehicleType: { type: String, enum: ['standard', 'premium', 'luxury'], default: 'standard' },
   preferredVehicleModel: { type: String },
   preferredVehicleId: { type: Schema.Types.ObjectId, ref: 'Vehicle' },
-  status: { type: String, enum: ['pending','assigned','accepted','on_trip','completed','cancelled'], default: 'pending' },
+  status: { 
+    type: String, 
+    enum: ['pending', 'assigned', 'accepted', 'on_trip', 'completed', 'cancelled', 'no_drivers','pending_completion'], 
+    default: 'pending' 
+  },
   assignedDriver: { type: Schema.Types.ObjectId, ref: 'User', default: null },
   fare: { type: Number, default: 0 },
   distanceKm: { type: Number, default: 0 },
