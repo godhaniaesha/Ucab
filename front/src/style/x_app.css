@@ -121,17 +121,18 @@ body {
 }
 
 .x_book-btn {
-  background: #0f6e55;
+   background: linear-gradient(90deg, #0f6e55, #199675);
   color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .x_book-btn:hover {
-  background: #199675;
+  background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
 }
 
 .x_close-btn {
@@ -295,7 +296,7 @@ body {
 
 .x_footer-pattern {
   background: repeating-linear-gradient(to right,
-      #199675 0 20px,
+      #0f6e55 0 20px,
       #000 20px 40px);
   height: 20px;
 }
@@ -371,12 +372,12 @@ body {
 
 .x_footer-ls button {
   width: 100%;
-  background-color: #199675;
+   background: linear-gradient(90deg, #0f6e55, #199675);
   color: #fff;
   padding: 10px 14px;
   border: none;
   border-radius: 22px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -385,7 +386,8 @@ body {
 }
 
 .x_footer-ls button:hover {
-  background-color: #16a67b;
+ background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
 }
 
 

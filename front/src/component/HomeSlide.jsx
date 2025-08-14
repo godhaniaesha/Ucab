@@ -609,6 +609,7 @@ const HomeSlide = () => {
           </div>
         </div>
       </section>
+      
     </>
   );
 };

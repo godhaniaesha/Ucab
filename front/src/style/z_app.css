@@ -770,12 +770,8 @@
 }
 
 .z_car_book_button_hover {
+  background: linear-gradient(135deg, #199675, #0f6e55);
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(25, 150, 117, 0.5);
-}
-
-.z_car_book_button_hover::before {
-  left: 100%;
 }
 
 /* Responsive Design */
@@ -1050,31 +1046,17 @@
   }
 }
 /* Contact Us */
-/* Section Background */
 .z_cntct_section {
   position: relative;
-  background: url("https://t4.ftcdn.net/jpg/05/08/80/19/360_F_508801991_UTsCAOorx25USitqonfRADueJlzyjhDq.jpg")
-    center/cover no-repeat;
   padding: 80px 20px;
   z-index: 1;
 }
 
-.z_cntct_section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Black overlay */
-  z-index: -1;
-}
-
+/* Overlay remains same */
 .z_cntct_overlay {
-  background: rgba(15, 110, 85, 0.55);
+  background: rgba(15, 110, 85, 0.55) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px) !important;
-  padding: 50px 20px;
   width: 50%;
   margin: auto;
   border-radius: 10px;
@@ -1090,11 +1072,36 @@
   align-items: stretch;
 }
 
-/* Info Box */
+/* Info Box with background image */
 .z_cntct_info {
   flex: 1;
-  padding: 30px;
+  padding: 0px;
   color: white;
+  background: url("../image/image.png") center/cover no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.z_cntct_info_inner {
+  padding: 30px; /* 🔹 Inner spacing maintain */
+  position: relative;
+  z-index: 1;
+}
+
+.z_cntct_info::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Black overlay */
+  z-index: 0;
+}
+
+.z_cntct_info > * {
+  position: relative;
+  z-index: 1;
 }
 
 .z_cntct_title {
@@ -1142,7 +1149,6 @@
   padding: 30px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
