@@ -1,0 +1,59 @@
+.z_about_hero {
+  width: 100%;
+  height: 60vh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.z_about_hero_overlay {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.z_about_hero_content {
+  color: #fff;
+  text-align: center;
+  max-width: 700px;
+  padding: 20px;
+}
+
+.z_about_hero_content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.z_about_hero_content p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.z_about_btn {
+  background: linear-gradient(90deg, #0f6e55, #199675);
+  color: #fff;
+  padding: 10px 25px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.z_about_btn:hover {
+  background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .z_about_hero_content h1 {
+    font-size: 2rem;
+  }
+  .z_about_hero {
+    height: 50vh;
+  }
+}
