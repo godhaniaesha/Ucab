@@ -971,7 +971,6 @@ body {
 }
 
 /* end service section */
-
 /* ===== HERO SECTION STYLES ===== */
 .x_hero_section {
   position: relative;
@@ -983,7 +982,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 .x_video_background {
   position: absolute;
   top: 0;
@@ -992,14 +990,12 @@ body {
   height: 100%;
   z-index: 1;
 }
-
 .x_video_background video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-
 .x_video_overlay {
   position: absolute;
   top: 0;
@@ -1018,12 +1014,10 @@ body {
   padding: 0 20px;
   text-align: center;
 }
-
 .x_hero_text {
   max-width: 800px;
   margin: 0 auto;
 }
-
 .x_hero_title {
   font-size: 3.5rem;
   font-weight: 700;
@@ -1059,13 +1053,11 @@ body {
   margin-bottom: 25px;
   gap: 15px;
 }
-
 .x_separator_line {
   width: 60px;
   height: 2px;
   background-color: #ffffff;
 }
-
 .x_or_text {
   color: #ffffff;
   font-size: 1rem;
@@ -1076,6 +1068,12 @@ body {
 
 .x_book_online_btn {
   background: linear-gradient(90deg, #0f6e55, #199675);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  font-family: 'Arial', sans-serif;
+}
+ 
+.x_book_online_btn {
+   background: linear-gradient(90deg, #0f6e55, #199675);
   color: white;
   border: none;
   padding: 12px 31px;
@@ -1099,18 +1097,15 @@ body {
   .x_hero_title {
     font-size: 2.5rem;
   }
-
   .x_hero_content {
     max-width: 1000px;
   }
 }
-
 @media (max-width: 1600px) {
   .x_hero_section {
     height: 520px;
   }
 }
-
 /* Desktop (≥1024px) */
 @media (max-width: 1024px) {
   .x_hero_title {
@@ -1129,35 +1124,29 @@ body {
     height: 520px;
   }
 }
-
 /* Tablet (≤768px) */
 @media (max-width: 768px) {
   .x_hero_section {
     height: 58vh;
     min-height: 500px;
   }
-
   .x_hero_title {
     font-size: 2rem;
     margin-bottom: 15px;
   }
-
   .x_hero_subtitle {
     font-size: 1rem;
     margin-bottom: 20px;
   }
-
   .x_hero_phone {
     font-size: 1.1rem;
     margin-bottom: 20px;
   }
-
   .x_book_online_btn {
     padding: 12px 30px;
     font-size: 1rem;
   }
 }
-
 /* Mobile (≤480px) */
 @media (max-width: 480px) {
   .x_hero_section {
@@ -1173,12 +1162,10 @@ body {
     font-size: 1.6rem;
     margin-bottom: 12px;
   }
-
   .x_hero_subtitle {
     font-size: 0.9rem;
     margin-bottom: 15px;
   }
-
   .x_hero_phone {
     font-size: 1rem;
     margin-bottom: 15px;
@@ -1197,7 +1184,6 @@ body {
     font-size: 0.9rem;
   }
 }
-
 /* Extra Small Mobile (≤320px) */
 @media (max-width: 320px) {
   .x_hero_section {
@@ -1213,12 +1199,10 @@ body {
     font-size: 1.3rem;
     margin-bottom: 10px;
   }
-
   .x_hero_subtitle {
     font-size: 0.8rem;
     margin-bottom: 12px;
   }
-
   .x_hero_phone {
     font-size: 0.9rem;
     margin-bottom: 12px;

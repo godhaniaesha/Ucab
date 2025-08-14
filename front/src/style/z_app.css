@@ -358,16 +358,19 @@
 .z_about_btn {
   background: linear-gradient(90deg, #0f6e55, #199675);
   color: white;
+  font-weight: 500;
   border: none;
   padding: 12px 25px;
   font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-decoration: none;
 }
 
 .z_about_btn:hover {
-  background-color: #199675;
+  background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
@@ -410,8 +413,9 @@
 /* Our Best Services For You */
 
 .z_service_section {
-  /* padding: 80px 0; */
+  padding-top: 80px !important;
   background-color: #f8f9fa;
+  padding-bottom: 2rem !important;
 }
 
 .z_service_heading {
@@ -420,8 +424,7 @@
 }
 
 .z_service_title {
-  font-size: 2.5rem;
-  font-weight: 400;
+  font-size: 2.2rem;
   color: #0f6e55;
   margin-bottom: 20px;
 }
@@ -578,8 +581,8 @@
 }
 
 .z_avlbl_title {
-  font-weight: bold;
   color: #0f6e55;
+  font-size: 2.2rem;
 }
 
 .z_avlbl_subtitle {
@@ -743,7 +746,7 @@
   padding: 12px 30px;
   border-radius: 25px;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -907,12 +910,9 @@
 }
 
 .z_testi_title {
-  font-size: 2.8rem;
-  font-weight: 700;
   margin-bottom: 60px;
-  color: #000;
-  position: relative;
-  z-index: 2;
+  color: #0f6e55;
+  font-size: 2.2rem;
 }
 
 .z_testi_slider {
@@ -1043,6 +1043,10 @@
 
   .z_testi_card {
     padding: 25px 20px;
+  }
+  .z_avlbl_title {
+    color: #0f6e55;
+    font-size: 26px;
   }
 }
 /* Contact Us */
@@ -1246,3 +1250,66 @@
     padding: 10px;
   }
 }
+
+/* Taxi.js */
+.z_allcabs_hero {
+  position: relative;
+  height: 70vh;
+  background-image: url("https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+.z_allcabs_hero_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* dark overlay */
+  z-index: 1;
+}
+
+.z_allcabs_hero_content {
+  position: relative;
+  z-index: 2; /* above overlay */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+.z_allcabs_hero_content h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.z_allcabs_hero_content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin-bottom: 25px;
+}
+
+.z_allcabs_btn {
+  background: linear-gradient(90deg, #0f6e55, #199675);
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.z_allcabs_btn:hover {
+  background: linear-gradient(135deg, #199675, #0f6e55);
+  transform: scale(1.05);
+}
+
