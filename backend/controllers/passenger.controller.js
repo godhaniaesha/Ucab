@@ -44,6 +44,18 @@ exports.createBooking = async (req, res) => {
       });
     }
 
+    // Check for pending payment (block booking if any transaction is pending_completion)
+    const pendingPaymentBooking = await Booking.findOne({
+      passenger: req.user.id,
+      status: BOOKING_STATUS.PENDING_COMPLETION
+    });
+    if (pendingPaymentBooking) {
+      return res.status(403).json({
+        message: 'You have a pending payment. Please complete your previous transaction before creating a new booking.',
+        bookingId: pendingPaymentBooking._id
+      });
+    }
+
     // Find vehicle pricing
     let vehiclePricing = null;
     if (preferredVehicleId) {
@@ -102,6 +114,12 @@ exports.createBooking = async (req, res) => {
     // Assign driver
     await assignDriverToBookingSync(booking._id);
     const updatedBooking = await Booking.findById(booking._id).lean();
+
+    if (updatedBooking.status === BOOKING_STATUS.NO_DRIVERS) {
+      // Delete the booking if no driver found
+      await Booking.findByIdAndDelete(booking._id);
+      return res.status(400).json({ message: 'No cab available at your location' });
+    }
 
     return res.status(201).json({
       message:

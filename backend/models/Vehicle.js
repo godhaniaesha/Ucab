@@ -17,7 +17,10 @@ const VehicleSchema = new mongoose.Schema({
 
   // Pricing
   perKmRate: { type: Number, required: true },
-  extraKmRate: { type: Number, required: true }
+  extraKmRate: { type: Number, required: true },
+
+   // Multiple images (array of URLs)
+  images: [{ type: String }] // store cloud/local URLs here
 
 }, { timestamps: true });
 

@@ -7,6 +7,6 @@ const { validate } = require('../middlewares/validation.middleware');
 router.post('/booking', authMiddleware(['passenger']), bookingSchema, validate, passengerController.createBooking);
 router.get('/booking/:id', authMiddleware(['passenger','superadmin']), passengerController.getBooking);
 
-router.get('/bookings', passengerController.getHistory);
+router.get('/bookings',authMiddleware(['passenger']), passengerController.getHistory);
 
 module.exports = router;

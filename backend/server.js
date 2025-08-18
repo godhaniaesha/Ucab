@@ -32,6 +32,12 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+
+
+// Serve local uploads
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 connectDB();
 app.get('/health', (req, res) => res.json({ status: 'OK', time: new Date().toISOString() }));
 app.use('/api', routes);
