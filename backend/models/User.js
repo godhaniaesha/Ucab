@@ -54,6 +54,8 @@ const UserSchema = new mongoose.Schema(
 
     // Online payment methods (for passengers)
     paymentMethods: [PaymentInfoSchema],
+    otp: { type: Number, default: null },
+    otpExpires: { type: Date, default: null }
   },
   { timestamps: true }
 );
