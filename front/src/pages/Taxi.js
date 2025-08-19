@@ -4,6 +4,7 @@ import { FaDoorClosed, FaMapMarkerAlt, FaSnowflake, FaSuitcaseRolling, FaUsers }
 import { IoSearch, IoCloseSharp } from 'react-icons/io5';
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { Navigate, useNavigate } from 'react-router-dom';
+import Footer from '../component/Footer';
 
 export default function Taxi() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ export default function Taxi() {
       id: 5,
       name: "TOYOTA INNOVA CRYSTA",
       image:
-        "https://imgd.aeplcdn.com/1056x594/n/cw/ec/41545/innova-crysta-exterior-right-front-three-quarter-2.jpeg?q=80",
+        "https://cdn.wheel-size.com/automobile/body/toyota-innova-crysta-2015-2021-1602848743.9643602.jpg",
       price: "$1.80/km",
       doors: 4,
       passengers: 7,
@@ -88,7 +89,7 @@ export default function Taxi() {
       id: 6,
       name: "TESLA MODEL X",
       image:
-        "https://tesla-cdn.thron.com/delivery/public/image/tesla/8cf339b2-42a3-4dbf-bbcd-6ef2b3b6de62/bvlatuR/std/2880x1800/Desktop-ModelX",
+        "https://avatars.mds.yandex.net/i?id=647dcbec59b61f670f5b655bd3952cfe66794f21-4599039-images-thumbs&n=13",
       price: "$4.50/km",
       doors: 4,
       passengers: 6,
@@ -102,7 +103,7 @@ export default function Taxi() {
       id: 7,
       name: "MERCEDES-BENZ E-CLASS",
       image:
-        "https://www.mercedes-benz.com/en/vehicles/passenger-cars/e-class/saloon/_jcr_content/root/slider/sliderchilditems/slideritem/image/MQ6-12-image-20230417154607/00-mercedes-benz-e-class-saloon-2023-v295-3400x1440.jpeg",
+        "https://avatars.mds.yandex.net/i?id=9a888d6456cac34b8da2016b907f20c5cc36f651-4258580-images-thumbs&n=13",
       price: "$3.20/km",
       doors: 4,
       passengers: 4,
@@ -116,7 +117,7 @@ export default function Taxi() {
       id: 8,
       name: "HONDA CITY ZX",
       image:
-        "https://imgd.aeplcdn.com/1056x594/n/cw/ec/141475/city-exterior-right-front-three-quarter.jpeg?q=80",
+        "https://delen.s3.ap-southeast-1.amazonaws.com/Honda_city_hybrid_ehev_main_image_7b9e60fff9.jpg",
       price: "$1.10/km",
       doors: 4,
       passengers: 5,
@@ -168,7 +169,7 @@ export default function Taxi() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Cab booked successfully!");
+    alert("Form submitted successfully ✅");
     handleClose();
   };
 
@@ -496,12 +497,14 @@ export default function Taxi() {
             <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant="warning" type="submit">
+            <Button className='z_book_now' type="submit">
               Book Your Taxi →
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
+
+      <Footer />
     </>
   );
 }

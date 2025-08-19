@@ -263,6 +263,21 @@ export default function Blog({ onSearch }) {
   return (
     <div>
       <main>
+
+        {/* HERO SECTION */}
+        <section className="x_hero_section">
+          <img
+            src="https://demoxml.com/html/automan/images/background01.jpg"
+            alt="Blog Hero"
+            className="x_hero_image"
+          />
+          <div className="x_hero_overlay"></div>
+          <div className="x_hero_content">
+            <h1>Welcome to Our Blog</h1>
+            <p>Your daily source for taxi service tips, travel guides, and transportation news.</p>
+          </div>
+        </section>
+
         <section className="x_blog_section">
           {/* Offcanvas Toggle Button - Only visible below 991px */}
           <button className="x_offcanvas_toggle" onClick={toggleOffcanvas}>
@@ -317,7 +332,7 @@ export default function Blog({ onSearch }) {
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                 >
-                 <FaChevronLeft style={{"height":"14px"}}/>
+                  <FaChevronLeft style={{ "height": "14px" }} />
                 </button>
 
                 <div className="x_page_numbers">
@@ -337,7 +352,7 @@ export default function Blog({ onSearch }) {
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                 >
-                  <FaChevronRight style={{"height":"14px"}}/>
+                  <FaChevronRight style={{ "height": "14px" }} />
                 </button>
               </div>
 
