@@ -57,7 +57,8 @@ exports.register = async (req, res) => {
         airCondition: vehicle.airCondition,
         gpsNavigation: vehicle.gpsNavigation,
         perKmRate: vehicle.perKmRate,
-        extraKmRate: vehicle.extraKmRate
+        extraKmRate: vehicle.extraKmRate,
+        description : vehicle.description || '', // optional description
       });
 
       user.vehicle = newVehicle._id;

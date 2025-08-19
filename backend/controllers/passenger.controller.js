@@ -3,6 +3,7 @@ const Payment = require("../models/Payment") || null;
 const calculateFare = require("../utils/fareCalculator");
 const {
   tryAssignDriver,
+  driverSockets,
   assignDriverToBookingSync,
   passengerSockets,
 } = require("../sockets/booking.socket");
@@ -213,7 +214,62 @@ exports.createBooking = async (req, res) => {
       .json({ message: "Server error", error: err.message });
   }
 };
+exports.cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
 
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Check if user is authorized to cancel this booking
+    if (booking.passenger.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    // Only allow cancellation for certain statuses
+    const allowedStatuses = [BOOKING_STATUS.PENDING, BOOKING_STATUS.ASSIGNED];
+    if (!allowedStatuses.includes(booking.status)) {
+      return res.status(400).json({
+        message: "Booking cannot be cancelled in current status",
+      });
+    }
+
+    // Update booking status to cancelled
+    booking.status = BOOKING_STATUS.CANCELLED;
+    await booking.save();
+
+    // Free up assigned driver if any
+    if (booking.assignedDriver) {
+      await User.findByIdAndUpdate(booking.assignedDriver, {
+        status: USER_STATUS.AVAILABLE,
+      });
+
+      // Notify driver through socket
+
+      const driverSocket = driverSockets.get(
+        booking.assignedDriver?.toString()
+      );
+      if (driverSocket) {
+        driverSocket.emit("booking_cancelled", { bookingId: booking._id });
+        await User.findByIdAndUpdate(booking.assignedDriver, {
+          status: USER_STATUS.AVAILABLE,
+        });
+      }
+    }
+
+    return res.json({
+      message: "Booking cancelled successfully",
+      booking,
+    });
+  } catch (err) {
+    console.error("cancelBooking error:", err);
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};
 exports.getBooking = async (req, res) => {
   const booking = await Booking.findById(req.params.id).populate(
     "driver passenger preferredVehicleId"
