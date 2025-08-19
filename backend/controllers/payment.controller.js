@@ -46,48 +46,46 @@ const processPayment = async (req, res) => {
   try {
     const { bookingId } = req.params;
     const passengerId = req.user.id;
-   
-    
+
     const booking = await Booking.findById(bookingId);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
     if (booking.passenger.toString() !== passengerId) return res.status(403).json({ message: 'Unauthorized' });
+
     if (booking.status !== BOOKING_STATUS.PENDING_COMPLETION)
       return res.status(400).json({ message: 'Booking is not ready for payment' });
 
     let payment = await Payment.findOne({ booking: bookingId });
     if (!payment) {
-      payment = await Payment.create({
-        booking: bookingId,
-        amount: booking.fare,
-        status: 'pending'
-      });
+      return res.status(400).json({ message: "Payment already processed to driver, owner portion remaining" });
     }
 
-    // Static payment: just mark as completed
-    payment.status = 'completed';
-    payment.transactionId = `STATIC_${Date.now()}`;
-    payment.completedAt = new Date();
-    await payment.save();
+    // --- Pay remaining 20% to owner ---
+    const owner = await User.findOne({ role: 'superadmin' });
+    if (!owner) return res.status(404).json({ message: "Owner not found" });
+
+    const ownerAmount = payment.ownerCommission || booking.fare * 0.2;
+
+    await Payment.create({
+      booking: bookingId,
+      amount: ownerAmount,
+      status: 'completed',
+      payoutTo: owner._id,
+      payoutType: 'owner',
+      transactionId: `OWNER_${Date.now()}`,
+      completedAt: new Date()
+    });
 
     booking.status = BOOKING_STATUS.COMPLETED;
-    booking.completedAt = new Date();
     await booking.save();
 
-    // Make driver available
-    await User.findByIdAndUpdate(booking.assignedDriver, { available: true });
-
-    res.json({
-      message: 'Payment marked as completed (static)',
-      payment,
-      booking,
-      transactionId: payment.transactionId
-    });
+    res.json({ message: 'Owner paid successfully', ownerAmount, booking });
 
   } catch (err) {
     console.error('processPayment error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 // Get passenger's pending payments
 const getPendingPayments = async (req, res) => {

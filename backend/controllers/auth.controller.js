@@ -2,6 +2,12 @@ const User = require('../models/User');
 const Vehicle = require('../models/Vehicle');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const twilio = require('twilio');
+
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Store OTP temporarily (in production use DB or Redis)
+const otpStore = {};
 
 exports.register = async (req, res) => {
   try {
@@ -105,3 +111,113 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const user = await User.findOne({ phone });
+    if (!user) return res.status(404).json({ message: 'User with this phone not found' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Save OTP and expiry in user document
+    user.otp = otp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 min
+    await user.save();
+
+    // Send OTP via Twilio
+    await client.messages.create({
+      body: `Your OTP for password reset is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: phone
+    });
+
+    res.json({ message: 'OTP sent successfully' });
+  } catch (err) {
+    console.error("Twilio error full object:", err);
+    if (err.status && err.code) {
+      return res.status(err.status).json({
+        success: false,
+        message: err.message,
+        code: err.code,
+        moreInfo: err.moreInfo,
+        details: err.details || null
+      });
+    }
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
+/**
+ * 2️⃣ Verify OTP
+ */
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+    const user = await User.findOne({ phone });
+    if (!user || !user.otp) return res.status(400).json({ message: 'OTP not found. Please request again.' });
+    if (Date.now() > user.otpExpires) {
+      user.otp = null;
+      user.otpExpires = null;
+      await user.save();
+      return res.status(400).json({ message: 'OTP expired. Please request again.' });
+    }
+    if (parseInt(otp) !== user.otp) return res.status(400).json({ message: 'Invalid OTP' });
+
+    
+    await user.save();
+
+    res.json({ message: 'OTP verified successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
+/**
+ * 3️⃣ Reset Password
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { phone, otp, newPassword, confirmPassword } = req.body;
+
+    // Check if newPassword and confirmPassword match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'New password and confirm password do not match.' });
+    }
+
+    const user = await User.findOne({ phone });
+    if (!user || !user.otp) {
+      return res.status(400).json({ message: 'OTP not found. Please request again.' });
+    }
+
+    // Check if OTP has expired
+    if (Date.now() > user.otpExpires) {
+      user.otp = null;
+      user.otpExpires = null;
+      await user.save();
+      return res.status(400).json({ message: 'OTP expired. Please request again.' });
+    }
+
+    // Check if OTP is correct
+    if (parseInt(otp) !== user.otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Hash new password
+    user.password = await bcrypt.hash(newPassword, 12);
+
+    // Clear OTP
+    user.otp = null;
+    user.otpExpires = null;
+
+    await user.save();
+    res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+

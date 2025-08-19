@@ -13,6 +13,7 @@ import Footer from "./component/Footer";
 import HomeSlide from "./component/HomeSlide";
 import CarDetails from "./pages/CarDetails";
 import Faq from "./pages/Faq";
+import AdminLayout from "./pages/AdminLayout";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
         <Route path="/CarDetails" element={<Main><CarDetails /></Main>} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/HomeSlide" element={<HomeSlide />} />
+
+        <Route path="/admin" element={<AdminLayout />}></Route>
 
       </Routes>
     </Router>

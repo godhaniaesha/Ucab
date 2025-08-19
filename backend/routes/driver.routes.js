@@ -3,6 +3,7 @@ const driverController = require('../controllers/driver.controller');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 const { locationSchema } = require('../validators/schemas');
 const { validate } = require('../middlewares/validation.middleware');
+const upload = require('../middlewares/upload');
 
 // Update location
 router.post('/location', authMiddleware(['driver']), locationSchema, validate, driverController.updateLocation);
@@ -24,7 +25,12 @@ router.post('/complete/:id', authMiddleware(['driver']), driverController.comple
 // Booking history
 router.get('/history', authMiddleware(['driver']), driverController.getHistory);
 
-router.post('/update-profile', authMiddleware(['driver','passenger']), driverController.updateProfile);
+router.post('/update-profile', authMiddleware(['driver','passenger','superadmin']),
+upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "images", maxCount: 5 }
+  ]),
+driverController.updateProfile);
 
 
 module.exports = router;

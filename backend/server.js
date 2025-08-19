@@ -8,6 +8,8 @@ const { connectDB } = require('./config/db');
 const routes = require('./routes');
 const { initSockets } = require('./sockets/booking.socket');
 const logger = require('./utils/logger');
+// const { checkDriverActivity } = require('./utils/driverActivity');
+
 
 const app = express();
 const server = http.createServer(app);
@@ -32,7 +34,14 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+
+
+// Serve local uploads
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 connectDB();
+// setInterval(checkDriverActivity, 10 * 60 * 1000); // every 10 minutes
 app.get('/health', (req, res) => res.json({ status: 'OK', time: new Date().toISOString() }));
 app.use('/api', routes);
 
