@@ -1330,7 +1330,7 @@ body {
 
 /* Offcanvas Toggle Button */
 .x_offcanvas_toggle {
-  position: fixed;
+  position: absolute;
   /* top: 20px; */
   right: 20px;
   width: 50px;
