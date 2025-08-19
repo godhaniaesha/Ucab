@@ -2,6 +2,7 @@ import React from 'react';
 import "../style/z_app.css";
 import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 import "../style/Contect.css";
+import Footer from '../component/Footer';
 
 export default function Contact() {
   return (
@@ -44,7 +45,7 @@ export default function Contact() {
               </div>
 
               {/* Right Side - Form */}
-              <div className="col-md-6 pb-4">
+              <div className="col-md-6 pb-4" style={{ padding: "0 20px" }}>
                 <div className="z_cntct_form h-100 d-flex align-items-center">
                   <form className="w-100">
                     <input type="text" placeholder="Your Name" required />
@@ -67,7 +68,7 @@ export default function Contact() {
       </section>
 
       {/* Map Section */}
-      <section className='container'>
+      <section className='container mb-5'>
         <div className="z_cntct_map_section">
           <iframe
             className="z_cntct_map"
@@ -79,6 +80,8 @@ export default function Contact() {
           ></iframe>
         </div>
       </section>
+
+      <Footer />
     </>
   );
 }

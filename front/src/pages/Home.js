@@ -17,6 +17,9 @@ import {
   FaSuitcaseRolling,
   FaSnowflake,
 } from "react-icons/fa";
+import testi1 from '../image/Testimonial1.png';
+import testi2 from '../image/Testimonial2.png';
+import testi3 from '../image/Testimonial3.png';
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -427,7 +430,7 @@ export default function Home({ car }) {
         </div>
       </section>
 
-    {/* Booking Form Modal */}
+      {/* Booking Form Modal */}
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Book Your Cab</Modal.Title>
@@ -494,7 +497,7 @@ export default function Home({ car }) {
           </Modal.Footer>
         </Form>
       </Modal>
-      
+
       {/* Video */}
       <section className="x_hero_section">
         <div className="x_video_background">
@@ -617,17 +620,17 @@ export default function Home({ car }) {
         {/* Background Cars */}
         <div className="z_testi_bg_cars">
           <img
-            src="https://luxedrive.qodeinteractive.com/wp-content/uploads/2023/02/Pricing-table-img-01.png"
+            src={testi1}
             alt="Car 1"
             className="z_testi_car_1"
           />
           <img
-            src="https://luxedrive.qodeinteractive.com/wp-content/uploads/2023/02/Pricing-table-img-02.png"
+            src={testi2}
             alt="Car 2"
             className="z_testi_car_2"
           />
           <img
-            src="https://luxedrive.qodeinteractive.com/wp-content/uploads/2023/02/Pricing-table-img-03.png"
+            src={testi3}
             alt="Car 3"
             className="z_testi_car_3"
           />

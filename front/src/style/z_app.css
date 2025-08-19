@@ -437,7 +437,6 @@
 .z_service_subtitle {
   font-size: 1.1rem;
   color: #666;
-  max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
 }
@@ -477,8 +476,9 @@
 .z_service_card_title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #333;
+  color: #333 !important;
   margin-bottom: 15px;
+  font-family: "Merriweather", serif;
 }
 
 .z_service_card_description {
@@ -528,6 +528,14 @@
   .z_service_title {
     font-size: 2.2rem;
   }
+
+  .z_cntct_overlay {
+    width: auto !important;
+  }
+
+  /* .z_cntct_overlay .container {
+    --bs-gutter-x: 0 !important;
+  } */
 }
 
 @media (max-width: 768px) {
@@ -788,6 +796,9 @@
     width: 90%;
     max-width: 350px;
   }
+  .z_allcabs_hero_content h1 {
+    font-size: 2rem !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -821,11 +832,11 @@
 /* Testimonial Section Styles */
 .z_testi_section {
   /* background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)); */
-  padding: 100px 20px;
+  padding: 50px 20px;
   color: white;
   text-align: center;
   position: relative;
-  min-height: 600px;
+  min-height: 540px;
   overflow: hidden;
 }
 
@@ -860,17 +871,16 @@
 .z_testi_car_2 {
   position: absolute;
   top: 50%;
-  right: 8%;
+  right: 2%;
   width: 200px;
   height: auto;
   opacity: 0.25;
   transform: rotate(15deg);
   animation: float2 8s ease-in-out infinite;
 }
-
 .z_testi_car_3 {
   position: absolute;
-  bottom: 15%;
+  bottom: 2%;
   left: 15%;
   width: 180px;
   height: auto;
@@ -1063,7 +1073,6 @@
   -webkit-backdrop-filter: blur(8px) !important;
   width: 50%;
   margin: auto;
-  border-radius: 10px;
 }
 
 /* Container */
@@ -1153,7 +1162,6 @@
   padding: 30px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .z_cntct_form form {
@@ -1207,7 +1215,7 @@
 @media (max-width: 992px) {
   .z_cntct_overlay {
     width: 80%;
-    padding: 40px 20px;
+    /* padding: 40px 20px; */
   }
 }
 
@@ -1219,7 +1227,7 @@
 
   .z_cntct_overlay {
     width: 100%;
-    padding: 30px 15px;
+    /* padding: 30px 15px; */
   }
 
   .z_cntct_info {
@@ -1313,3 +1321,136 @@
   transform: scale(1.05);
 }
 
+/* HERO SECTION */
+.x_hero_section {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.x_hero_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.x_hero_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45); /* dark overlay */
+}
+
+.x_hero_content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  padding: 0 15px;
+}
+
+.x_hero_content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.x_hero_content p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.z_book_now {
+  background: linear-gradient(90deg, #0f6e55, #199675);
+  color: white;
+  border: none !important;
+  padding: 8px 30px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  cursor: pointer;
+  text-transform: uppercase !important;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+/* Service Accordion */
+/* === Fleet Section Accordion === */
+.z_fleet_section {
+  padding: 60px 20px;
+}
+
+.z_fleet_list {
+  border-top: 1px solid #ddd;
+}
+
+.z_fleet_item {
+  border-bottom: 1px solid #ddd;
+}
+
+.z_fleet_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.z_fleet_title {
+  font-family: "Merriweather", serif;
+  color: #0f6e55;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.z_fleet_icon {
+  font-size: 1.5rem;
+}
+
+.z_fleet_body {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 12px 0;
+}
+
+.z_fleet_details {
+  flex: 1;
+}
+
+.z_fleet_rating {
+  color: #c5a46d;
+  margin-bottom: 10px;
+}
+
+.z_fleet_desc {
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+.z_fleet_price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #199675;
+}
+
+.z_fleet_image {
+  flex: 1;
+  max-width: 300px;
+}
+
+.z_fleet_image img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
