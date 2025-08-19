@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import { PiTelegramLogoBold } from "react-icons/pi";
 import "../style/x_app.css";
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
     const [isVisible, setIsVisible] = useState(false);
@@ -71,12 +72,21 @@ export default function Footer() {
                     <div className="x_footer-col">
                         <h3>Quick Links</h3>
                         <ul>
-                            <li><FaCaretRight color="#199675" /> About Us</li>
-                            <li><FaCaretRight color="#199675" /> Update News</li>
-                            <li><FaCaretRight color="#199675" /> Testimonials</li>
-                            <li><FaCaretRight color="#199675" /> Terms Of Service</li>
-                            <li><FaCaretRight color="#199675" /> Privacy Policy</li>
-                            <li><FaCaretRight color="#199675" /> Our Drivers</li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/home">Home</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/blog">Blog</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/about">About Us</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/pages">My Account</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/taxi">Book A Ride</Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -84,12 +94,21 @@ export default function Footer() {
                     <div className="x_footer-col">
                         <h3>Support Center</h3>
                         <ul>
-                            <li><FaCaretRight color="#199675" /> FAQ's</li>
-                            <li><FaCaretRight color="#199675" /> Affiliates</li>
-                            <li><FaCaretRight color="#199675" /> Booking Tips</li>
-                            <li><FaCaretRight color="#199675" /> Book A Ride</li>
-                            <li><FaCaretRight color="#199675" /> Contact Us</li>
-                            <li><FaCaretRight color="#199675" /> Sitemap</li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/faq">FAQ's</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/contact">Contact Us</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/service">Service</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/privacy">Privacy Policy</Link>
+                            </li>
+                            <li>
+                                <FaCaretRight color="#199675" /> <Link to="/terms">Terms & Condition</Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -106,7 +125,7 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            
+
             {/* Running Taxi Animation - Only visible when footer is in view */}
             {isVisible && (
                 <div className="running-taxi">
@@ -126,7 +145,7 @@ export default function Footer() {
                 </div>
             </div>
 
-            
+
         </footer>
     );
 }

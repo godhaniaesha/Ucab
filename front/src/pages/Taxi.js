@@ -286,7 +286,7 @@ export default function Taxi() {
 
           {/* Car Cards */}
           {filteredCars.length > 0 && (
-            <div className="z_cars_container container">
+            <div className="z_cars_container my-4 container">
               <div className="row g-4">
                 {filteredCars.map((car) => (
                   <div
@@ -504,7 +504,6 @@ export default function Taxi() {
         </Form>
       </Modal>
 
-      <Footer />
     </>
   );
 }

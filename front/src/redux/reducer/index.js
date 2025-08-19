@@ -1,7 +1,8 @@
-import React from 'react'
+import { combineReducers } from '@reduxjs/toolkit';
+import authReducer from '../slice/auth.slice';
 
-export default function index() {
-  return (
-    <div>index</div>
-  )
-}
+export const rootReducer = combineReducers({
+  auth: authReducer
+});
+
+export default rootReducer;

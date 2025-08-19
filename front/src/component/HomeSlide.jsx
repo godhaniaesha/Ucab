@@ -93,7 +93,56 @@ const HomeSlide = () => {
       airCondition: "Yes",
       gps: "Yes",
     },
+    {
+      id: 5,
+      name: "TESLA MODEL S 2023",
+      image:
+        "https://tesla-cdn.thron.com/delivery/public/image/tesla/6c39e4b4-8e8f-4c78-bf30-71dbd3e7c9d0/bvlatuR/std/2880x1800/Model-S-Red",
+      price: "$4.00/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 3,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 6,
+      name: "TOYOTA INNOVA CRYSTA",
+      image:
+        "https://imgd-ct.aeplcdn.com/664x374/n/cw/ec/129681/innova-crysta-exterior-right-front-three-quarter-79.jpeg",
+      price: "$1.75/km",
+      doors: 4,
+      passengers: 7,
+      luggage: 4,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 7,
+      name: "MERCEDES-BENZ G-CLASS",
+      image:
+        "https://www.mbusa.com/content/dam/mb-nafta/us/myco/my24/g/class-page/2024-G-CLASS-SUV-AVP-DR.jpg",
+      price: "$5.25/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 5,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 8,
+      name: "HONDA CIVIC 2022",
+      image:
+        "https://www.honda.ca/-/media/Brands/Honda/Models/2022/Civic-Sedan/Overview/2022-Civic-Sedan-Touring-White.jpg",
+      price: "$1.10/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 3,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
   ];
+
 
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
@@ -407,9 +456,8 @@ const HomeSlide = () => {
               {carData.map((car) => (
                 <div
                   key={car.id}
-                  className={`z_car_card ${
-                    hoveredCard === car.id ? "z_car_card_hover" : ""
-                  }`}
+                  className={`z_car_card ${hoveredCard === car.id ? "z_car_card_hover" : ""
+                    }`}
                   onMouseEnter={() => setHoveredCard(car.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
@@ -485,11 +533,10 @@ const HomeSlide = () => {
                     </div>
 
                     <button
-                      className={`z_car_book_button ${
-                        hoveredButton === car.id
+                      className={`z_car_book_button ${hoveredButton === car.id
                           ? "z_car_book_button_hover"
                           : ""
-                      }`}
+                        }`}
                       onMouseEnter={() => setHoveredButton(car.id)}
                       onMouseLeave={() => setHoveredButton(null)}
                       onClick={() => alert(`Booking ${car.name}...`)}
@@ -609,7 +656,7 @@ const HomeSlide = () => {
           </div>
         </div>
       </section>
-      
+
     </>
   );
 };

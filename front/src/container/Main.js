@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../component/Header'
+import Footer from '../component/Footer'
 
 export default function Main({ children }) {
   return (
@@ -8,6 +9,7 @@ export default function Main({ children }) {
       <main>
         {children}
       </main>
+      <Footer />
     </div>
   )
 }

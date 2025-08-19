@@ -5,6 +5,10 @@ body {
   background-color: #f4f4f4;
 }
 
+a {
+    color: #fff;
+    text-decoration: none;
+}
 
 .x_main {
   width: 100vw;
@@ -270,12 +274,7 @@ body {
     color: #000;
   }
 
-  /* Mobile book button */
-  .x_mobile-book-btn {
-    display: block;
-    margin-top: 20px;
-    width: 100%;
-  }
+  
 
 
 
@@ -315,6 +314,12 @@ body {
 @media (max-width: 375px) {
   .x_desktop-book-btn {
     display: none;
+  }
+  /* Mobile book button */
+  .x_mobile-book-btn {
+    display: block;
+    margin-top: 20px;
+    width: 100%;
   }
 }
 
@@ -534,6 +539,9 @@ body {
   .running-taxi {
     /* bottom: 10% !important; */
     bottom: 0% !important;
+  }
+  .taxi{
+    display: none;
   }
 }
 
@@ -3060,5 +3068,113 @@ body {
 @media (max-width: 768px) {
   .x_faq_grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* end FAQ's */ 
+
+/* PrivacyPolicy start */.x_privacy {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Common style for both cars */
+.x_privacy-bg {
+  position: absolute;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.x_privacy-car {
+  max-width: 500px;
+  height: auto;
+}
+
+/* Center Car */
+.x_privacy-bg-center {
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Bottom Car */
+.x_privacy-bg-bottom {
+  bottom: 5%;
+  right: 5%;
+}
+
+/* Content Card */
+.x_privacy-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  /* background: #fff; */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.x_privacy-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #199675;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.x_privacy-updated {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #777;
+}
+
+.x_privacy-section {
+  margin-bottom: 30px;
+}
+
+.x_privacy-section h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.x_privacy-section p,
+.x_privacy-section ul {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.x_privacy-section ul {
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .x_privacy-container {
+    padding: 20px;
+  }
+
+  .x_privacy-title {
+    font-size: 1.6rem;
+  }
+
+  .x_privacy-car {
+    max-width: 250px;
+  }
+
+  .x_privacy-bg-center {
+    top: 40%;
+  }
+
+  .x_privacy-bg-bottom {
+    bottom: 0;
   }
 }

@@ -109,7 +109,56 @@ export default function Home({ car }) {
       airCondition: "Yes",
       gps: "Yes",
     },
+    {
+      id: 5,
+      name: "TESLA MODEL S 2023",
+      image:
+        "https://media.carsandbids.com/cdn-cgi/image/width=2080,quality=70/9004500a220bf3a3d455d15ee052cf8c332606f8/photos/Kdlxk0Oj-ltZNt6X3sW-(edit).jpg?t=170935452690",
+      price: "$4.00/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 3,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 6,
+      name: "TOYOTA INNOVA CRYSTA",
+      image:
+        "https://dreamsauto.in/uploadFiles/Gallery/24091308182442597.jpg",
+      price: "$1.75/km",
+      doors: 4,
+      passengers: 7,
+      luggage: 4,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 7,
+      name: "MERCEDES-BENZ G-CLASS",
+      image:
+        "https://images.cdn.autocar.co.uk/sites/autocar.co.uk/files/01-mercedes-g500-g-wagen-2024-review-lead-driving-front.jpg",
+      price: "$5.25/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 5,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
+    {
+      id: 8,
+      name: "HONDA CIVIC 2022",
+      image:
+        "https://static0.carbuzzimages.com/wordpress/wp-content/uploads/gallery-images/original/877000/0/877065.jpg?q=70&fit=contain&w=1200&h=628&dpr=1",
+      price: "$1.10/km",
+      doors: 4,
+      passengers: 5,
+      luggage: 3,
+      airCondition: "Yes",
+      gps: "Yes",
+    },
   ];
+
 
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
@@ -675,8 +724,7 @@ export default function Home({ car }) {
           </Swiper>
         </div>
       </section>
-
-      <Footer />
+      
     </>
   );
 }

@@ -454,7 +454,6 @@ export default function CarDetails() {
         </Form>
       </Modal>
 
-      <Footer />
     </>
   );
 }
