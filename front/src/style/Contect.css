@@ -47,8 +47,6 @@
   padding: 50px 20px;
 }
 
-
-
 .z_cntct_container {
   display: flex;
   flex-wrap: wrap;
@@ -96,11 +94,14 @@
   border-radius: 5px;
 }
 
-
 /* Responsive */
 @media (max-width: 768px) {
   .z_cntct_container {
     flex-direction: column;
+  }
+
+  .z_cntct_hero_title {
+    font-size: 2rem;
   }
 }
 
@@ -114,4 +115,3 @@
   height: 100%;
   border: none;
 }
-

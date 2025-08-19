@@ -37,83 +37,108 @@ const Faq = () => {
   ];
 
   return (
-    <section>
-      <div className="faq_section">
-        <div className="x_container_f x_faq_grid">
-          {/* General Questions */}
-          <div className="x_faq_col">
-            <h2 className="x_faq_title">General Questions</h2>
-            {generalQuestions.map((item, index) => (
-              <div key={index} className={`x_faq_item ${openGeneralIndex === index ? "active" : ""}`}>
-                <button
-                  className="x_faq_question"
-                  onClick={() => setOpenGeneralIndex(openGeneralIndex === index ? null : index)}
-                >
-                  {index + 1}. {item.q}
-                  <span>{openGeneralIndex === index ? "▲" : "▼"}</span>
-                </button>
-                {openGeneralIndex === index && <div className="x_faq_answer">{item.a}</div>}
-              </div>
-            ))}
-          </div>
 
-          {/* Booking Questions */}
-          <div className="x_faq_col">
-            <h2 className="x_faq_title">Managing Your Booking</h2>
-            {bookingQuestions.map((item, index) => (
-              <div key={index} className={`x_faq_item ${openBookingIndex === index ? "active" : ""}`}>
-                <button
-                  className="x_faq_question"
-                  onClick={() => setOpenBookingIndex(openBookingIndex === index ? null : index)}
-                >
-                  {index + 1}. {item.q}
-                  <span>{openBookingIndex === index ? "▲" : "▼"}</span>
-                </button>
-                {openBookingIndex === index && <div className="x_faq_answer">{item.a}</div>}
-              </div>
-            ))}
+    <>
+
+      {/* Hero Section */}
+      <section
+        className="service-hero"
+        style={{
+          backgroundImage:
+            "url('https://yandex-images.clstorage.net/9ICmJ6388/b977b6BiM/e4TSF6q-acMCzvaOdfzmpSV0vJnw6lFGGaGnqrcqp3IwOqLApqTqaVGirMUj91ZT3Y2cVu4Bi4vAtWLJRyB0_SaBgx6bo32-b5Pm7yXc6rEtAcmVtJs5V23IrtvjfpteHBqiOE9sf7G1DzRk7hK-Lr2llQPqeNbyvRD72KrBETxHVHZntk4cv9IeX_JdMJYlBTGc-fxrBWsxJfbb2_OXx0FTIoRnsB8B4Ss40PrSDgaJrT2Dn1B2JiFIElBmPTVgs0DqZ4LW9Jvq_vdSxUiOabUJqOkEg1mrYTEai5OTW8dxT9aM96D_2eGTSKDGCspa9Q3h21sgmkYdIJLoVgW9mGcAGucK-mB35sYjdklESoVxfdSZVAvVo11Vek8f81s3zT8O5B8MR2HVf1RUmtK6CoUNuXMTeE4KLXhSQI79sSSr4LKnEt64p_ZWK5ohmAZ9mQmwFWA_Zb_VOXoXc3fXr3W3-uBr1Mc90ffg4Jr6Vpbl2Qk3p3Ti6llMktDS4Y0oH5zGd4IegNN69q--8UiSVXHF2LW438XP7d32ax8nnzchO76YA8jj-emDrHTeloLeaTnVuxto0notNMaEmqFh9Lc4gt-apizLsnJ3Hvlggj2VPRS9jCP1Q1WlIj_j_1dDYU_-wNM4S5Fx7_gItqYaKiHFZcNThGLyPaRuYB7pOexfdL7PlpYAd9Ji--r1JO7pkQGMwUj3oUOxje7Dx--r9-3vooQX8Eud9ZdQVNYqgmbZXeGnKyAKnlG00oAiPYGIZwxeSyZuGGeSivdS2Ri6ieXFnJVQd7WnbR1-v4_7X7_JE1oAO9ATWQnv1MQWOlYK3blBm7_Uzh7FiKpMxj2N1PP4kt9K5pi3_rrTGl1sCv3RNZyBhHP5r_EZPuNfo28_uftOrI9gJ3VlL6zU-i6yAmUFjTurRP7qSfDW0JI1qajfCPIjvv50V4baa9IZbLp56V2sEeiTza8Bnf5TPx8c')" ,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="service-hero-content">
+  <h1>Frequently Asked Questions</h1>
+  <p>
+    Find quick answers to your queries about bookings, deals, cab services,
+    and tour packages. We’re here to guide you every step of the way.
+  </p>
+</div>
+
+      </section>
+
+
+      <section>
+        <div className="faq_section">
+          <div className="x_container_f x_faq_grid">
+            {/* General Questions */}
+            <div className="x_faq_col">
+              <h2 className="x_faq_title">General Questions</h2>
+              {generalQuestions.map((item, index) => (
+                <div key={index} className={`x_faq_item ${openGeneralIndex === index ? "active" : ""}`}>
+                  <button
+                    className="x_faq_question"
+                    onClick={() => setOpenGeneralIndex(openGeneralIndex === index ? null : index)}
+                  >
+                    {index + 1}. {item.q}
+                    <span>{openGeneralIndex === index ? "▲" : "▼"}</span>
+                  </button>
+                  {openGeneralIndex === index && <div className="x_faq_answer">{item.a}</div>}
+                </div>
+              ))}
+            </div>
+
+            {/* Booking Questions */}
+            <div className="x_faq_col">
+              <h2 className="x_faq_title">Managing Your Booking</h2>
+              {bookingQuestions.map((item, index) => (
+                <div key={index} className={`x_faq_item ${openBookingIndex === index ? "active" : ""}`}>
+                  <button
+                    className="x_faq_question"
+                    onClick={() => setOpenBookingIndex(openBookingIndex === index ? null : index)}
+                  >
+                    {index + 1}. {item.q}
+                    <span>{openBookingIndex === index ? "▲" : "▼"}</span>
+                  </button>
+                  {openBookingIndex === index && <div className="x_faq_answer">{item.a}</div>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="faq_section1">
-        <div className="x_container_f x_faq_grid">
-          {/* Deal Questions */}
-          <div className="x_faq_col">
-            <h2 className="x_faq_title">Managing Your Deals</h2>
-            {dealQuestions.map((item, index) => (
-              <div key={index} className={`x_faq_item ${openDealIndex === index ? "active" : ""}`}>
-                <button
-                  className="x_faq_question"
-                  onClick={() => setOpenDealIndex(openDealIndex === index ? null : index)}
-                >
-                  {index + 1}. {item.q}
-                  <span>{openDealIndex === index ? "▲" : "▼"}</span>
-                </button>
-                {openDealIndex === index && <div className="x_faq_answer">{item.a}</div>}
-              </div>
-            ))}
-          </div>
+        <div className="faq_section1">
+          <div className="x_container_f x_faq_grid">
+            {/* Deal Questions */}
+            <div className="x_faq_col">
+              <h2 className="x_faq_title">Managing Your Deals</h2>
+              {dealQuestions.map((item, index) => (
+                <div key={index} className={`x_faq_item ${openDealIndex === index ? "active" : ""}`}>
+                  <button
+                    className="x_faq_question"
+                    onClick={() => setOpenDealIndex(openDealIndex === index ? null : index)}
+                  >
+                    {index + 1}. {item.q}
+                    <span>{openDealIndex === index ? "▲" : "▼"}</span>
+                  </button>
+                  {openDealIndex === index && <div className="x_faq_answer">{item.a}</div>}
+                </div>
+              ))}
+            </div>
 
-          {/* Package Questions */}
-          <div className="x_faq_col">
-            <h2 className="x_faq_title">Managing Your Tour Packages</h2>
-            {packageQuestions.map((item, index) => (
-              <div key={index} className={`x_faq_item ${openPackageIndex === index ? "active" : ""}`}>
-                <button
-                  className="x_faq_question"
-                  onClick={() => setOpenPackageIndex(openPackageIndex === index ? null : index)}
-                >
-                  {index + 1}. {item.q}
-                  <span>{openPackageIndex === index ? "▲" : "▼"}</span>
-                </button>
-                {openPackageIndex === index && <div className="x_faq_answer">{item.a}</div>}
-              </div>
-            ))}
+            {/* Package Questions */}
+            <div className="x_faq_col">
+              <h2 className="x_faq_title">Managing Your Tour Packages</h2>
+              {packageQuestions.map((item, index) => (
+                <div key={index} className={`x_faq_item ${openPackageIndex === index ? "active" : ""}`}>
+                  <button
+                    className="x_faq_question"
+                    onClick={() => setOpenPackageIndex(openPackageIndex === index ? null : index)}
+                  >
+                    {index + 1}. {item.q}
+                    <span>{openPackageIndex === index ? "▲" : "▼"}</span>
+                  </button>
+                  {openPackageIndex === index && <div className="x_faq_answer">{item.a}</div>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
