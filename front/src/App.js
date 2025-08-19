@@ -11,6 +11,7 @@ import Contact from "./pages/Contact";
 import "./App.css";
 import Footer from "./component/Footer";
 import HomeSlide from "./component/HomeSlide";
+import AdminLayout from "./pages/AdminLayout";
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
         <Route path="/contact" element={<Main><Contact /></Main>} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/HomeSlide" element={<HomeSlide />} />
+
+        <Route path="/admin" element={<AdminLayout />}></Route>
 
       </Routes>
     </Router>
