@@ -35,3 +35,10 @@
   font-size: 1.2rem;
   line-height: 1.6;
 }
+
+
+@media only screen and (max-width: 768px) {
+  .service-hero-content h1 {
+    font-size: 2rem !important;
+}
+}
