@@ -12,6 +12,7 @@ import "./App.css";
 import Footer from "./component/Footer";
 import HomeSlide from "./component/HomeSlide";
 import CarDetails from "./pages/CarDetails";
+import Faq from "./pages/Faq";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/taxi" element={<Main><Taxi /></Main>} />
         <Route path="/service" element={<Main><Service /></Main>} />
         <Route path="/pages" element={<Main><Pages /></Main>} />
+        <Route path="/faq" element={<Main><Faq /></Main>} />
         <Route path="/blog" element={<Main><Blog /></Main>} />
         <Route path="/contact" element={<Main><Contact /></Main>} />
         <Route path="/CarDetails" element={<Main><CarDetails /></Main>} />

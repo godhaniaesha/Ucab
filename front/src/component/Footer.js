@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from 'react';
 import {
     FaFacebookF,
     FaTwitter,
@@ -12,8 +13,39 @@ import { PiTelegramLogoBold } from "react-icons/pi";
 import "../style/x_app.css";
 
 export default function Footer() {
+    const [isVisible, setIsVisible] = useState(false);
+    const footerRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // When footer comes into view, show the taxi animation
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                } else {
+                    // Hide animation when footer is out of view
+                    setIsVisible(false);
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of footer is visible
+                rootMargin: '0px 0px -50px 0px' // Trigger slightly before footer is fully visible
+            }
+        );
+
+        if (footerRef.current) {
+            observer.observe(footerRef.current);
+        }
+
+        return () => {
+            if (footerRef.current) {
+                observer.unobserve(footerRef.current);
+            }
+        };
+    }, []);
+
     return (
-        <footer className="x_footer">
+        <footer className="x_footer" ref={footerRef}>
             {/* Top Border Pattern */}
             <div className="x_footer-pattern"></div>
 
@@ -74,17 +106,21 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            <div class="running-taxi">
-                <div class="taxi"></div>
-                <div class="taxi-2"></div>
-                <div class="taxi-3"></div>
-            </div>
+            
+            {/* Running Taxi Animation - Only visible when footer is in view */}
+            {isVisible && (
+                <div className="running-taxi">
+                    <div className="taxi"></div>
+                    <div className="taxi-2"></div>
+                    <div className="taxi-3"></div>
+                </div>
+            )}
 
             {/* Bottom Bar */}
-            <div class="copyright-area no-menu-set">
-                <div class="container">
-                    <div class="copyright-inner">
-                        <div class="site-info">
+            <div className="copyright-area no-menu-set">
+                <div className="container">
+                    <div className="copyright-inner">
+                        <div className="site-info">
                             © Copyright 2025 <a href="https://themeforest.net/user/dynamiclayers">DynamicLayers</a>. All Rights Reserved. </div>
                     </div>
                 </div>

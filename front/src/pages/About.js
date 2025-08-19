@@ -2,6 +2,7 @@ import React from 'react';
 import '../style/x_app.css';
 import "../style/z_app.css";
 import '../style/About.css'
+import { FaTaxi, FaMoneyBillWave, FaShieldAlt, FaMapMarkedAlt, FaHeadset, FaClock } from "react-icons/fa";
 
 export default function About() {
   return (
@@ -69,6 +70,8 @@ export default function About() {
         </div>
       </section>
 
+      
+
       {/* Image Gallery */}
       <div className="about-page">
         <div className="about-container">
@@ -114,6 +117,114 @@ export default function About() {
           </div>
         </div>
       </div>
+
+      <div className="x_con my-5">
+					<div className="x_section_header">
+						<p className="x_section_subtitle">Why Us</p>
+						<h3 className="x_section_title">Why Choose Our Cab Service?</h3>
+					</div>
+
+
+					<div className="x_cards_grid">
+						{/* <!-- Card 01 - Easy Booking --> */}
+						<div className="x_card ">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">01</div>
+								<h3 className="x_card_title">Easy Online Booking</h3>
+								<p className="x_card_description">
+									Book your cab in just a few clicks with our user-friendly app or website.
+									No waiting, no hassle – ride when you need it.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaTaxi />
+							</div>
+						</div>
+
+						{/* <!-- Card 02 - Affordable Rides --> */}
+						<div className="x_card">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">02</div>
+								<h3 className="x_card_title">Affordable Rides</h3>
+								<p className="x_card_description">
+									Enjoy transparent pricing with no hidden charges. Choose from budget,
+									premium, or luxury cabs as per your needs.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaMoneyBillWave />
+							</div>
+						</div>
+
+						{/* <!-- Card 03 - Safety --> */}
+						<div className="x_card">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">03</div>
+								<h3 className="x_card_title">Safety & Comfort</h3>
+								<p className="x_card_description">
+									All our cabs are sanitized regularly, equipped with safety features, and
+									driven by trained, verified drivers.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaShieldAlt />
+							</div>
+						</div>
+
+						{/* <!-- Card 04 - Live Tracking --> */}
+						<div className="x_card">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">04</div>
+								<h3 className="x_card_title">Live Tracking</h3>
+								<p className="x_card_description">
+									Track your ride in real-time and share your trip details with friends
+									and family for extra security.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaMapMarkedAlt />
+							</div>
+						</div>
+
+						{/* <!-- Card 05 - 24/7 Support --> */}
+						<div className="x_card">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">05</div>
+								<h3 className="x_card_title">24/7 Support</h3>
+								<p className="x_card_description">
+									Our customer support team is available round the clock to assist you
+									with any query during your trip.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaHeadset />
+							</div>
+						</div>
+
+						{/* <!-- Card 06 - Faster Pickup --> */}
+						<div className="x_card">
+							<div className="x_card_background"></div>
+							<div className="x_card_content">
+								<div className="x_card_number">06</div>
+								<h3 className="x_card_title">Faster Pickup</h3>
+								<p className="x_card_description">
+									Get a cab at your doorstep within minutes. Our smart allocation system
+									ensures the nearest cab reaches you quickly.
+								</p>
+							</div>
+							<div className="x_card_icon">
+								<FaClock />
+							</div>
+						</div>
+					</div>
+
+
+				</div>
     </>
   );
 }
