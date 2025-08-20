@@ -19,9 +19,11 @@ const VehicleSchema = new mongoose.Schema({
   perKmRate: { type: Number, required: true },
   extraKmRate: { type: Number, required: true },
 
-   // Multiple images (array of URLs)
-  images: [{ type: String }] // store cloud/local URLs here
+  // Multiple images (array of URLs)
+  images: [{ type: String }], // store cloud/local URLs here
 
+  // Vehicle description
+  description: { type: String, default: '' } // optional description
 }, { timestamps: true });
 
 module.exports = mongoose.model('Vehicle', VehicleSchema);

@@ -1,0 +1,191 @@
+/* tab.css - Styles moved from tab.js */
+
+/* Custom styles for the active tab indicator and availability toggle */
+.d_nav_tab.active {
+  border: 2px solid #0f6e55; /* Simulate ring effect */
+}
+
+.d_nav_sidebar .d_nav_tab:not(.active) {
+  background-color: rgb(21, 136, 109); /* Inactive tab background */
+}
+.d_nav_sidebar .d_nav_tab:not(.active):hover {
+  background-color: rgb(12, 107, 82); /* Inactive tab hover background */
+  color: #ffffff !important; /* Ensure text color changes on hover */
+}
+
+/* Bootstrap Switch custom color */
+.d_content_area .form-check-input:checked {
+  background-color: #0f6e55 !important;
+  border-color: #0f6e55 !important;
+}
+.d_content_area .form-check-input:focus,
+.d_content_area .form-control:focus,
+.d_content_area .form-select:focus,
+.btn-close:focus {
+  border-color: #dee2e6 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+/* Fixed sidebar width */
+.d_nav_sidebar {
+  width: 280px !important;
+  min-width: 280px;
+  flex-shrink: 0;
+}
+/* Modal Custom */
+.d_modal_content {
+  background: #f9f9f9;
+  border-radius: 16px;
+  border: none;
+  padding: 0;
+}
+
+.d_modal_header {
+  background: #15886d;
+  color: #fff;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  padding: 1rem 1.5rem;
+}
+
+.d_modal_title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.d_modal_body {
+  padding: 1.5rem;
+}
+
+/* Profile Header */
+.d_profile_header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.d_profile_img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #15886d;
+  object-fit: cover;
+}
+
+.d_profile_name {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+/* Info Grid */
+.d_info_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Custom Card */
+.d_card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #eee;
+}
+
+.d_card_title {
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #15886d;
+}
+
+/* Payment Card */
+.d_payment_card {
+  background: #f1f1f1;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive horizontal tabs for mobile */
+@media (max-width: 991.98px) {
+  .d_nav_sidebar {
+    width: 100% !important;
+    min-width: unset;
+    flex-shrink: 1;
+  }
+  .d_nav_tabs_container {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    scrollbar-width: thin;
+    justify-content: center;
+    width: 100% !important;
+  }
+  .d_nav_tabs_container .d_nav_tab:first-child {
+    margin-left: 46px;
+  }
+  .d_driver_tab .d_nav_tabs_container .d_nav_tab:first-child {
+    margin-left: 0px !important;
+  }
+  .d_nav_tabs_container::-webkit-scrollbar {
+    height: 4px;
+  }
+  .d_nav_tabs_container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+  .d_nav_tabs_container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+  .d_nav_tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  .d_nav_tab .tab-text {
+    display: none;
+  }
+  .d_nav_tab .bi {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Show text on larger mobile screens */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .d_nav_tab .tab-text {
+    display: inline;
+    font-size: 0.875rem;
+  }
+}
+@media (max-width: 576px) {
+  .d_nav_tab {
+    min-width: 50px !important;
+    height: 50px !important;
+  }
+  .d_nav_tabs_container {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0rem;
+    margin: auto;
+    padding-top: 0.5rem;
+  }
+  .d_content_area {
+    font-size: 14px !important;
+  }
+  .d_content_area .form-control {
+    font-size: 12px !important;
+  }
+}
+@media (max-width: 513px) {
+  .stat-card {
+    min-width: 90% !important;
+  }
+}

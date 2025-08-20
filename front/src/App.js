@@ -16,6 +16,9 @@ import Faq from "./pages/Faq";
 import AdminLayout from "./pages/AdminLayout";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
+import Tab from "./pages/Tab";
+import SuperAdminTab from "./pages/SuperAdminTab";
+import PassengerTab from "./pages/PassengerTab";
 
 function App() {
   return (
@@ -37,7 +40,9 @@ function App() {
         <Route path="/HomeSlide" element={<HomeSlide />} />
 
         <Route path="/admin" element={<AdminLayout />}></Route>
-
+        <Route path="/tab" element={<Tab />} />
+        <Route path="/SuperAdminTab" element={<SuperAdminTab />} />
+        <Route path="/PassengerTab" element={<PassengerTab />} />
       </Routes>
     </Router>
   );
