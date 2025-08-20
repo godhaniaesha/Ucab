@@ -1136,7 +1136,18 @@
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-18T09:37:36.090Z"}
 {"level":"info","message":"Server listening on 5000","timestamp":"2025-08-18T12:32:47.455Z"}
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-18T12:32:47.822Z"}
+<<<<<<< HEAD
 {"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T12:04:07.538Z"}
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T12:04:07.922Z"}
 {"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T12:18:31.339Z"}
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T12:18:31.686Z"}
+=======
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T06:07:18.142Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T06:07:18.536Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T06:07:53.893Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T06:07:54.239Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T08:40:03.733Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T08:40:04.244Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T03:35:12.191Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T03:35:12.531Z"}
+>>>>>>> origin/Krups190825
