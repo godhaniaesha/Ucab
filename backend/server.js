@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 // Serve local uploads
 const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static("uploads"));
 
 connectDB();
 // setInterval(checkDriverActivity, 10 * 60 * 1000); // every 10 minutes

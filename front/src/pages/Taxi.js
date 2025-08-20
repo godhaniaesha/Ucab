@@ -1,171 +1,87 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import '../style/z_app.css'
 import { FaDoorClosed, FaMapMarkerAlt, FaSnowflake, FaSuitcaseRolling, FaUsers } from 'react-icons/fa';
 import { IoSearch, IoCloseSharp } from 'react-icons/io5';
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { Navigate, useNavigate } from 'react-router-dom';
 import Footer from '../component/Footer';
+import { getVehicles } from '../redux/slice/vehicles.slice';
 
 export default function Taxi() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-
-  // Grid
-  const carData = [
-    {
-      id: 1,
-      name: "BMW M5 2019 MODEL",
-      image:
-        "https://daxstreet.com/wp-content/uploads/2025/03/2019-BMW-M5-Competition.jpg",
-      price: "$1.25/km",
-      doors: 4,
-      passengers: 4,
-      luggage: 2,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "luxury",
-      brand: "BMW"
-    },
-    {
-      id: 2,
-      name: "SUV PREMIUM MODEL",
-      image:
-        "https://content.assets.pressassociation.io/2024/11/26171902/51ad881d-b38b-4d93-b57d-e320a96f7046.jpg?w=1280",
-      price: "$2.50/km",
-      doors: 4,
-      passengers: 6,
-      luggage: 4,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "suv",
-      brand: "Premium"
-    },
-    {
-      id: 3,
-      name: "MINI COOPER MODEL",
-      image:
-        "https://i.pinimg.com/originals/cb/f5/43/cbf543ffda479dc025d686e80df8648e.jpg",
-      price: "$0.85/km",
-      doors: 2,
-      passengers: 3,
-      luggage: 2,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "compact",
-      brand: "MINI"
-    },
-    {
-      id: 4,
-      name: "LUXURY SEDAN MODEL",
-      image:
-        "https://www.cadillaccanada.ca/content/dam/cadillac/na/canada/english/index/navigation/vehicles/2025/vehicles-drp-sedans-25-ct4.png?imwidth=1200",
-      price: "$3.75/km",
-      doors: 4,
-      passengers: 4,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "luxury",
-      brand: "Cadillac"
-    },
-    {
-      id: 5,
-      name: "TOYOTA INNOVA CRYSTA",
-      image:
-        "https://cdn.wheel-size.com/automobile/body/toyota-innova-crysta-2015-2021-1602848743.9643602.jpg",
-      price: "$1.80/km",
-      doors: 4,
-      passengers: 7,
-      luggage: 4,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "mpv",
-      brand: "Toyota"
-    },
-    {
-      id: 6,
-      name: "TESLA MODEL X",
-      image:
-        "https://avatars.mds.yandex.net/i?id=647dcbec59b61f670f5b655bd3952cfe66794f21-4599039-images-thumbs&n=13",
-      price: "$4.50/km",
-      doors: 4,
-      passengers: 6,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "electric",
-      brand: "Tesla"
-    },
-    {
-      id: 7,
-      name: "MERCEDES-BENZ E-CLASS",
-      image:
-        "https://avatars.mds.yandex.net/i?id=9a888d6456cac34b8da2016b907f20c5cc36f651-4258580-images-thumbs&n=13",
-      price: "$3.20/km",
-      doors: 4,
-      passengers: 4,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "luxury",
-      brand: "Mercedes"
-    },
-    {
-      id: 8,
-      name: "HONDA CITY ZX",
-      image:
-        "https://delen.s3.ap-southeast-1.amazonaws.com/Honda_city_hybrid_ehev_main_image_7b9e60fff9.jpg",
-      price: "$1.10/km",
-      doors: 4,
-      passengers: 5,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-      category: "sedan",
-      brand: "Honda"
-    },
-  ];
-
-
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
-
   const [show, setShow] = useState(false);
 
+  // Redux state
+  const vehicles = useSelector((state) => state.vehicle.vehicles);
+
+  console.log("vehicles", vehicles);
+
+  useEffect(() => {
+    dispatch(getVehicles());
+  }, [dispatch]);
+
+  // Enhanced filter function for better search
+  const filteredCars = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return vehicles || [];
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim();
+
+    return (vehicles || []).filter(car => {
+      // Helper function to safely convert to string and search
+      const searchInField = (value) => {
+        if (value === null || value === undefined) return false;
+        return String(value).toLowerCase().includes(searchLower);
+      };
+
+      // Check if any of these fields contain the search term
+      return (
+        searchInField(car.name) ||
+        searchInField(car.model) ||
+        searchInField(car.make) ||
+        searchInField(car.category) ||
+        searchInField(car.price) ||
+        searchInField(car.passengers) ||
+        searchInField(car.taxiDoors) ||
+        searchInField(car.doors) ||
+        searchInField(car.luggageCarry) ||
+        searchInField(car.type) ||
+        searchInField(car.fuelType) ||
+        // Add more fields as needed based on your car object structure
+        (car.airCondition && searchLower.includes('ac')) ||
+        (car.airCondition && searchLower.includes('air')) ||
+        (car.gpsNavigation && searchLower.includes('gps')) ||
+        (car.gpsNavigation && searchLower.includes('navigation'))
+      );
+    });
+  }, [searchTerm, vehicles]);
+
+  // Modal handlers
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
 
-  // Search functionality
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      setIsSearching(true);
-    }
+  // Search handlers
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleClear = () => {
+  const handleClearSearch = () => {
     setSearchTerm('');
-    setIsSearching(false);
   };
 
-  // Filter cars based on search term
-  const filteredCars = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return carData;
-    }
-
-    const searchLower = searchTerm.toLowerCase();
-    return carData.filter(car =>
-      car.name.toLowerCase().includes(searchLower) ||
-      car.brand.toLowerCase().includes(searchLower) ||
-      car.category.toLowerCase().includes(searchLower) ||
-      car.price.toLowerCase().includes(searchLower) ||
-      car.passengers.toString().includes(searchLower) ||
-      car.doors.toString().includes(searchLower)
-    );
-  }, [searchTerm]);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // Search is handled by the useMemo, no additional action needed
+    console.log(`Searching for: ${searchTerm}`);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -191,8 +107,6 @@ export default function Taxi() {
         </div>
       </section>
 
-
-
       {/* Our Cab Let's Check Available Cars*/}
       <section className="z_avlbl_section pt-5">
         <div className="container">
@@ -206,83 +120,98 @@ export default function Taxi() {
             </p>
           </div>
 
-          {/* No Results Message */}
-          {filteredCars.length === 0 && searchTerm && (
-            <div className="text-center py-5">
-              <h4 className="text-muted">No cars found</h4>
-              <p className="text-muted">Try searching with different keywords or clear the search.</p>
-              <button
-                className="btn btn-warning"
-                onClick={handleClear}
-              >
-                Clear Search
-              </button>
-            </div>
-          )}
-
           {/* Search Section */}
-          <section className="z_search_section" style={{ backgroundColor: '#f8f9fa' }}>
+          <section className="z_search_section mb-4" style={{ backgroundColor: '#f8f9fa', padding: '20px 0', borderRadius: '10px' }}>
             <div className="container">
               <div className="row justify-content-center">
-                <div className="col-lg-6 col-md-8">
+                <div className="col-lg-8 col-md-10">
                   <div className="z_search_container">
-                    {/* <h4 className="text-center mb-3">Find Your Perfect Cab</h4> */}
-                    <div className="z_search_bar d-flex" style={{
-                      border: '2px solid #ddd',
-                      borderRadius: '25px',
-                      overflow: 'hidden',
-                      backgroundColor: 'white'
-                    }}>
-                      <input
-                        type="text"
-                        placeholder="Search by car name, brand, category, price..."
-                        className="form-control border-0"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleSearch();
-                          }
-                        }}
-                        style={{
-                          boxShadow: 'none',
-                          fontSize: '16px',
-                          padding: '12px 20px'
-                        }}
-                      />
-                      <button
-                        type="button"
-                        className="btn"
-                        onClick={isSearching ? handleClear : handleSearch}
-                        style={{
-                          backgroundColor: '#0f6e55',
-                          border: 'none',
-                          padding: '12px 20px',
-                          borderRadius: '0 25px 25px 0'
-                        }}
-                        onMouseDown={(e) => e.preventDefault()}
-                      >
-                        {isSearching ? (
-                          <IoCloseSharp style={{ fontSize: "1.2rem", color: "#000" }} />
-                        ) : (
-                          <IoSearch style={{ fontSize: "1.2rem", color: "#ffffffff" }} />
+                    <h4 className="text-center mb-3">Find Your Perfect Cab</h4>
+                    <form onSubmit={handleSearchSubmit}>
+                      <div className="z_search_bar d-flex" style={{
+                        border: '2px solid #ddd',
+                        borderRadius: '25px',
+                        overflow: 'hidden',
+                        backgroundColor: 'white',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                      }}>
+                        <input
+                          type="text"
+                          placeholder="Search by car name, model, brand..."
+                          className="form-control border-0"
+                          value={searchTerm}
+                          onChange={handleSearchChange}
+                          style={{
+                            boxShadow: 'none',
+                            fontSize: '16px',
+                            padding: '15px 20px'
+                          }}
+                        />
+                        {searchTerm && (
+                          <button
+                            type="button"
+                            className="btn"
+                            onClick={handleClearSearch}
+                            style={{
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              padding: '15px 10px',
+                              color: '#999'
+                            }}
+                            title="Clear search"
+                          >
+                            <IoCloseSharp style={{ fontSize: "1.2rem" }} />
+                          </button>
                         )}
-                      </button>
-                    </div>
-                    {searchTerm && (
-                      <div className="text-center mt-2">
-                        <small className="text-muted">
-                          {filteredCars.length} car{filteredCars.length !== 1 ? 's' : ''} found
-                          {searchTerm && ` for "${searchTerm}"`}
-                        </small>
+                        <button
+                          type="submit"
+                          className="btn"
+                          style={{
+                            backgroundColor: '#0f6e55',
+                            border: 'none',
+                            padding: '15px 25px',
+                            borderRadius: searchTerm ? '0' : '0 25px 25px 0'
+                          }}
+                        >
+                          <IoSearch style={{ fontSize: "1.2rem", color: "#ffffff" }} />
+                        </button>
                       </div>
-                    )}
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
           </section>
+
+          {/* No Results Message */}
+          {filteredCars.length === 0 && searchTerm && (
+            <div className="text-center py-5">
+              <div className="mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#6c757d"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+
+
+
+              <h4 className="text-muted">No cars found</h4>
+              <p className="text-muted">
+                We couldn't find any cars matching "<strong>{searchTerm}</strong>".<br />
+                Try searching with different keywords or browse all available cars.
+              </p>
+            </div>
+          )}
 
           {/* Car Cards */}
           {filteredCars.length > 0 && (
@@ -298,18 +227,47 @@ export default function Taxi() {
                     <div
                       className={`z_car_card ${hoveredCard === car.id ? "z_car_card_hover" : ""}`}
                       style={{ cursor: "pointer" }}
-                      onClick={() => navigate('/CarDetails')}
+                      onClick={() => navigate('/CarDetails', { state: { car } })}
                     >
-                      <div className="z_car_image_container">
+                      <div className="z_car_image_container" style={{ position: 'relative' }}>
                         <img
-                          src={car.image}
-                          alt={car.name}
-                          className="z_car_image"
+                          src={`http://localhost:5000${car.images}`}
+                          alt={`${car.model || car.name} - Taxi`}
+                          width="150"
+                          style={{ borderRadius: '8px' }}
                         />
+                        {/* Brand Badge */}
+                        {car.make && (
+                          <div
+                            className="z_brand_badge"
+                            style={{
+                              position: 'absolute',
+                              top: '8px',
+                              right: '8px',
+                              backgroundColor: '#0f6e55',
+                              color: 'white',
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                              zIndex: '2'
+                            }}
+                          >
+                            {car.make}
+                          </div>
+                        )}
                       </div>
 
                       <div className="z_car_card_body">
-                        <h5 className="z_car_name">{car.name}</h5>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                          <h5 className="z_car_name" style={{ margin: 0, flex: 1 }}>
+                            {car.model || car.name}
+                          </h5>
+
+                        </div>
                         <div className="z_car_price">{car.price}</div>
                         <div className="z_car_separator"></div>
 
@@ -321,7 +279,7 @@ export default function Taxi() {
                               </div>
                               <span>Taxi Doors:</span>
                             </div>
-                            <span className="z_car_feature_value">{car.doors}</span>
+                            <span className="z_car_feature_value">{car.taxiDoors || car.doors}</span>
                           </div>
 
                           <div className="z_car_feature">
@@ -331,9 +289,7 @@ export default function Taxi() {
                               </div>
                               <span>Passengers:</span>
                             </div>
-                            <span className="z_car_feature_value">
-                              {car.passengers}
-                            </span>
+                            <span className="z_car_feature_value">{car.passengers}</span>
                           </div>
 
                           <div className="z_car_feature">
@@ -343,9 +299,7 @@ export default function Taxi() {
                               </div>
                               <span>Luggage Carry:</span>
                             </div>
-                            <span className="z_car_feature_value">
-                              {car.luggage}
-                            </span>
+                            <span className="z_car_feature_value">{car.luggageCarry}</span>
                           </div>
 
                           <div className="z_car_feature">
@@ -356,7 +310,7 @@ export default function Taxi() {
                               <span>Air Condition:</span>
                             </div>
                             <span className="z_car_feature_value">
-                              {car.airCondition}
+                              {car.airCondition ? "Yes" : "No"}
                             </span>
                           </div>
 
@@ -367,14 +321,15 @@ export default function Taxi() {
                               </div>
                               <span>GPS Navigation:</span>
                             </div>
-                            <span className="z_car_feature_value">{car.gps}</span>
+                            <span className="z_car_feature_value">
+                              {car.gpsNavigation ? "Yes" : "No"}
+                            </span>
                           </div>
                         </div>
 
                         {/* Book Taxi Button */}
                         <button
-                          className={`z_car_book_button ${hoveredButton === car.id ? "z_car_book_button_hover" : ""
-                            }`}
+                          className={`z_car_book_button ${hoveredButton === car.id ? "z_car_book_button_hover" : ""}`}
                           onMouseEnter={() => setHoveredButton(car.id)}
                           onMouseLeave={() => setHoveredButton(null)}
                           onClick={(e) => {
@@ -503,7 +458,6 @@ export default function Taxi() {
           </Modal.Footer>
         </Form>
       </Modal>
-
     </>
   );
 }
