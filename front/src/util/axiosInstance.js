@@ -8,7 +8,8 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 10000,
-  withCredentials: true, // Important for cookies
+  // withCredentials true forces non-wildcard CORS; since we use JWT in headers, keep it false
+  withCredentials: false,
 });
 
 // Request interceptor to add token
@@ -27,11 +28,7 @@ axiosInstance.interceptors.request.use(
 const refreshAccessToken = async () => {
   try {
     // Only need to send cookies, not refreshToken in body
-    const response = await axios.post(
-      'http://localhost:5000/api/auth/refresh-token',
-      {},
-      { withCredentials: true }
-    );
+    const response = await axios.post('http://localhost:5000/api/auth/refresh-token', {});
     const { accessToken } = response.data;
     if (accessToken) {
       localStorage.setItem('token', accessToken);

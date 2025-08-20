@@ -73,19 +73,19 @@ export default function Footer() {
                         <h3>Quick Links</h3>
                         <ul>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/home">Home</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/home">Home</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/blog">Blog</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/blog">Blog</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/about">About Us</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/about">About Us</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/pages">My Account</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/pages">My Account</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/taxi">Book A Ride</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/taxi">Book A Ride</Link>
                             </li>
                         </ul>
                     </div>
@@ -95,19 +95,19 @@ export default function Footer() {
                         <h3>Support Center</h3>
                         <ul>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/faq">FAQ's</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/faq">FAQ's</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/contact">Contact Us</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/contact">Contact Us</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/service">Service</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/service">Service</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/privacy">Privacy Policy</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/privacy">Privacy Policy</Link>
                             </li>
                             <li>
-                                <FaCaretRight color="#199675" /> <Link to="/terms">Terms & Condition</Link>
+                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/terms">Terms & Condition</Link>
                             </li>
                         </ul>
                     </div>

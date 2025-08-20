@@ -15,6 +15,7 @@ import CarDetails from "./pages/CarDetails";
 import Faq from "./pages/Faq";
 import AdminLayout from "./pages/AdminLayout";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
         <Route path="/contact" element={<Main><Contact /></Main>} />
         <Route path="/CarDetails" element={<Main><CarDetails /></Main>} />
         <Route path="/privacy" element={<Main><PrivacyPolicy /></Main>} />
-
+        <Route path="/terms" element={<Main><TermsAndConditionsPage /></Main>} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/HomeSlide" element={<HomeSlide />} />
 

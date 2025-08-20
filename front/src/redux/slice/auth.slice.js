@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../util/axiosInstance';
 
 
-// Async thunk for user registration
+// Async thunk for user registration (name, email, password, role, phone)
 export const registerUser = createAsyncThunk(
     'auth/registerUser',
     async (userData, { rejectWithValue }) => {
@@ -28,12 +28,12 @@ export const loginUser = createAsyncThunk(
     }
 );
 
-// Async thunk for forgot password
+// Async thunk for forgot password (send OTP to phone)
 export const forgotPassword = createAsyncThunk(
     'auth/forgotPassword',
-    async (email, { rejectWithValue }) => {
+    async (phone, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post(`/auth/forgot-password`, { email });
+            const response = await axiosInstance.post(`/auth/forgot-password`, { phone });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -41,12 +41,12 @@ export const forgotPassword = createAsyncThunk(
     }
 );
 
-// Async thunk for OTP verification
+// Async thunk for OTP verification (phone + otp)
 export const verifyOTP = createAsyncThunk(
     'auth/verifyOTP',
     async (otpData, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post(`/auth/verify-password-reset-otp`, otpData);
+            const response = await axiosInstance.post(`/auth/verify-otp`, otpData);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -54,7 +54,7 @@ export const verifyOTP = createAsyncThunk(
     }
 );
 
-// Async thunk for reset password
+// Async thunk for reset password (phone, otp, newPassword, confirmPassword)
 export const resetPassword = createAsyncThunk(
     'auth/resetPassword',
     async (resetData, { rejectWithValue }) => {
@@ -76,7 +76,7 @@ export const fetchUserProfile = createAsyncThunk(
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
             const response = await axiosInstance.get(`/auth/users/${userId}`);
             // console.log("resposne",response.data.data);
-            
+
             return response.data.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -187,9 +187,14 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.success = true;
                 state.message = action.payload.message || 'Login successful';
-                state.user = action.payload.data;
+                state.user = action.payload.user || action.payload.data;
                 state.isAuthenticated = true;
-                state.accessToken = action.payload.accessToken;
+                state.accessToken = action.payload.token || action.payload.accessToken;
+                try {
+                    if (state.accessToken) {
+                        localStorage.setItem('token', state.accessToken);
+                    }
+                } catch (_) { }
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -280,7 +285,7 @@ const authSlice = createSlice({
             .addCase(getUserById.fulfilled, (state, action) => {
                 state.loading = false;
                 state.success = true;
-                state.user = action.payload.data; 
+                state.user = action.payload.data;
             })
             .addCase(getUserById.rejected, (state, action) => {
                 state.loading = false;

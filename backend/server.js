@@ -13,16 +13,20 @@ const logger = require('./utils/logger');
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? (process.env.ALLOWED_ORIGINS?.split(',') || [])
+  : ['http://localhost:3000', 'http://127.0.0.1:3000'];
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ? process.env.ALLOWED_ORIGINS?.split(',') : '*',
-    methods: ['GET', 'POST']
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? process.env.ALLOWED_ORIGINS?.split(',') : '*',
+  origin: allowedOrigins,
   credentials: true
 }));
 

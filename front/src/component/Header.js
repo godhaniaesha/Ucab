@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   FaSignInAlt,
   FaUserPlus,
@@ -14,8 +15,11 @@ import { IoMailUnreadOutline, IoClose } from "react-icons/io5";
 import { PiPhoneCallBold } from "react-icons/pi";
 import { LuAlarmClock } from "react-icons/lu";
 import "../style/x_app.css";
+import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword } from "../redux/slice/auth.slice";
 
 export default function Header() {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((s) => s.auth || {});
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -26,10 +30,10 @@ export default function Header() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     phone: '',
     password: '',
+    role: 'user',
     confirmPassword: '',
     otp: '',
     newPassword: '',
@@ -151,8 +155,14 @@ export default function Header() {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    console.log('Header Login:', loginForm);
-    setShowLoginModal(false);
+    dispatch(loginUser(loginForm))
+      .unwrap()
+      .then(() => {
+        setShowLoginModal(false);
+      })
+      .catch((err) => {
+        alert(err || 'Login failed');
+      });
   };
 
   const closeLoginModal = () => setShowLoginModal(false);
@@ -164,7 +174,22 @@ export default function Header() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    console.log('Register:', formData);
+    const payload = {
+      name: (formData.email && formData.email.split('@')[0]) || 'User',
+      email: formData.email,
+      password: formData.password,
+      role: formData.role === 'driver' ? 'driver' : 'passenger',
+      phone: formData.phone
+    };
+    dispatch(registerUser(payload))
+      .unwrap()
+      .then(() => {
+        setShowRegisterModal(false);
+        setShowLoginModal(true);
+      })
+      .catch((err) => {
+        alert(err || 'Registration failed');
+      });
   };
 
   const openForgot = (e) => {
@@ -174,16 +199,28 @@ export default function Header() {
   };
 
   const handleSendOtp = () => {
-    // TODO: call API to send OTP
-    setShowForgotModal(false);
-    setShowOtpVerifyModal(true);
+    if (!formData.phone) {
+      alert('Please enter phone number');
+      return;
+    }
+    dispatch(forgotPassword(formData.phone))
+      .unwrap()
+      .then(() => {
+        setShowForgotModal(false);
+        setShowOtpVerifyModal(true);
+      })
+      .catch((err) => alert(err || 'Failed to send OTP'));
   };
 
   const handleOtpVerification = (e) => {
     e.preventDefault();
-    // TODO: verify OTP
-    setShowOtpVerifyModal(false);
-    setShowResetPasswordModal(true);
+    dispatch(verifyOTP({ phone: formData.phone, otp: formData.otp }))
+      .unwrap()
+      .then(() => {
+        setShowOtpVerifyModal(false);
+        setShowResetPasswordModal(true);
+      })
+      .catch((err) => alert(err || 'Invalid OTP'));
   };
 
   const handlePasswordReset = (e) => {
@@ -192,9 +229,19 @@ export default function Header() {
       alert('Passwords do not match!');
       return;
     }
-    console.log('Password Reset:', { newPassword: formData.newPassword });
-    setShowResetPasswordModal(false);
-    setShowLoginModal(true);
+    const resetPayload = {
+      phone: formData.phone,
+      otp: formData.otp,
+      newPassword: formData.newPassword,
+      confirmPassword: formData.confirmNewPassword
+    };
+    dispatch(resetPassword(resetPayload))
+      .unwrap()
+      .then(() => {
+        setShowResetPasswordModal(false);
+        setShowLoginModal(true);
+      })
+      .catch((err) => alert(err || 'Failed to reset password'));
   };
 
   const closeAllModals = () => {
@@ -204,7 +251,7 @@ export default function Header() {
     setShowOtpVerifyModal(false);
     setShowResetPasswordModal(false);
     setFormData({
-      username: '', email: '', phone: '', password: '', confirmPassword: '', otp: '', newPassword: '', confirmNewPassword: ''
+      email: '', phone: '', password: '', role: 'user', confirmPassword: '', otp: '', newPassword: '', confirmNewPassword: ''
     });
   };
 
@@ -292,10 +339,10 @@ export default function Header() {
                 <label>Password</label>
                 <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} required placeholder="Enter your password" />
               </div>
-              <button type="submit" className="x_modal_btn">Login</button>
+                <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Login'}</button>
               <div className="x_modal_links">
-                <button type="button" className="x_link_btn" onClick={openForgot}>Forgot Password?</button>
-                <button type="button" className="x_link_btn" onClick={() => { setShowLoginModal(false); setShowRegisterModal(true); }}>Don't have account? Register</button>
+                <button type="button" className="x_link_btn text-decoration-none" onClick={() => { setShowLoginModal(false); setShowRegisterModal(true); }}>Don't have account? Register</button>
               </div>
             </form>
           </div>
@@ -312,10 +359,6 @@ export default function Header() {
             </div>
             <form onSubmit={handleRegister} className="x_modal_form">
               <div className="x_form_group">
-                <label>Username</label>
-                <input type="text" name="username" value={formData.username} onChange={handleInputChange} required placeholder="Enter your username" />
-              </div>
-              <div className="x_form_group">
                 <label>Email</label>
                 <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="Enter your email" />
               </div>
@@ -327,7 +370,34 @@ export default function Header() {
                 <label>Password</label>
                 <input type="password" name="password" value={formData.password} onChange={handleInputChange} required placeholder="Enter your password" />
               </div>
-              <button type="submit" className="x_modal_btn">Register</button>
+              <div className="x_form_group">
+                <label>Role</label>
+                <div className="x_role_group">
+                  <label className="x_radio d-flex ">
+                    <input
+                      type="radio"
+                      name="role"
+                      value="user"
+                      checked={formData.role === 'user'}
+                      onChange={handleInputChange}
+                    />
+                    <span className="x_radio_custom"></span>
+                    <span className="x_radio_label"><p className="m-0">User</p></span>
+                  </label>
+                  <label className="x_radio d-flex">
+                    <input
+                      type="radio"
+                      name="role"
+                      value="driver"
+                      checked={formData.role === 'driver'}
+                      onChange={handleInputChange}
+                    />
+                    <span className="x_radio_custom"></span>
+                    <span className="x_radio_label"><p className="m-0">Driver</p></span>
+                  </label>
+                </div>
+              </div>
+              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Register'}</button>
               <div className="x_modal_links">
                 <button type="button" className="x_link_btn" onClick={() => { setShowRegisterModal(false); setShowLoginModal(true); }}>Already have account? Login</button>
               </div>
@@ -349,7 +419,7 @@ export default function Header() {
                 <label>Phone Number</label>
                 <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required placeholder="Enter your phone number" />
               </div>
-              <button type="button" onClick={handleSendOtp} className="x_modal_btn">Send OTP</button>
+              <button type="button" onClick={handleSendOtp} className="x_modal_btn" disabled={loading}>{loading ? 'Sending...' : 'Send OTP'}</button>
               <div className="x_modal_links">
                 <button type="button" onClick={() => { setShowForgotModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
               </div>
@@ -368,10 +438,10 @@ export default function Header() {
             </div>
             <form onSubmit={handleOtpVerification} className="x_modal_form">
               <div className="x_form_group">
-                <label>Enter 4-Digit OTP</label>
-                <input type="text" name="otp" value={formData.otp} onChange={handleInputChange} required maxLength="4" placeholder="Enter 4-digit OTP" />
+                <label>Enter 6-Digit OTP</label>
+                <input type="text" name="otp" inputMode="numeric" pattern="[0-9]*" value={formData.otp} onChange={handleInputChange} required maxLength="6" placeholder="Enter 6-digit OTP" />
               </div>
-              <button type="submit" className="x_modal_btn">Verify OTP</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Verifying...' : 'Verify OTP'}</button>
               <div className="x_modal_links">
                 <button type="button" onClick={() => { setShowOtpVerifyModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
               </div>
@@ -397,7 +467,7 @@ export default function Header() {
                 <label>Confirm New Password</label>
                 <input type="password" name="confirmNewPassword" value={formData.confirmNewPassword} onChange={handleInputChange} required placeholder="Confirm new password" />
               </div>
-              <button type="submit" className="x_modal_btn">Reset Password</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Reset Password'}</button>
               <div className="x_modal_links">
                 <button type="button" onClick={() => { setShowResetPasswordModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
               </div>

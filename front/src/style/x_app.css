@@ -5,9 +5,9 @@ body {
   background-color: #f4f4f4;
 }
 
-a {
-    color: #fff;
-    text-decoration: none;
+.x_footer-row .xf_link {
+  color: #fff;
+  text-decoration: none;
 }
 
 .x_main {
@@ -274,7 +274,7 @@ a {
     color: #000;
   }
 
-  
+
 
 
 
@@ -315,6 +315,7 @@ a {
   .x_desktop-book-btn {
     display: none;
   }
+
   /* Mobile book button */
   .x_mobile-book-btn {
     display: block;
@@ -540,7 +541,8 @@ a {
     /* bottom: 10% !important; */
     bottom: 0% !important;
   }
-  .taxi{
+
+  .taxi {
     display: none;
   }
 }
@@ -2229,7 +2231,7 @@ a {
   color: #0f6e55;
   font-size: 1.1rem;
   font-weight: 500;
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -2289,7 +2291,7 @@ a {
 .x_card_content {
   background-color: white;
   border-radius: 10px;
-  padding: 30px 20px;
+  /* padding: 30px 20px; */
   position: relative;
   overflow: hidden;
   z-index: 2;
@@ -2422,10 +2424,6 @@ a {
     font-size: 2rem;
   }
 
-  .x_card_content {
-    padding: 2rem 1.5rem;
-  }
-
   .x_card_number {
     font-size: 3rem;
   }
@@ -2449,12 +2447,9 @@ a {
 
 
   .x_section_title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
-  .x_card_content {
-    padding: 1.5rem 1rem;
-  }
 
   .x_card_number {
     font-size: 2.5rem;
@@ -2475,9 +2470,6 @@ a {
     font-size: 1.8rem;
   }
 
-  .x_card_content {
-    padding: 1.5rem 1rem;
-  }
 
   .x_card_number {
     font-size: 2.5rem;
@@ -2488,6 +2480,10 @@ a {
 
   .x_section_title {
     font-size: 1.5rem;
+  }
+
+  .x_card_content {
+    padding: 0rem !important;
   }
 }
 
@@ -2606,6 +2602,125 @@ a {
 .x_form_group input::placeholder {
   color: #999;
 }
+
+/* Custom radio group for role selection */
+/* .x_role_group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.x_radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.x_radio input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.x_radio_custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #0f6e55;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.x_radio input:checked + .x_radio_custom {
+  background: linear-gradient(135deg, #0f6e55 0%, #199675 100%);
+  border-color: #0f6e55;
+}
+
+.x_radio input:checked + .x_radio_custom::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.x_radio_label {
+  font-weight: 600;
+  color: #333;
+} */
+
+/* Role Radio Group Layout */
+.x_role_group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Radio Wrapper */
+.x_radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.x_radio:hover {
+  background: #f1f1f1;
+}
+
+/* Hide Default Radio */
+.x_radio input[type="radio"] {
+  display: none;
+}
+
+/* Custom Radio Circle */
+.x_radio_custom {
+  height: 20px;
+  width: 20px;
+  border: 2px solid #555;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* When checked → Fill inside */
+.x_radio input[type="radio"]:checked+.x_radio_custom {
+  border-color: green;
+  background-color: transparent;
+}
+
+.x_radio input[type="radio"]:checked+.x_radio_custom::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  background: green;
+  border-radius: 50%;
+}
+
+/* Label Text */
+.x_radio_label {
+  margin: 0px 10px 5px 10px;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
 
 .x_modal_btn {
   width: 100%;
@@ -2803,8 +2918,8 @@ a {
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.x_section_title {
-  font-size: 1.2rem;
+.x_card .x_section_title {
+  font-size: 2rem;
   margin-bottom: 20px;
   font-weight: bold;
 }
@@ -2889,7 +3004,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 0rem;
   z-index: 1000;
 }
 
@@ -3071,9 +3186,10 @@ a {
   }
 }
 
-/* end FAQ's */ 
+/* end FAQ's */
 
-/* PrivacyPolicy start */.x_privacy {
+/* PrivacyPolicy start */
+.x_privacy {
   position: relative;
   min-height: 100vh;
   background: #f8f9fa;
@@ -3178,3 +3294,154 @@ a {
     bottom: 0;
   }
 }
+
+/* PrivacyPolicy end */
+
+/* Terms & ConditionsPage start */
+
+/* Container */
+/* General */
+.tx_terms_wrapper {
+  font-family: Arial, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Container */
+.tx_container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px 15px;
+}
+
+/* Header */
+.tx_header {
+  background: url("https://electroneek.com/_next/image/?url=%2Faccess%2Fimg%2Fpage%2Flegal%2Fbg_legal.jpg&w=3840&q=75");
+  background-size: cover;
+  background-position: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.tx_title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #ededed;
+}
+
+.tx_subtitle {
+  color: #c5c5c5;
+}
+
+.tx_date {
+  font-size: 0.9rem;
+  color: #c7c7c7;
+}
+
+/* Table of contents */
+.tx_toc_section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+}
+
+.tx_toc_list {
+  list-style: none;
+  padding: 0;
+}
+
+.tx_toc_list li {
+  margin: 8px 0;
+}
+
+.tx_toc_list a {
+  color: #007b55;
+  text-decoration: none;
+}
+
+.tx_toc_list a:hover {
+  text-decoration: underline;
+}
+
+/* Section */
+.tx_section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tx_section h3 {
+  margin-bottom: 10px;
+  color: #007b55;
+}
+
+/* Agreement */
+.tx_agreement {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.tx_btn_group {
+  margin-top: 15px;
+}
+
+.tx_btn {
+  padding: 6px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin: 0 8px;
+}
+
+.tx_primary {
+  background: linear-gradient(90deg, #0f6e55, #199675);
+  color: #fff;
+}
+
+.tx_primary:hover {
+  background: linear-gradient(90deg, #199675, #0f6e55);
+}
+
+.tx_secondary {
+  border: #0f6e55 1px solid;
+  background: #fff;
+  color: #000;
+}
+
+@media (max-width: 1200px) {
+  .tx_toc_section {
+    display: none;
+  }
+
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tx_title {
+    font-size: 1.5rem;
+  }
+
+  .tx_section {
+    padding: 15px !important;
+  }
+
+  .tx_btn {
+    width: 100%;
+    margin: 8px 0;
+  }
+}
+
+@media (max-width: 425px) {
+  .tx_container {
+    padding: 20px 0px;
+  }
+}
+
+/* Terms & ConditionsPage end */
