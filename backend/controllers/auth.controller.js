@@ -229,4 +229,61 @@ const newphone = '+91' + phone;
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+exports.getUser = async (req, res) => {
+  try {
+    // Get token from header
+    const token = req.headers.authorization?.split(' ')[1];
+    console.log(token,'token');
+    
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Get user data
+    const user = await User.findById(decoded.id)
+      .select('-password -otp -otpExpires')
+      .populate('vehicle');
+      
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        vehicle: user.vehicle || null,
+        bankDetails: user.bankDetails || null,
+        paymentMethods: user.paymentMethods || [],
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        isActive: user.isActive,
+        address: user.address,
+        profileImage: user.profileImage,
+        preferences: user.preferences,
+        ratings: user.ratings,
+        tripHistory: user.tripHistory,
+        notifications: user.notifications,
+        documents: user.documents,
+        verificationStatus: user.verificationStatus
+      }
+    });
+
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
 

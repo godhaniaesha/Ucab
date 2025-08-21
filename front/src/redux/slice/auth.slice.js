@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../util/axiosInstance';
+import axios from 'axios';
 
 
 // Async thunk for user registration (name, email, password, role, phone)
@@ -21,6 +22,7 @@ export const loginUser = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/auth/login`, userData);
+            localStorage.setItem("token", response.data.token);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -74,10 +76,13 @@ export const fetchUserProfile = createAsyncThunk(
         try {
             const token = localStorage.getItem('token');
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            const response = await axiosInstance.get(`/auth/users/${userId}`);
+            const response = await axiosInstance.get(`/auth/getuser`);
+            // console.log("resposne",response);
+            
             // console.log("resposne",response.data.data);
-
-            return response.data.data.data;
+           
+            
+            return response.data.user;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
         }
@@ -87,17 +92,39 @@ export const fetchUserProfile = createAsyncThunk(
 // Update current user profile (PUT, with image)
 export const updateUserProfile = createAsyncThunk(
     'auth/updateUserProfile',
-    async ({ userId, formData }, { rejectWithValue }) => {
-        try {
-            const token = localStorage.getItem('token');
-            const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            const response = await axiosInstance.put(`/auth/change-profile/${userId}`, formData, config);
-            return response.data.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data?.message || error.message);
+    async (formData, { rejectWithValue }) => {   // 👈 accept FormData directly
+      try {
+        console.log('fggh',formData);
+        
+        const token = localStorage.getItem('token');
+        const config = token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          : {};
+  
+        // Proper debug log
+        console.log("form-data sending:");
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
         }
+  
+        const response = await axios.post(
+          "http://localhost:5000/api/driver/update-profile",
+          formData,
+          config
+        );
+  
+        return response.data.user; // 👈 make sure backend returns updated user
+      } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
     }
-);
+  );
+  
 
 export const getUserById = createAsyncThunk(
     'auth/getUserById',
@@ -269,9 +296,12 @@ const authSlice = createSlice({
             })
             .addCase(updateUserProfile.fulfilled, (state, action) => {
                 state.profileLoading = false;
-                state.profile = action.payload;
                 state.profileUpdateSuccess = true;
-            })
+                // If backend sends updated user, update state
+                if (action.payload) {
+                  state.profile = action.payload;
+                }
+              })
             .addCase(updateUserProfile.rejected, (state, action) => {
                 state.profileLoading = false;
                 state.profileError = action.payload;

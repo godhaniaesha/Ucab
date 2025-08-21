@@ -7,6 +7,7 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { Navigate, useNavigate } from 'react-router-dom';
 import Footer from '../component/Footer';
 import { getVehicles } from '../redux/slice/vehicles.slice';
+import { createBooking, resetBookingStatus } from '../redux/slice/passengers.slice';
 
 export default function Taxi() {
   const navigate = useNavigate();
@@ -17,11 +18,27 @@ export default function Taxi() {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [show, setShow] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    pickupLocation: '',
+    dropoffLocation: '',
+    passengers: '',
+    cabModel: '',
+    pickupDate: '',
+    pickupTime: '',
+    message: ''
+  });
+
+
 
   // Redux state
   const vehicles = useSelector((state) => state.vehicle.vehicles);
-
-  console.log("vehicles", vehicles);
+  // const { error, success } = useSelector((state) => state.passengers);
 
   useEffect(() => {
     dispatch(getVehicles());
@@ -65,8 +82,36 @@ export default function Taxi() {
   }, [searchTerm, vehicles]);
 
   // Modal handlers
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
+  const handleShow = (car = null) => {
+    if (car) {
+      setSelectedCar(car);
+      // Pre-fill form with car details
+      setFormData(prev => ({
+        ...prev,
+        passengers: car.passengers || '',
+        cabModel: car.model || car.name || ''
+      }));
+    }
+    setShow(true);
+  };
+
+  const handleClose = () => {
+    setShow(false);
+    setSelectedCar(null);
+    // Reset form
+    setFormData({
+      fullName: '',
+      phone: '',
+      email: '',
+      pickupLocation: '',
+      dropoffLocation: '',
+      passengers: '',
+      cabModel: '',
+      pickupDate: '',
+      pickupTime: '',
+      message: ''
+    });
+  };
 
   // Search handlers
   const handleSearchChange = (e) => {
@@ -79,15 +124,127 @@ export default function Taxi() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // Search is handled by the useMemo, no additional action needed
     console.log(`Searching for: ${searchTerm}`);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Form submitted successfully ✅");
-    handleClose();
+  // Form handlers
+  // Add these imports
+ 
+  
+  // Add state for coordinates
+  const [pickupCoords, setPickupCoords] = useState([0, 0]);
+  const [dropCoords, setDropCoords] = useState([0, 0]);
+  
+  // Add geocoding function
+  const getCoordinates = async (address) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        // [lng, lat] format
+        return [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+      }
+      return null;
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
   };
+  
+  // Update handleInputChange
+  const handleInputChange = async (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  
+    // Get coordinates when locations change
+    if (name === 'pickupLocation') {
+      const coords = await getCoordinates(value);
+      if (coords) setPickupCoords(coords);
+    } else if (name === 'dropoffLocation') {
+      const coords = await getCoordinates(value);
+      if (coords) setDropCoords(coords);
+    }
+  };
+ // Helper to decode JWT and extract payload
+const getUserIdFromToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const base64Url = token.split(".")[1]; // payload is 2nd part
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const payload = JSON.parse(jsonPayload);
+    return payload.id || payload._id || payload.userId || null; 
+  } catch (e) {
+    console.error("Invalid token:", e);
+    return null;
+  }
+};
+
+  
+ // Update handleSubmit function - replace the existing one
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    // Get logged in user id from token
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      console.error("No user ID found in token");
+      return;
+    }
+
+    // Get coordinates for pickup/drop addresses
+    const pickupCoords = await getCoordinates(formData.pickupLocation);
+    const dropCoords = await getCoordinates(formData.dropoffLocation);
+
+    const bookingData = {
+      passenger: userId,
+      pickup: {
+        address: formData.pickupLocation,
+        type: "Point",  // ✅ Add this required field
+        coordinates: pickupCoords || [0, 0]  // ✅ Direct coordinates array
+      },
+      drop: {
+        address: formData.dropoffLocation,
+        type: "Point",  // ✅ Add this required field
+        coordinates: dropCoords || [0, 0]  // ✅ Direct coordinates array
+      },
+      vehicleType: selectedCar?.type || "standard",
+      preferredVehicleId: selectedCar?._id,
+      preferredVehicleModel: selectedCar?.model || selectedCar?.name
+    };
+
+    console.log("🚖 Sending booking data:", bookingData);
+
+    await dispatch(createBooking(bookingData)).unwrap();
+    handleClose();
+  } catch (err) {
+    console.error("Booking failed:", err);
+  }
+};
+
+  // Clean up booking status when modal closes
+  useEffect(() => {
+    if (!show) {
+      dispatch(resetBookingStatus());
+    }
+  }, [show, dispatch]);
+
+  // Add this near the form to show status
+  // {error && <div className="alert alert-danger">{error}</div>}
+  // {success && <div className="alert alert-success">Booking successful!</div>}
 
   return (
     <>
@@ -202,9 +359,6 @@ export default function Taxi() {
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </div>
-
-
-
               <h4 className="text-muted">No cars found</h4>
               <p className="text-muted">
                 We couldn't find any cars matching "<strong>{searchTerm}</strong>".<br />
@@ -217,15 +371,15 @@ export default function Taxi() {
           {filteredCars.length > 0 && (
             <div className="z_cars_container my-4 container">
               <div className="row g-4">
-                {filteredCars.map((car) => (
+                {filteredCars.map((car, index) => (
                   <div
                     key={car.id}
                     className="col-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center"
-                    onMouseEnter={() => setHoveredCard(car.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
                   >
                     <div
-                      className={`z_car_card ${hoveredCard === car.id ? "z_car_card_hover" : ""}`}
+                      onMouseEnter={() => setHoveredCard(car._id)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      className={`z_car_card ${hoveredCard === car._id ? "z_car_card_hover" : ""}`}
                       style={{ cursor: "pointer" }}
                       onClick={() => navigate('/CarDetails', { state: { car } })}
                     >
@@ -266,7 +420,6 @@ export default function Taxi() {
                           <h5 className="z_car_name" style={{ margin: 0, flex: 1 }}>
                             {car.model || car.name}
                           </h5>
-
                         </div>
                         <div className="z_car_price">{car.price}</div>
                         <div className="z_car_separator"></div>
@@ -329,12 +482,14 @@ export default function Taxi() {
 
                         {/* Book Taxi Button */}
                         <button
-                          className={`z_car_book_button ${hoveredButton === car.id ? "z_car_book_button_hover" : ""}`}
-                          onMouseEnter={() => setHoveredButton(car.id)}
+                          onMouseEnter={() => setHoveredButton(`book-${car._id}`)}
                           onMouseLeave={() => setHoveredButton(null)}
+                          className={`z_car_book_button ${hoveredButton === `book-${car._id}` ? "z_car_book_button_hover" : ""}`}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent card click
-                            handleShow();
+                            console.log("Selected car ID:", car._id);
+                            console.log("Selected car details:", car);
+                            handleShow(car); // Pass car data to the modal
                           }}
                         >
                           Book Taxi Now →
@@ -352,7 +507,14 @@ export default function Taxi() {
       {/* Booking Form Modal */}
       <Modal show={show} onHide={handleClose} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Make Your Booking Today</Modal.Title>
+          <Modal.Title>
+            Make Your Booking Today
+            {selectedCar && (
+              <small className="text-muted d-block" style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                Selected: {selectedCar.model || selectedCar.name} - {selectedCar.price}
+              </small>
+            )}
+          </Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
@@ -366,20 +528,41 @@ export default function Taxi() {
             <Row className="mb-3">
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Full Name</Form.Label>
-                  <Form.Control type="text" placeholder="Your Name" required />
+                  <Form.Label>Full Name *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="fullName"
+                    placeholder="Your Name"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Phone Number</Form.Label>
-                  <Form.Control type="tel" placeholder="Your Phone" required />
+                  <Form.Label>Phone Number *</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    name="phone"
+                    placeholder="Your Phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" placeholder="Your Email" required />
+                  <Form.Label>Email *</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    placeholder="Your Email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -387,35 +570,28 @@ export default function Taxi() {
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Pick Up Location</Form.Label>
-                  <Form.Control type="text" placeholder="Type Location" required />
+                  <Form.Label>Pick Up Location *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="pickupLocation"
+                    placeholder="Type Location"
+                    value={formData.pickupLocation}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Drop Off Location</Form.Label>
-                  <Form.Control type="text" placeholder="Type Location" required />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Passengers</Form.Label>
-                  <Form.Control type="number" min="1" placeholder="Passengers" required />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Cab Type</Form.Label>
-                  <Form.Select required>
-                    <option value="">Choose Cab</option>
-                    <option>Sedan</option>
-                    <option>SUV</option>
-                    <option>Mini</option>
-                    <option>Luxury</option>
-                  </Form.Select>
+                  <Form.Label>Drop Off Location *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="dropoffLocation"
+                    placeholder="Type Location"
+                    value={formData.dropoffLocation}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -423,21 +599,88 @@ export default function Taxi() {
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Pick Up Date</Form.Label>
-                  <Form.Control type="date" required />
+                  <Form.Label>Passengers *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="passengers"
+                    min="1"
+                    max={selectedCar?.passengers || 10}
+                    placeholder="Passengers"
+                    value={formData.passengers}
+                    onChange={handleInputChange}
+                    disabled={!!selectedCar}
+                    style={{
+                      backgroundColor: selectedCar ? '#f8f9fa' : 'white',
+                      cursor: selectedCar ? 'not-allowed' : 'text'
+                    }}
+                    required
+                  />
+                  {selectedCar && (
+                    <small className="text-muted">Pre-filled based on selected car capacity</small>
+                  )}
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Pick Up Time</Form.Label>
-                  <Form.Control type="time" required />
+                  <Form.Label>Cab Model *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="cabModel"
+                    placeholder="Car Model"
+                    value={formData.cabModel}
+                    onChange={handleInputChange}
+                    disabled={!!selectedCar}
+                    style={{
+                      backgroundColor: selectedCar ? '#f8f9fa' : 'white',
+                      cursor: selectedCar ? 'not-allowed' : 'text'
+                    }}
+                    required
+                  />
+                  {selectedCar && (
+                    <small className="text-muted">Pre-filled based on selected car model</small>
+                  )}
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Pick Up Date *</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="pickupDate"
+                    value={formData.pickupDate}
+                    onChange={handleInputChange}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Pick Up Time *</Form.Label>
+                  <Form.Control
+                    type="time"
+                    name="pickupTime"
+                    value={formData.pickupTime}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mb-3">
               <Form.Label>Your Message</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Write Your Message" />
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="message"
+                placeholder="Write Your Message"
+                value={formData.message}
+                onChange={handleInputChange}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">

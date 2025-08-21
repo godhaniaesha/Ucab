@@ -268,64 +268,69 @@ exports.getHistory = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, phone, bankDetails, paymentMethods } = req.body;
+    let { name, email, phone, role, status, documentsVerified, bankDetails, paymentMethods } = req.body;
 
     const updateData = {};
+
+    // Basic fields
     if (name) updateData.name = name;
+    if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
+    if (role) updateData.role = role;
+    if (status) updateData.status = status;
+    if (documentsVerified !== undefined) {
+      updateData.documentsVerified = documentsVerified === "true" || documentsVerified === true;
+    }
 
     // Profile image
     if (req.files?.profileImage?.length > 0) {
-      // Get existing user to check for previous image
       const existingUser = await User.findById(userId);
-      
       if (existingUser?.profileImage) {
         try {
-          // Extract filename from the full URL
-          const oldImagePath = existingUser.profileImage.split('/uploads/')[1];
-          // Delete old image file
-          const fs = require('fs');
-          const path = require('path');
-          const oldImageFullPath = path.join(__dirname, '../uploads', oldImagePath);
-          
-          if (fs.existsSync(oldImageFullPath)) {
-            fs.unlinkSync(oldImageFullPath);
-          }
+          const fs = require("fs");
+          const path = require("path");
+          const oldImagePath = existingUser.profileImage.split("/uploads/")[1];
+          const oldImageFullPath = path.join(__dirname, "../uploads", oldImagePath);
+          if (fs.existsSync(oldImageFullPath)) fs.unlinkSync(oldImageFullPath);
         } catch (error) {
           console.error("Error deleting old profile image:", error);
         }
       }
 
-      // Set new image
-      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${
-        req.files.profileImage[0].filename
-      }`;
+      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${req.files.profileImage[0].filename}`;
     }
 
-    // Bank details
+    // Parse JSON fields if present
     if (bankDetails) {
-      updateData.bankDetails = { ...bankDetails };
+      try {
+        const parsedBank = JSON.parse(bankDetails);
+        updateData.bankDetails = parsedBank;
+      } catch {
+        console.error("Invalid bankDetails JSON");
+      }
     }
 
-    // Payment methods
-    if (Array.isArray(paymentMethods)) {
-      updateData.paymentMethods = paymentMethods.map((method) => ({
-        ...method,
-        last4: method.cardNumber
-          ? method.cardNumber.slice(-4)
-          : method.last4 || "",
-        cardNumber: undefined,
-      }));
+    if (paymentMethods) {
+      try {
+        const parsedPayments = JSON.parse(paymentMethods);
+        if (Array.isArray(parsedPayments)) {
+          updateData.paymentMethods = parsedPayments.map((method) => ({
+            ...method,
+            last4: method.cardNumber ? method.cardNumber.slice(-4) : method.last4 || "",
+            cardNumber: undefined,
+          }));
+        }
+      } catch {
+        console.error("Invalid paymentMethods JSON");
+      }
     }
 
-    // Update user
-    const user = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
-    });
+    // Update in DB
+    const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
     res.json({
       message: "Profile updated",
-      user
+      user,
     });
   } catch (err) {
     console.error("updateProfile error:", err);
