@@ -76,6 +76,6 @@ router.get('/getAdminStats',authController.getAdminStats);
 
 
 
-router.get('/getuser',authMiddleware(['superadmin','passenger','admin']),authController.getUser)
+router.get('/getuser',authMiddleware(['superadmin','passenger','driver']),authController.getUser)
 
 module.exports = router;

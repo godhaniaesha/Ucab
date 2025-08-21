@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getTodayStats } from "../../redux/slice/passengers.slice";
 
-export default function P_DashboardContent({ rideStats }) {
-  const stats = rideStats || {
-    ridesToday: 3,
-    totalSpent: 72.5,
-    completedRides: 45,
+export default function P_DashboardContent() {
+  const dispatch = useDispatch();
+  const passengersState = useSelector((state) => state.passengers) || {};
+  const { todayStats, loading } = passengersState;
+
+  useEffect(() => {
+    dispatch(getTodayStats());
+  }, [dispatch]);
+
+  const stats = todayStats || {
+    totalRides: 0,
+    totalSpent: 0,
+    totalCompletedRides: 0
   };
 
   return (
@@ -22,7 +32,7 @@ export default function P_DashboardContent({ rideStats }) {
               <div className="bg-light p-lg-4 p-2 rounded-4 shadow-sm border border-light text-center h-100 d-flex flex-column justify-content-center">
                 <i className="bi bi-geo-alt-fill fs-3 text-secondary mb-2"></i>
                 <p className="text-muted mb-0">Rides Today</p>
-                <h4 className="fs-4 fw-bold text-dark mt-1">{stats.ridesToday}</h4>
+                <h4 className="fs-4 fw-bold text-dark mt-1">{loading ? "..." : stats.totalRides}</h4>
               </div>
             </div>
 
@@ -31,7 +41,7 @@ export default function P_DashboardContent({ rideStats }) {
               <div className="bg-light p-lg-4 p-2 rounded-4 shadow-sm border border-light text-center h-100 d-flex flex-column justify-content-center">
                 <i className="bi bi-cash-stack fs-3 text-success mb-2"></i>
                 <p className="text-muted mb-0">Total Spent</p>
-                <h4 className="fs-4 fw-bold text-success mt-1">${stats.totalSpent.toFixed(2)}</h4>
+                <h4 className="fs-4 fw-bold text-success mt-1">${loading ? "..." : stats.totalSpent.toFixed(2)}</h4>
               </div>
             </div>
 
@@ -41,7 +51,7 @@ export default function P_DashboardContent({ rideStats }) {
               <div className="bg-light p-lg-4 p-2 rounded-4 shadow-sm border border-light text-center h-100 d-flex flex-column justify-content-center">
                 <i className="bi bi-check-circle-fill fs-3 text-success mb-2"></i>
                 <p className="text-muted mb-0">Completed Rides</p>
-                <h4 className="fs-4 fw-bold text-dark mt-1">{stats.completedRides}</h4>
+                <h4 className="fs-4 fw-bold text-dark mt-1">{loading ? "..." : stats.totalCompletedRides}</h4>
               </div>
             </div>
 

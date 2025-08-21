@@ -1,7 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getActiveBooking, completeBooking } from "../../redux/slice/driver.slice";
 
-const D_ActiveRideContent = ({ currentTrip, onStartTrip, onCompleteTrip }) => {
-  // ...existing code...
+const D_ActiveRideContent = ({ onStartTrip }) => {
+  const dispatch = useDispatch();
+  const { currentTrip, loading, error } = useSelector((state) => state.driver);
+
+  console.log(currentTrip, "currentTrip");
+
+  // 🔹 Fetch active booking when component mounts
+  useEffect(() => {
+    dispatch(getActiveBooking());
+  }, [dispatch]);
+
+  // 🔹 Handle Complete Trip
+  const handleCompleteTrip = () => {
+    if (currentTrip?._id) {
+      dispatch(completeBooking(currentTrip._id));
+    }
+  };
+
+  // 🔹 Loading state
+  if (loading) {
+    return (
+      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+        <p className="text-primary">Fetching active booking...</p>
+      </div>
+    );
+  }
+
+  // 🔹 Error state
+  if (error) {
+    return (
+      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+        <p className="text-danger">⚠ {error}</p>
+      </div>
+    );
+  }
+
+  // 🔹 No Active Trip
   if (!currentTrip) {
     return (
       <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
@@ -14,8 +51,8 @@ const D_ActiveRideContent = ({ currentTrip, onStartTrip, onCompleteTrip }) => {
     );
   }
 
-  const isEnRoutePickup = currentTrip.status === "en_route_pickup";
-  const isEnRouteDropoff = currentTrip.status === "en_route_dropoff";
+  const isEnRoutePickup = currentTrip.status === "accepted";
+  const isEnRouteDropoff = currentTrip.status === "on_trip";
 
   return (
     <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
@@ -26,22 +63,34 @@ const D_ActiveRideContent = ({ currentTrip, onStartTrip, onCompleteTrip }) => {
         {isEnRouteDropoff &&
           "You are currently on an active trip. Follow the navigation to the passenger's destination."}
       </p>
+
       <div className="bg-primary-subtle p-3 rounded-2 border border-primary-subtle mb-lg-4 mb-md-2 mb-1">
         <p className="fw-semibold text-primary-emphasis">
-          Passenger: {currentTrip.passengerName}
+          Passenger ID: {currentTrip.passenger}
         </p>
         <p className="text-secondary">
-          Status: {isEnRoutePickup ? "En route to Pickup" : "En route to Drop-off"}
+          Status:{" "}
+          {isEnRoutePickup
+            ? "En route to Pickup"
+            : isEnRouteDropoff
+            ? "En route to Drop-off"
+            : currentTrip.status}
         </p>
-        <p className="text-secondary">Pickup: {currentTrip.pickupLocation}</p>
         <p className="text-secondary">
-          Drop-off: {currentTrip.dropoffLocation}
+          Pickup: {currentTrip.pickup?.address}
         </p>
-        <p className="text-secondary">ETA: {currentTrip.eta} minutes</p>
         <p className="text-secondary">
-          Distance Remaining: {currentTrip.distanceRemaining} km
+          Drop-off: {currentTrip.drop?.address}
+        </p>
+        <p className="text-secondary">Fare: ₹{currentTrip.fare}</p>
+        <p className="text-secondary">
+          Distance: {currentTrip.distanceKm?.toFixed(2) || 0} km
+        </p>
+        <p className="text-secondary">
+          Vehicle: {currentTrip.vehicleType} ({currentTrip.preferredVehicleModel})
         </p>
       </div>
+
       <div className="d-flex justify-content-end gap-2">
         {isEnRoutePickup && (
           <button
@@ -56,7 +105,7 @@ const D_ActiveRideContent = ({ currentTrip, onStartTrip, onCompleteTrip }) => {
           <button
             className="btn text-white px-4 py-2 rounded-2 fw-semibold"
             style={{ backgroundColor: "#0f6e55" }}
-            onClick={onCompleteTrip}
+            onClick={handleCompleteTrip}
           >
             Complete Trip
           </button>
