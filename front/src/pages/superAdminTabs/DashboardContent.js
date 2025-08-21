@@ -5,10 +5,10 @@ import { getAdminStats } from "../../redux/slice/admin.slice"; // ✅ adjust pat
 
 export default function SA_DashboardContent() {
   const dispatch = useDispatch();
-  const { stats, loading, error } = useSelector((state) => state.admin.stats);
+  const adminStats = useSelector((state) => state.admin?.stats) || {};
+  const { stats, loading, error } = adminStats;
 
-console.log("stats" , stats);
-
+  console.log("stats" , stats);
 
   // fetch stats on mount
   useEffect(() => {

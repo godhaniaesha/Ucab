@@ -6,6 +6,7 @@ import passengerReducer from '../slice/passengers.slice';
 import contactReducer from '../slice/contact.slice'; // Import the contactReducer
 import transactionReducer from '../slice/transaction.slice';
 import adminReducer from '../slice/admin.slice'
+import driverReducer from '../slice/driver.slice'
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -14,7 +15,8 @@ export const rootReducer = combineReducers({
   passenger: passengerReducer,  
   contact:contactReducer,
   transactions: transactionReducer,
-  admin:adminReducer
+  admin:adminReducer,
+  driver:driverReducer
 });
 
 export default rootReducer;

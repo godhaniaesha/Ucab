@@ -155,6 +155,8 @@ exports.createBooking = async (req, res) => {
     // Assign driver
     await assignDriverToBookingSync(booking._id);
     const updatedBooking = await Booking.findById(booking._id).lean();
+    console.log(updatedBooking,'updatedBooking');
+    
 
     if (updatedBooking.status === BOOKING_STATUS.NO_DRIVERS) {
       // Delete the booking if no driver found
@@ -168,6 +170,8 @@ exports.createBooking = async (req, res) => {
     setTimeout(async () => {
       try {
         const freshBooking = await Booking.findById(booking._id);
+        console.log(freshBooking,'freshBooking');
+        
         if (freshBooking && freshBooking.status === BOOKING_STATUS.ASSIGNED) {
           freshBooking.status = BOOKING_STATUS.CANCELLED;
           await freshBooking.save();

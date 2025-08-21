@@ -59,15 +59,50 @@ async function findNearbyDrivers(
           { make: { $regex: preferredVehicleModel, $options: "i" } },
         ],
       }).limit(50);
+      console.log(vehicles, "vehicles");
       if (vehicles && vehicles.length) {
-        const vehicleIds = vehicles.map((v) => v._id);
-        const drivers = await User.find({
-          ...baseQuery,
-          vehicle: { $in: vehicleIds },
-        })
-          .populate("vehicle")
-          .limit(20);
-        if (drivers && drivers.length) return drivers;
+        console.log(
+          "🔍 Vehicles found:",
+          vehicles.map((v) => ({
+            id: v._id,
+            provider: v.provider,
+            model: v.model,
+          }))
+        );
+
+        const providerIds = vehicles.map((v) => v.provider);
+
+        
+
+        // 4. Finally add location
+        const driversWithLocation = await User.find({
+          _id: { $in: providerIds },
+          role: "driver",
+          status: USER_STATUS.AVAILABLE,
+          location: {
+            $near: {
+              $geometry: { type: "Point", coordinates },
+              $maxDistance: radiusMeters,
+            },
+          },
+        }).limit(20);
+        console.log("Step 4 (full baseQuery):", driversWithLocation);
+
+        if (!driversWithLocation || driversWithLocation.length === 0) {
+          console.log(
+            "❌ No drivers found for location or vehicle-provider match"
+          );
+        } else {
+          console.log(
+            "✅ Drivers found:",
+            driversWithLocation.map((d) => ({
+              id: d._id,
+              name: d.name,
+            }))
+          );
+        }
+
+        return driversWithLocation;
       }
     }
 

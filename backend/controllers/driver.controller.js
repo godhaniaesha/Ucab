@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Booking = require("../models/Booking");
 const { USER_STATUS, BOOKING_STATUS } = require("../utils/constants");
 const Vehicle = require("../models/Vehicle");
+const Payment = require("../models/Payment");
 
 exports.updateLocation = async (req, res) => {
   try {
@@ -172,6 +173,54 @@ exports.acceptBooking = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Server error", error: err.message });
+  }
+};
+exports.driverCancelBooking = async (req, res) => {
+  try {
+    const driverId = req.user && req.user.id;
+    const bookingId = req.params.id;
+
+    // 🔹 Find booking
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // 🔹 Check driver is owner of this booking
+    if (!booking.assignedDriver || booking.assignedDriver.toString() !== driverId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    // 🔹 Allow only assigned bookings to be cancelled by driver
+    if (booking.status !== BOOKING_STATUS.ASSIGNED) {
+      return res.status(400).json({
+        message: "Booking cannot be cancelled in current status",
+      });
+    }
+
+    // 🔹 Update booking status
+    booking.status = BOOKING_STATUS.CANCELLED;
+    await booking.save();
+
+    // 🔹 Free driver
+    await User.findByIdAndUpdate(driverId, { status: USER_STATUS.AVAILABLE });
+
+    // 🔹 Notify passenger via socket
+    const passengerSocket = passengerSockets.get(booking.passenger.toString());
+    if (passengerSocket) {
+      passengerSocket.emit("booking_cancelled", { bookingId: booking._id });
+    }
+
+    return res.json({
+      message: "Booking cancelled by driver",
+      booking,
+    });
+  } catch (err) {
+    console.error("driverCancelBooking error:", err);
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 

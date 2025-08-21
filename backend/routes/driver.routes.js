@@ -17,6 +17,7 @@ router.post('/set-availability', authMiddleware(['driver']), driverController.se
 
 // Accept booking
 router.post('/accept/:id', authMiddleware(['driver']), driverController.acceptBooking);
+router.post('/cancle/:id', authMiddleware(['driver']), driverController.driverCancelBooking);
 router.post('/start-trip/:id', authMiddleware(['driver']), driverController.startTrip);
 
 // Complete booking
