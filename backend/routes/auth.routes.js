@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
 const { validate } = require('../middlewares/validation.middleware');
 const upload = require('../middlewares/upload');
+const { authMiddleware } = require('../middlewares/auth.middleware');
 
 // ✅ Register
 router.post(
@@ -61,5 +62,7 @@ router.post(
   validate,
   authController.resetPassword
 );
+
+router.get('/getuser',authMiddleware(['superadmin','passenger','admin']),authController.getUser)
 
 module.exports = router;
