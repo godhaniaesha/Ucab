@@ -10,15 +10,14 @@ const { initSockets } = require('./sockets/booking.socket');
 const logger = require('./utils/logger');
 const path = require('path');
 // const { checkDriverActivity } = require('./utils/driverActivity');
- 
+
 const app = express();
 const server = http.createServer(app);
- 
+
 // ✅ Allowed origins (dev vs prod)
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? (process.env.ALLOWED_ORIGINS?.split(',') || [])
   : ['http://localhost:3000', 'http://127.0.0.1:3000'];
- 
 // ✅ Socket.io CORS
 const io = require('socket.io')(server, {
   cors: {
@@ -27,7 +26,6 @@ const io = require('socket.io')(server, {
     credentials: true,
   },
 });
- 
 // ✅ Helmet configured ONCE (fixes CSP)
 // Helmet CSP fix
 app.use(
@@ -46,7 +44,6 @@ app.use(
     crossOriginEmbedderPolicy: false, // ✅ prevent CORP blocking
   })
 );
- 
 // ✅ CORS
 app.use(
   cors({
@@ -54,18 +51,17 @@ app.use(
     credentials: true,
   })
 );
- 
 // ✅ Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
 });
 app.use(limiter);
- 
+
 // ✅ JSON parsers
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
- 
+
 // ✅ Serve uploads
 app.use(
   "/uploads",
@@ -79,25 +75,23 @@ app.use(
   },
   express.static(path.join(__dirname, "uploads"))
 );
- 
 // ✅ DB + routes
 connectDB();
 app.get('/health', (req, res) =>
   res.json({ status: 'OK', time: new Date().toISOString() })
 );
 app.use('/api', routes);
- 
 // ✅ Error handler
 app.use((err, req, res, next) => {
   logger.error(err);
   res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
- 
+
 // ✅ Init sockets
 initSockets(io);
- 
+
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => logger.info(`Server listening on ${PORT}`));
- 
+
 module.exports = { app, server };

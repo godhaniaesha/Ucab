@@ -19,9 +19,11 @@ import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
 import Tab from "./pages/Tab";
 import SuperAdminTab from "./pages/SuperAdminTab";
 import PassengerTab from "./pages/PassengerTab";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
+    <>
     <Router>
       <Routes>
         <Route path="/" element={<Main><Home /></Main>} />
@@ -45,6 +47,8 @@ function App() {
         <Route path="/PassengerTab" element={<PassengerTab />} />
       </Routes>
     </Router>
+       <ToastContainer position="top-right" autoClose={4000} />
+    </>
   );
 }
 

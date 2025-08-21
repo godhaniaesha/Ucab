@@ -337,3 +337,57 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+exports.getDriverStats = async (req, res) => {
+  try {
+    const driverId = req.user.id;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    // Get total completed rides
+    const totalRides = await Booking.countDocuments({
+      assignedDriver: driverId,
+      status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] }
+    });
+
+    // Get today's rides 
+    const todayRides = await Booking.countDocuments({
+      assignedDriver: driverId,
+      status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] },
+      completedAt: {
+        $gte: today
+      }
+    });
+
+    // Get total earnings
+    const earnings = await Booking.aggregate([
+      {
+        $match: {
+          assignedDriver: driverId,
+          status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarnings: {
+            $sum: {
+              $multiply: ["$fare", 0.8] // 80% of fare
+            }
+          }
+        }
+      }
+    ]);
+
+    const totalEarnings = earnings.length > 0 ? earnings[0].totalEarnings : 0;
+
+    return res.json({
+      totalRides,
+      todayRides, 
+      totalEarnings
+    });
+
+  } catch (err) {
+    console.error("Error getting driver stats:", err);
+    return res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

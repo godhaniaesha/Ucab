@@ -32,5 +32,7 @@ upload.fields([
   ]),
 driverController.updateProfile);
 
+router.get('/getDriverStats',authMiddleware(['driver']),driverController.getDriverStats);
+
 
 module.exports = router;
