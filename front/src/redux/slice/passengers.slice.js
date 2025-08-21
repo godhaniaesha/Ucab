@@ -5,13 +5,15 @@ import axios from 'axios';
 export const createBooking = createAsyncThunk(
   'passengers/createBooking',
   async (bookingData) => {
+    console.log(bookingData, "bookingData");
+
     try {
-        const token = localStorage.getItem('token');
-        console.log(token,'booking');        
-        const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const token = localStorage.getItem('token');
+      console.log(token, 'booking');
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
       const response = await axios.post('http://localhost:5000/api/passenger/booking', bookingData, config);
-      console.log(response,'booking');
-      
+      console.log(response.data, 'booking');
+
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -27,7 +29,7 @@ export const getBookings = createAsyncThunk(
       const token = localStorage.getItem('token');
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
       const response = await axios.get('http://localhost:5000/api/passenger/bookings', config);
-      console.log(response.data,'booking');
+      console.log(response.data, 'booking');
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -90,8 +92,9 @@ const passengersSlice = createSlice({
       .addCase(createBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.bookings.push(action.payload);
+        state.bookings.push(action.payload);   // 👈 booking add kare che
       })
+
       .addCase(createBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;

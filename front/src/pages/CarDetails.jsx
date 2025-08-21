@@ -118,7 +118,7 @@ export default function CarDetails() {
                   <p className="text-muted mb-2">Brand: {car.make}</p>
                 )}
                 <div className="d-flex justify-content-md-center justify-content-lg-start flex-wrap gap-3 my-3 text-muted">
-                  <span>Price: {car.price}</span>
+                  <span>Per KM: {car.perKmRate}</span>
                   {car.fuelType && (
                     <span>
                       <FaGasPump className="me-1" />

@@ -688,6 +688,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 20px;
 }
 
 .z_car_image {
@@ -1492,4 +1493,40 @@
   .x_hero_content h1 {
     font-size: 1.7rem ;
   }
+}
+
+.payment-card {
+  transition: all 0.3s ease;
+}
+
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.payment-card.selected {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 110, 85, 0.3) !important;
+}
+
+.payment-icon {
+  transition: color 0.3s ease;
+}
+
+.z_book_now {
+  background-color: #0f6e55;
+  border-color: #0f6e55;
+  transition: all 0.3s ease;
+}
+
+.z_book_now:hover {
+  background-color: #0c5a47;
+  border-color: #0c5a47;
+  transform: translateY(-1px);
+}
+
+.z_book_now:disabled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  cursor: not-allowed;
 }

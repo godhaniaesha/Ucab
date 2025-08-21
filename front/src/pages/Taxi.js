@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import Footer from '../component/Footer';
 import { getVehicles } from '../redux/slice/vehicles.slice';
 import { createBooking, resetBookingStatus } from '../redux/slice/passengers.slice';
+import { fetchUserProfile } from '../redux/slice/auth.slice'; // Import fetchUserProfile
 
 export default function Taxi() {
   const navigate = useNavigate();
@@ -34,14 +35,18 @@ export default function Taxi() {
     message: ''
   });
 
-
-
   // Redux state
   const vehicles = useSelector((state) => state.vehicle.vehicles);
+  const { profile } = useSelector((state) => state.auth); // Get profile from auth slice
   // const { error, success } = useSelector((state) => state.passengers);
 
   useEffect(() => {
     dispatch(getVehicles());
+    // Fetch user profile to get bank details
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchUserProfile());
+    }
   }, [dispatch]);
 
   // Enhanced filter function for better search
@@ -81,8 +86,34 @@ export default function Taxi() {
     });
   }, [searchTerm, vehicles]);
 
+  // Function to check if user has bank details
+  const checkBankDetails = () => {
+    console.log('Profile data:', profile);
+    console.log('Bank details:', profile?.bankDetails);
+    
+    if (!profile || !profile.bankDetails) {
+      return false;
+    }
+
+    const { bankDetails } = profile;
+    
+    // Check if essential bank details are present
+    const hasAccountNumber = bankDetails.accountNumber && bankDetails.accountNumber.trim() !== '';
+    const hasAccountHolderName = bankDetails.accountHolderName && bankDetails.accountHolderName.trim() !== '';
+    const hasIfscCode = bankDetails.ifscCode && bankDetails.ifscCode.trim() !== '';
+    const hasBankName = bankDetails.bankName && bankDetails.bankName.trim() !== '';
+
+    return hasAccountNumber && hasAccountHolderName && hasIfscCode && hasBankName;
+  };
+
   // Modal handlers
   const handleShow = (car = null) => {
+    // Check bank details before showing modal
+    if (!checkBankDetails()) {
+      alert('Please add your bank details in Profile section before booking a taxi. Required: Account Number, Account Holder Name, IFSC Code, and Bank Name.');
+      return;
+    }
+
     if (car) {
       setSelectedCar(car);
       // Pre-fill form with car details
@@ -170,27 +201,28 @@ export default function Taxi() {
       if (coords) setDropCoords(coords);
     }
   };
- // Helper to decode JWT and extract payload
-const getUserIdFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
+ 
+  // Helper to decode JWT and extract payload
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
 
-  try {
-    const base64Url = token.split(".")[1]; // payload is 2nd part
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    const payload = JSON.parse(jsonPayload);
-    return payload.id || payload._id || payload.userId || null; 
-  } catch (e) {
-    console.error("Invalid token:", e);
-    return null;
-  }
-};
+    try {
+      const base64Url = token.split(".")[1]; // payload is 2nd part
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      const payload = JSON.parse(jsonPayload);
+      return payload.id || payload._id || payload.userId || null; 
+    } catch (e) {
+      console.error("Invalid token:", e);
+      return null;
+    }
+  };
 
   
  // Update handleSubmit function - replace the existing one
@@ -489,7 +521,7 @@ const handleSubmit = async (e) => {
                             e.stopPropagation(); // Prevent card click
                             console.log("Selected car ID:", car._id);
                             console.log("Selected car details:", car);
-                            handleShow(car); // Pass car data to the modal
+                            handleShow(car); // This will now check bank details before showing modal
                           }}
                         >
                           Book Taxi Now →
