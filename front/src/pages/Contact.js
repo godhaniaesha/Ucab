@@ -190,7 +190,6 @@ useEffect(() => {
         </div>
       </section>
 
-      <Footer />
     </>
   );
 }

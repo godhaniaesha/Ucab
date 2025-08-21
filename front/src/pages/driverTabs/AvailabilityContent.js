@@ -1,35 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setAvailability, updateLocation } from "../../redux/slice/driver.slice";
 
 const D_AvailabilityContent = ({ setHasNewRequest, isTripActive }) => {
- const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
+  const dispatch = useDispatch();
+  const locationIntervalRef = useRef(null);
 
-  useEffect(() => {
-    let timeoutId;
-    if (isOnline && !isTripActive) {
-      timeoutId = setTimeout(() => {
-        setHasNewRequest({
-          passengerName: "New Passenger",
-          pickupLocation: "123 Market St",
-          dropoffLocation: "Central Park",
-          estimatedFare: 25.5,
-          estimatedTime: "20 min",
-          distanceAway: "3.0 km",
-        });
+  // Helper to get current coordinates
+  const getCurrentCoordinates = () =>
+    new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            resolve([longitude, latitude]);
+          },
+          (err) => reject(err)
+        );
+      } else {
+        reject(new Error("Geolocation not supported"));
+      }
+    });
+    console.log(getCurrentCoordinates,"cordinates");
+    
+
+  // Handle switch toggle
+  const handleToggle = async (e) => {
+    const online = e.target.checked;
+    setIsOnline(online);
+
+    // Update availability status
+    dispatch(setAvailability({ available: online }));
+
+    if (online) {
+      // Start sending location every 5 seconds
+      locationIntervalRef.current = setInterval(async () => {
+        try {
+          const coordinates = await getCurrentCoordinates();
+          dispatch(updateLocation({ coordinates }));
+        } catch (err) {
+          // Optionally handle geolocation error
+        }
       }, 5000);
+    } else {
+      // Stop sending location
+      clearInterval(locationIntervalRef.current);
+      locationIntervalRef.current = null;
     }
-    return () => clearTimeout(timeoutId);
-  }, [isOnline, isTripActive, setHasNewRequest]);
 
-  const handleToggle = (e) => {
-    setIsOnline(e.target.checked);
-    if (!e.target.checked) {
+    if (!online) {
       setHasNewRequest(null);
     }
   };
 
+  // Stop location updates if trip is active or component unmounts
+  useEffect(() => {
+    if (isTripActive && locationIntervalRef.current) {
+      clearInterval(locationIntervalRef.current);
+      locationIntervalRef.current = null;
+    }
+    return () => {
+      if (locationIntervalRef.current) {
+        clearInterval(locationIntervalRef.current);
+      }
+    };
+  }, [isTripActive]);
+
   return (
     <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
-      <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">Availability Control</h2>
+      <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
+        Availability Control
+      </h2>
       <p className="text-secondary mb-lg-4 mb-md-2 mb-1">
         Toggle your online status to start receiving ride requests. Your current
         location will help us connect you with passengers nearby.

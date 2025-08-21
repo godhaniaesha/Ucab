@@ -29,6 +29,7 @@ async function findNearbyDrivers(
       },
     };
 
+    logger.debug("findNearbyDrivers base query", baseQuery);
     // Add vehicleType to base query if provided
     if (vehicleType && vehicleType !== "standard") {
       const vehicles = await Vehicle.find({ type: vehicleType });
