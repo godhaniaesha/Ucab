@@ -28,3 +28,4 @@
 {"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:27:59.736Z"}
 {"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:28:12.458Z"}
 {"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:28:13.032Z"}
+{"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-21T06:30:20.335Z"}

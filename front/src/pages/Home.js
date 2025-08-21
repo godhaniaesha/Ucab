@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { TbArrowMoveRightFilled } from "react-icons/tb";
@@ -26,17 +26,77 @@ import "swiper/css/navigation";
 import "../style/z_app.css";
 import Footer from "../component/Footer";
 
+import { useDispatch, useSelector } from 'react-redux';
+import { getVehicles } from '../redux/slice/vehicles.slice';
+import { createBooking, resetBookingStatus } from "../redux/slice/passengers.slice";
+
+
+// Helper to decode JWT and extract userId
+const getUserIdFromToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const payload = JSON.parse(jsonPayload);
+    return payload.id || payload._id || payload.userId || null;
+  } catch (e) {
+    console.error("Invalid token:", e);
+    return null;
+  }
+};
+
+// Convert address → coordinates
+const getCoordinates = async (address) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+    );
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+    }
+    return [0, 0];
+  } catch (error) {
+    console.error("Geocoding error:", error);
+    return [0, 0];
+  }
+};
+
 export default function Home({ car }) {
   const [show, setShow] = useState(false);
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Cab booked successfully!");
     handleClose();
   };
+
+  const dispatch = useDispatch();
+  const { vehicles, loading } = useSelector((state) => state.vehicle);
+
+
+  useEffect(() => {
+    dispatch(getVehicles());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (vehicles && vehicles.length > 0) {
+      console.log("Fetched Vehicles:", vehicles);
+    }
+  }, [vehicles]);
+
 
   const slides = [
     {
@@ -58,108 +118,6 @@ export default function Home({ car }) {
         "Perfect choice for corporate trips, airport transfers, and special occasions.",
     },
   ];
-
-  // Grid
-  const carData = [
-    {
-      id: 1,
-      name: "BMW M5 2019 MODEL",
-      image:
-        "https://daxstreet.com/wp-content/uploads/2025/03/2019-BMW-M5-Competition.jpg",
-      price: "$1.25/km",
-      doors: 4,
-      passengers: 4,
-      luggage: 2,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 2,
-      name: "SUV PREMIUM MODEL",
-      image:
-        "https://content.assets.pressassociation.io/2024/11/26171902/51ad881d-b38b-4d93-b57d-e320a96f7046.jpg?w=1280",
-      price: "$2.50/km",
-      doors: 4,
-      passengers: 6,
-      luggage: 4,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 3,
-      name: "MINI COOPER MODEL",
-      image:
-        "https://i.pinimg.com/originals/cb/f5/43/cbf543ffda479dc025d686e80df8648e.jpg",
-      price: "$0.85/km",
-      doors: 2,
-      passengers: 3,
-      luggage: 2,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 4,
-      name: "LUXURY SEDAN MODEL",
-      image:
-        "https://www.cadillaccanada.ca/content/dam/cadillac/na/canada/english/index/navigation/vehicles/2025/vehicles-drp-sedans-25-ct4.png?imwidth=1200",
-      price: "$3.75/km",
-      doors: 4,
-      passengers: 4,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 5,
-      name: "TESLA MODEL S 2023",
-      image:
-        "https://media.carsandbids.com/cdn-cgi/image/width=2080,quality=70/9004500a220bf3a3d455d15ee052cf8c332606f8/photos/Kdlxk0Oj-ltZNt6X3sW-(edit).jpg?t=170935452690",
-      price: "$4.00/km",
-      doors: 4,
-      passengers: 5,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 6,
-      name: "TOYOTA INNOVA CRYSTA",
-      image:
-        "https://dreamsauto.in/uploadFiles/Gallery/24091308182442597.jpg",
-      price: "$1.75/km",
-      doors: 4,
-      passengers: 7,
-      luggage: 4,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 7,
-      name: "MERCEDES-BENZ G-CLASS",
-      image:
-        "https://images.cdn.autocar.co.uk/sites/autocar.co.uk/files/01-mercedes-g500-g-wagen-2024-review-lead-driving-front.jpg",
-      price: "$5.25/km",
-      doors: 4,
-      passengers: 5,
-      luggage: 5,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-    {
-      id: 8,
-      name: "HONDA CIVIC 2022",
-      image:
-        "https://static0.carbuzzimages.com/wordpress/wp-content/uploads/gallery-images/original/877000/0/877065.jpg?q=70&fit=contain&w=1200&h=628&dpr=1",
-      price: "$1.10/km",
-      doors: 4,
-      passengers: 5,
-      luggage: 3,
-      airCondition: "Yes",
-      gps: "Yes",
-    },
-  ];
-
-
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
 
@@ -234,6 +192,92 @@ export default function Home({ car }) {
     ));
   };
 
+  // inside Home component
+  const [selectedMake, setSelectedMake] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [passengers, setPassengers] = useState("");
+  const [selectedRate, setSelectedRate] = useState("");
+  // extract unique makes
+  const makes = [...new Set(vehicles.map(v => v.make))];
+
+  // filter models based on make
+  const models = vehicles
+    .filter(v => v.make === selectedMake)
+    .map(v => v.model);
+
+  // when model changes, update passengers
+  useEffect(() => {
+    if (selectedModel) {
+      const vehicle = vehicles.find(
+        (v) => v.model === selectedModel && v.make === selectedMake
+      );
+      setPassengers(vehicle ? vehicle.passengers : "");
+      setSelectedRate(vehicle ? vehicle.perKmRate : "");
+    }
+  }, [selectedModel, selectedMake, vehicles]);
+
+
+  // form states
+  const [pickup, setPickup] = useState("");
+  const [dropoff, setDropoff] = useState("");
+  // const [selectedMake, setSelectedMake] = useState("");
+  // const [selectedModel, setSelectedModel] = useState("");
+  // const [passengers, setPassengers] = useState("");
+  // const [selectedRate, setSelectedRate] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+
+
+  const { bookings, error, success } = useSelector((state) => state.passenger || {});
+
+  console.log(bookings, "success");
+
+
+  // Submit booking
+  const handleBooking = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userId = getUserIdFromToken(); // 👈 function to decode token
+      if (!userId) {
+        alert("You must be logged in to book.");
+        return;
+      }
+
+      const pickupCoords = await getCoordinates(pickup);
+      const dropCoords = await getCoordinates(dropoff);
+
+      // 🚖 Find vehicle info from your vehicles slice (Redux state)
+      const selectedVehicle = vehicles.find(v => v.model === selectedModel);
+
+      const bookingData = {
+        passenger: userId,
+        pickup: {
+          address: pickup,
+          type: "Point",
+          coordinates: pickupCoords,
+        },
+        drop: {
+          address: dropoff,
+          type: "Point",
+          coordinates: dropCoords,
+        },
+        vehicleType: selectedVehicle?.type || "standard",        // ✅ enum valid
+        preferredVehicleId: selectedVehicle?._id,                // ✅ actual ObjectId
+        preferredVehicleModel: selectedVehicle?.model || "",
+      };
+
+      console.log("🚕 Sending bookingData:", bookingData);
+
+      await dispatch(createBooking(bookingData)).unwrap();
+    } catch (err) {
+      console.error("Booking failed:", err);
+    }
+  };
+
+
+
+
   return (
     <>
       <section className="z_slide_section">
@@ -273,54 +317,119 @@ export default function Home({ car }) {
         </Swiper>
 
         {/* Booking Form outside SwiperSlide so it stays fixed */}
-        <div className="z_slide_form">
+        <form className="z_slide_form" onSubmit={handleBooking}>
           <div className="form_group">
             <FaMapMarkerAlt />
-            <input type="text" placeholder="Pick Up Location" />
+            <input
+              type="text"
+              placeholder="Pick Up Location"
+              value={pickup}
+              onChange={(e) => setPickup(e.target.value)}
+            />
           </div>
+
           <div className="form_group">
             <FaMapMarkerAlt />
-            <input type="text" placeholder="Drop Off Location" />
+            <input
+              type="text"
+              placeholder="Drop Off Location"
+              value={dropoff}
+              onChange={(e) => setDropoff(e.target.value)}
+            />
           </div>
+
+          {/* Makes */}
           <div className="form_group">
-            <input type="number" placeholder="Passengers" />
-          </div>
-          <div className="form_group">
-            <select className="z_drpdwn_select">
-              <option>Choose Cab</option>
-              <option>Sedan</option>
-              <option>SUV</option>
-              <option>Mini</option>
+            <select
+              className="z_drpdwn_select"
+              value={selectedMake}
+              onChange={(e) => {
+                setSelectedMake(e.target.value);
+                setSelectedModel("");
+                setPassengers("");
+              }}
+            >
+              <option value="">Choose Cab</option>
+              {makes.map((make, index) => (
+                <option key={index} value={make}>
+                  {make}
+                </option>
+              ))}
             </select>
           </div>
+
+          {/* Models */}
+          <div className="form_group">
+            <select
+              className="z_drpdwn_select"
+              value={selectedModel}
+              onChange={(e) => {
+                setSelectedModel(e.target.value);
+                setPassengers(e.target.value === "SUV" ? 6 : 4); // demo logic
+                setSelectedRate(e.target.value === "Luxury" ? 50 : 20); // demo logic
+              }}
+              disabled={!selectedMake}
+            >
+              <option value="">Choose Model</option>
+              {models.map((model, index) => (
+                <option key={index} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Passengers */}
+          <div className="form_group">
+            <input
+              type="number"
+              placeholder="Passengers"
+              value={passengers}
+              readOnly
+            />
+          </div>
+
+          {/* Rate */}
+          <div className="form_group">
+            <input
+              type="text"
+              className="z_drpdwn_select"
+              value={selectedRate ? `₹${selectedRate}/km` : ""}
+              placeholder="Rate/km"
+              readOnly
+            />
+          </div>
+
           <div className="form_group">
             <FaCalendarAlt />
-            <input type="date" className="date-input" />
+            <input
+              type="date"
+              className="date-input"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </div>
+
           <div className="form_group">
             <FaClock />
-            <input type="time" className="time-input" />
+            <input
+              type="time"
+              className="time-input"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
           </div>
-          <div className="form_group">
-            <select className="z_drpdwn_select">
-              <option>Choose Age</option>
-              <option>18-25</option>
-              <option>26-35</option>
-              <option>36+</option>
-            </select>
-          </div>
-          <div className="form_group">
-            <select className="z_drpdwn_select">
-              <option>Choose Model</option>
-              <option>Model A</option>
-              <option>Model B</option>
-              <option>Model C</option>
-            </select>
-          </div>
+
           <div className="z_book_btn">
-            <button className="book_btn">BOOK TAXI</button>
+            <button className="book_btn" type="submit" disabled={loading}>
+              {loading ? "Booking..." : "BOOK TAXI"}
+            </button>
           </div>
-        </div>
+
+          {success && <p style={{ color: "green" }}>✅ Booking successful!</p>}
+          {error && <p style={{ color: "red" }}>❌ {error}</p>}
+        </form>
+
       </section>
       {/* About section */}
       <section className="z_about_section">
@@ -382,98 +491,103 @@ export default function Home({ car }) {
           {/* Car Cards */}
           <div className="z_cars_container">
             <div className="z_cars_row">
-              {carData.map((car) => (
-                <div
-                  key={car.id}
-                  className={`z_car_card ${hoveredCard === car.id ? "z_car_card_hover" : ""
-                    }`}
-                  onMouseEnter={() => setHoveredCard(car.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <div className="z_car_image_container">
-                    <img
-                      src={car.image}
-                      alt={car.name}
-                      className="z_car_image"
-                    />
-                  </div>
-
-                  <div className="z_car_card_body">
-                    <h5 className="z_car_name">{car.name}</h5>
-                    <div className="z_car_price">{car.price}</div>
-                    <div className="z_car_separator"></div>
-
-                    <div className="z_car_features">
-                      <div className="z_car_feature">
-                        <div className="z_car_feature_left">
-                          <div className="z_car_feature_icon">
-                            <FaDoorClosed size={16} />
-                          </div>
-                          <span>Taxi Doors:</span>
-                        </div>
-                        <span className="z_car_feature_value">{car.doors}</span>
-                      </div>
-
-                      <div className="z_car_feature">
-                        <div className="z_car_feature_left">
-                          <div className="z_car_feature_icon">
-                            <FaUsers size={16} />
-                          </div>
-                          <span>Passengers:</span>
-                        </div>
-                        <span className="z_car_feature_value">
-                          {car.passengers}
-                        </span>
-                      </div>
-
-                      <div className="z_car_feature">
-                        <div className="z_car_feature_left">
-                          <div className="z_car_feature_icon">
-                            <FaSuitcaseRolling size={16} />
-                          </div>
-                          <span>Luggage Carry:</span>
-                        </div>
-                        <span className="z_car_feature_value">
-                          {car.luggage}
-                        </span>
-                      </div>
-
-                      <div className="z_car_feature">
-                        <div className="z_car_feature_left">
-                          <div className="z_car_feature_icon">
-                            <FaSnowflake size={16} />
-                          </div>
-                          <span>Air Condition:</span>
-                        </div>
-                        <span className="z_car_feature_value">
-                          {car.airCondition}
-                        </span>
-                      </div>
-
-                      <div className="z_car_feature">
-                        <div className="z_car_feature_left">
-                          <div className="z_car_feature_icon">
-                            <FaMapMarkerAlt size={16} />
-                          </div>
-                          <span>GPS Navigation:</span>
-                        </div>
-                        <span className="z_car_feature_value">{car.gps}</span>
-                      </div>
+              {loading ? (
+                <div className="text-center">Loading...</div>
+              ) : vehicles && vehicles.length > 0 ? (
+                vehicles.map((car) => (
+                  <div
+                    key={car._id}
+                    className={`z_car_card ${hoveredCard === car._id ? "z_car_card_hover" : ""}`}
+                    onMouseEnter={() => setHoveredCard(car._id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <div className="z_car_image_container">
+                      <img
+                        src={`http://localhost:5000${car.images}`}
+                        alt={car.name}
+                        className="z_car_image"
+                      />
                     </div>
 
-                    {/* Book Taxi Button */}
-                    <button
-                      className={`z_car_book_button ${hoveredButton === car.id ? "z_car_book_button_hover" : ""
-                        }`}
-                      onMouseEnter={() => setHoveredButton(car.id)}
-                      onMouseLeave={() => setHoveredButton(null)}
-                      onClick={handleShow}
-                    >
-                      Book Taxi Now →
-                    </button>
+                    <div className="z_car_card_body">
+                      <h5 className="z_car_name">{car.model || car.name}</h5>
+                      <div className="z_car_price">{car.price}</div>
+                      <div className="z_car_separator"></div>
+
+                      <div className="z_car_features">
+                        <div className="z_car_feature">
+                          <div className="z_car_feature_left">
+                            <div className="z_car_feature_icon">
+                              <FaDoorClosed size={16} />
+                            </div>
+                            <span>Taxi Doors:</span>
+                          </div>
+                          <span className="z_car_feature_value">{car.taxiDoors || car.doors}</span>
+                        </div>
+
+                        <div className="z_car_feature">
+                          <div className="z_car_feature_left">
+                            <div className="z_car_feature_icon">
+                              <FaUsers size={16} />
+                            </div>
+                            <span>Passengers:</span>
+                          </div>
+                          <span className="z_car_feature_value">{car.passengers}</span>
+                        </div>
+
+                        <div className="z_car_feature">
+                          <div className="z_car_feature_left">
+                            <div className="z_car_feature_icon">
+                              <FaSuitcaseRolling size={16} />
+                            </div>
+                            <span>Luggage Carry:</span>
+                          </div>
+                          <span className="z_car_feature_value">{car.luggageCarry}</span>
+                        </div>
+
+                        <div className="z_car_feature">
+                          <div className="z_car_feature_left">
+                            <div className="z_car_feature_icon">
+                              <FaSnowflake size={16} />
+                            </div>
+                            <span>Air Condition:</span>
+                          </div>
+                          <span className="z_car_feature_value">
+                            {car.airCondition ? 'Yes' : 'No'}
+                          </span>
+                        </div>
+
+                        <div className="z_car_feature">
+                          <div className="z_car_feature_left">
+                            <div className="z_car_feature_icon">
+                              <FaMapMarkerAlt size={16} />
+                            </div>
+                            <span>GPS Navigation:</span>
+                          </div>
+                          <span className="z_car_feature_value">
+                            {car.gpsNavigation ? 'Yes' : 'No'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Book Taxi Button */}
+                      <button
+                        className={`z_car_book_button ${hoveredButton === car._id ? "z_car_book_button_hover" : ""}`}
+                        onMouseEnter={() => setHoveredButton(car._id)}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        onClick={() => handleShow(car)}
+                      >
+                        Book Taxi Now →
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <>
+                  <div className="text-center">No vehicles available</div>
+                </>
+
+              )}
             </div>
           </div>
         </div>
@@ -724,7 +838,7 @@ export default function Home({ car }) {
           </Swiper>
         </div>
       </section>
-      
+
     </>
   );
 }
