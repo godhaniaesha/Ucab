@@ -1,10 +1,68 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import "../style/z_app.css";
-import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 import "../style/Contect.css";
-import Footer from '../component/Footer';
+import Footer from "../component/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createContact,
+  clearContactError,
+  clearContactSuccess,
+} from "../redux/slice/contact.slice";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// ✅ Validation Schema with Yup
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  subject: Yup.string().required("Subject is required"),
+  message: Yup.string().min(10, "Message must be at least 10 characters").required("Message is required"),
+});
 
 export default function Contact() {
+  const dispatch = useDispatch();
+
+  const { loading, error, success, message } = useSelector(
+    (state) => state.contact
+  );
+
+  // ✅ Formik Setup
+const formik = useFormik({
+  initialValues: {
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  },
+  validationSchema,
+  onSubmit: (values) => {
+    dispatch(createContact(values));
+  },
+});
+
+
+  // ✅ Handle toast messages
+useEffect(() => {
+  if (success) {
+    toast.success("Message sent successfully!");
+    formik.resetForm();   // <-- clear form here after success
+  }
+  if (error) {
+    toast.error(error);
+  }
+
+  if (success || error) {
+    const timer = setTimeout(() => {
+      dispatch(clearContactSuccess());
+      dispatch(clearContactError());
+    }, 4000);
+    return () => clearTimeout(timer);
+  }
+}, [success, error, message, dispatch]);
+
   return (
     <>
       {/* Hero Section */}
@@ -19,8 +77,6 @@ export default function Contact() {
         </div>
       </section>
 
-
-
       {/* Contact Us */}
       <section className="z_cntct_section">
         <div className="z_cntct_overlay">
@@ -32,13 +88,22 @@ export default function Contact() {
                   <div className="z_cntct_info_inner">
                     <h2 className="z_cntct_title">Get in Touch</h2>
                     <p className="z_cntct_subtitle">
-                      Experience comfort, class, and safety. Book your premium ride today.
+                      Experience comfort, class, and safety. Book your premium
+                      ride today.
                     </p>
                     <ul>
-                      <li><FaPhoneAlt /> +91 98765 43210</li>
-                      <li><FaEnvelope /> info@cabbooking.com</li>
-                      <li><FaMapMarkerAlt /> 123 Green Street, Ahmedabad, India</li>
-                      <li><FaClock /> Mon - Sun: 24/7 Service</li>
+                      <li>
+                        <FaPhoneAlt /> +91 98765 43210
+                      </li>
+                      <li>
+                        <FaEnvelope /> info@cabbooking.com
+                      </li>
+                      <li>
+                        <FaMapMarkerAlt /> 123 Green Street, Ahmedabad, India
+                      </li>
+                      <li>
+                        <FaClock /> Mon - Sun: 24/7 Service
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -47,17 +112,61 @@ export default function Contact() {
               {/* Right Side - Form */}
               <div className="col-md-6 pb-4" style={{ padding: "0 20px" }}>
                 <div className="z_cntct_form h-100 d-flex align-items-center">
-                  <form className="w-100">
-                    <input type="text" placeholder="Your Name" required />
-                    <input type="email" placeholder="Your Email" required />
-                    <input type="tel" placeholder="Your Phone" required />
+                  <form className="w-100" onSubmit={formik.handleSubmit}>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your Name"
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.name && formik.errors.name && (
+                      <p className="text-danger">{formik.errors.name}</p>
+                    )}
+
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your Email"
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.email && formik.errors.email && (
+                      <p className="text-danger">{formik.errors.email}</p>
+                    )}
+
+                    <input
+                      type="text"
+                      name="subject"
+                      placeholder="Subject"
+                      value={formik.values.subject}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.subject && formik.errors.subject && (
+                      <p className="text-danger">{formik.errors.subject}</p>
+                    )}
+
                     <textarea
+                      name="message"
                       placeholder="Your Message"
                       rows="4"
-                      required
+                      value={formik.values.message}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     ></textarea>
-                    <button type="submit" className="z_cntct_btn">
-                      Send Message
+                    {formik.touched.message && formik.errors.message && (
+                      <p className="text-danger">{formik.errors.message}</p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="z_cntct_btn"
+                      disabled={loading}
+                    >
+                      {loading ? "Sending..." : "Send Message"}
                     </button>
                   </form>
                 </div>
@@ -68,7 +177,7 @@ export default function Contact() {
       </section>
 
       {/* Map Section */}
-      <section className='container mb-5'>
+      <section className="container mb-5">
         <div className="z_cntct_map_section">
           <iframe
             className="z_cntct_map"
@@ -81,6 +190,7 @@ export default function Contact() {
         </div>
       </section>
 
+      <Footer />
     </>
   );
 }

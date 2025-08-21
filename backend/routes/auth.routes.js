@@ -27,6 +27,9 @@ router.post(
   authController.login
 );
 
+// ✅ Logout
+router.post('/logout', authController.logout);
+
 // ✅ Forgot Password - Send OTP
 router.post(
   '/forgot-password',
@@ -61,5 +64,15 @@ router.post(
   validate,
   authController.resetPassword
 );
+// Get all passengers
+router.get('/passengers', authController.getAllPassengers);
+
+// Get all drivers  
+router.get('/drivers', authController.getAllDrivers);
+
+router.get('/getAdminStats',authController.getAdminStats);
+
+
+
 
 module.exports = router;

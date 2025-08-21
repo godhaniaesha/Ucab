@@ -10,4 +10,6 @@ router.put('/booking/:id', authMiddleware(['passenger','superadmin','driver']), 
 
 router.get('/bookings',authMiddleware(['passenger','superadmin','driver']), passengerController.getHistory);
 
+router.get('/getActiveRide',authMiddleware(['passenger']),passengerController.getActiveRide)
+router.get('/getTodayStats',authMiddleware(['passenger']),passengerController.getTodayStats)
 module.exports = router;

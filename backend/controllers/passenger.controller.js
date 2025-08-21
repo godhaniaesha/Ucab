@@ -17,7 +17,7 @@ exports.createBooking = async (req, res) => {
     const {
       pickup,
       drop,
-      vehicleType = "standard",
+      vehicleType = "standard", 
       preferredVehicleModel,
       preferredVehicleId,
     } = req.body;
@@ -116,6 +116,14 @@ exports.createBooking = async (req, res) => {
       vehiclePricing
     );
 
+    // Calculate distance using haversine formula
+    const distanceKm = haversineDistance(
+      pickup.coordinates[1],
+      pickup.coordinates[0],
+      drop.coordinates[1], 
+      drop.coordinates[0]
+    );
+
     // Create booking
     const booking = await Booking.create({
       passenger: req.user.id,
@@ -132,6 +140,7 @@ exports.createBooking = async (req, res) => {
       preferredVehicleId,
       fare: fareDetails.totalFare,
       fareDetails,
+      distanceKm
     });
 
     // Create pending payment
@@ -412,5 +421,78 @@ exports.getHistory = async (req, res) => {
     return res.json(bookings);
   } catch (err) {
     return res.status(500).json({ message: "err" });
+  }
+};
+exports.getActiveRide = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const activeRide = await Booking.findOne({
+      passenger: userId,
+      status: BOOKING_STATUS.IN_PROGRESS
+    }).populate('assignedDriver');
+
+    if(!activeRide) {
+      return res.status(404).json({
+        message: "No active ride found"
+      });
+    }
+
+    return res.json({
+      booking: activeRide
+    });
+
+  } catch(err) {
+    console.error("getActiveRide error:", err);
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
+  }
+};
+exports.getTodayStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Get today's start and end dates
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Get all completed rides for today
+    const todayRides = await Booking.find({
+      passenger: userId,
+      status: BOOKING_STATUS.COMPLETED,
+      createdAt: {
+        $gte: today,
+        $lt: tomorrow
+      }
+    });
+
+    // Get all completed rides (all time)
+    const allCompletedRides = await Booking.find({
+      passenger: userId,
+      status: BOOKING_STATUS.COMPLETED
+    });
+
+    // Calculate stats
+    const totalRides = todayRides.length;
+    const totalSpent = allCompletedRides.reduce((sum, ride) => sum + (ride.fare || 0), 0);
+    const totalCompletedRides = allCompletedRides.length;
+
+    return res.json({
+      todayStats: {
+        totalRides,
+        totalSpent,
+        totalCompletedRides
+      }
+    });
+
+  } catch(err) {
+    console.error("getTodayStats error:", err);
+    return res.status(500).json({
+      message: "Server error", 
+      error: err.message
+    });
   }
 };

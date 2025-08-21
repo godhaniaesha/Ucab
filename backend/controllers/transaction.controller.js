@@ -5,13 +5,17 @@ const getMyTransactions = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // 🟢 1. Driver/Owner payouts
+    // 🟢 1. Driver/Owner payouts 
     const payouts = await Payment.find({ payoutTo: userId })
       .populate({
         path: "booking",
-        select: "pickup drop fare passenger",
-        populate: { path: "passenger", select: "name email phone" }
+        select: "pickup drop fare passenger assignedDriver vehicleType preferredVehicleModel distanceKm", // Added vehicleType
+        populate: [
+          { path: "passenger", select: "name email phone" },
+          { path: "assignedDriver", select: "name email phone" }
+        ]
       })
+      .populate({ path: "payoutTo", select: "name email phone" })
       .sort({ createdAt: -1 });
 
     const driverOwnerTotals = {
@@ -23,16 +27,18 @@ const getMyTransactions = async (req, res) => {
 
     // 🟢 2. Passenger payments (only show what THEY paid to others)
     const passengerBookings = await Booking.find({ passenger: userId })
-      .select("_id pickup drop fare");
+      .select("_id pickup drop fare assignedDriver vehicleType preferredVehicleModel distanceKm") // Added vehicleType
+      .populate("assignedDriver", "name email phone");
 
     const passengerBookingIds = passengerBookings.map(b => b._id);
 
     const passengerPaymentsRaw = await Payment.find({
       booking: { $in: passengerBookingIds },
-      payoutTo: { $ne: null } // exclude platform fee-only records
+      payoutTo: { $ne: null }
     }).populate({
-      path: "booking",
-      select: "pickup drop fare"
+      path: "booking", 
+      select: "pickup drop fare assignedDriver vehicleType preferredVehicleModel distanceKm", // Added vehicleType
+      populate: { path: "assignedDriver", select: "name email phone" }
     });
 
     const passengerPayments = Object.values(
@@ -41,6 +47,7 @@ const getMyTransactions = async (req, res) => {
         if (!acc[bid]) {
           acc[bid] = {
             booking: payment.booking,
+            driver: payment.booking.assignedDriver,
             amount: 0,
             status: payment.status || "completed",
             createdAt: payment.createdAt,
@@ -64,11 +71,11 @@ const getMyTransactions = async (req, res) => {
 
     // 🟢 4. Return combined response but role-aware
     res.json({
-      payouts, // only relevant if user is driver/owner
-      passengerPayments, // only relevant if user is passenger
+      payouts,
+      passengerPayments,
       totals: {
-        totalReceived: driverOwnerTotals.totalAmount, // driver/owner
-        totalSent: passengerTotals.totalSent,         // passenger
+        totalReceived: driverOwnerTotals.totalAmount,
+        totalSent: passengerTotals.totalSent,
         driverOwner: driverOwnerTotals,
         passenger: passengerTotals
       },

@@ -1,113 +1,23 @@
-import React, { useState } from "react";
-import { Modal, Button, Badge } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPassengers } from "../../redux/slice/admin.slice"; // adjust path as needed
+import { Modal, Button, Spinner, Alert } from "react-bootstrap";
 import { FaEye } from "react-icons/fa";
 
 export default function SA_ManagePassengersContent() {
+  const dispatch = useDispatch();
+  const { passengers, loading, error } = useSelector(
+    (state) => state.admin.passengers
+  );
+  console.log(passengers,'dfgrf');
+  
   const [db_selectedPassenger, db_setSelectedPassenger] = useState(null);
   const [db_showModal, db_setShowModal] = useState(false);
-
-  // 🔹 Sample passengers (schema fields)
-  const db_passengers = [
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice.j@email.com",
-      phone: "+1 555-1111",
-      status: "ACTIVE",
-      createdAt: "2025-08-05",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-    {
-      id: 2,
-      name: "Bob Williams",
-      email: "bob.w@email.com",
-      phone: "+1 555-2222",
-      status: "BLOCKED",
-      createdAt: "2025-07-20",
-      profileImage: "/user.png",
-    },
-  ];
+  
+  // 🔹 Fetch passengers on mount
+  useEffect(() => {
+    dispatch(fetchPassengers());
+  }, [dispatch]);
 
   const db_handleView = (passenger) => {
     db_setSelectedPassenger(passenger);
@@ -126,73 +36,58 @@ export default function SA_ManagePassengersContent() {
         </div>
       </div>
 
-      {/* Table Wrapper with Scroll */}
-      <div
-        className="table"
-        style={{ maxHeight: "400px", overflow: "auto", width: "95%" }}
-      >
-        <table className="table align-middle table-hover text-nowrap">
-          <thead className="bg-dark text-white sticky-top">
-            <tr>
-              <th>#</th>
-              <th>Passenger</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Status</th>
-              <th>Joined</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {db_passengers.map((passenger, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>
-                  <div className="d-flex align-items-center gap-2">
-                    <img
-                      src={passenger.profileImage}
-                      alt={passenger.name}
-                      className="rounded-circle border"
-                      style={{ width: 40, height: 40, objectFit: "cover" }}
-                    />
-                    <div>
-                      <div className="fw-semibold">{passenger.name}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{passenger.email}</td>
-                <td>{passenger.phone}</td>
-                <td>
-                  <Badge
-                    bg={
-                      passenger.status === "ACTIVE"
-                        ? "dark"
-                        : passenger.status === "BLOCKED"
-                        ? "secondary"
-                        : "secondary"
-                    }
-                  >
-                    {passenger.status}
-                  </Badge>
-                </td>
-                <td>{passenger.createdAt}</td>
-                <td>
-                  <Button
-                    style={{
-                      backgroundColor: "rgb(21, 136, 109)",
-                      border: "none",
-                    }}
-                    size="sm"
-                    onClick={() => db_handleView(passenger)}
-                  >
-                    <FaEye className="mb-1" />
-                  </Button>
-                </td>
+      {/* Loader / Error */}
+      {loading && (
+        <div className="text-center my-4">
+          <Spinner animation="border" variant="dark" />
+        </div>
+      )}
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      {/* Table Wrapper */}
+      {!loading && !error && passengers?.length > 0 && (
+        <div
+          className="table"
+          style={{ maxHeight: "400px", overflow: "auto", width: "95%" }}
+        >
+          <table className="table align-middle table-hover text-nowrap">
+            <thead className="bg-dark text-white sticky-top">
+              <tr>
+                <th>#</th>
+                <th>Passenger</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joined</th>
+             
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {passengers.map((passenger, index) => (
+                <tr key={passenger._id}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <div className="d-flex align-items-center gap-2">
+                      <img
+                        src={passenger.profileImage || "/user.png"}
+                        alt={passenger.name}
+                        className="rounded-circle border"
+                        style={{ width: 40, height: 40, objectFit: "cover" }}
+                      />
+                      <div>
+                        <div className="fw-semibold">{passenger.name}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{passenger.email}</td>
+                  <td>{passenger.phone}</td>
+                  <td>{new Date(passenger.createdAt).toLocaleDateString()}</td>
+                
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Passenger Details Modal */}
       <Modal
@@ -211,15 +106,14 @@ export default function SA_ManagePassengersContent() {
               {/* Profile Header */}
               <div className="d_profile_header">
                 <img
-                  src={db_selectedPassenger.profileImage}
+                  src={db_selectedPassenger.profileImage || "/user.png"}
                   alt={db_selectedPassenger.name}
                   className="d_profile_img"
                 />
                 <div>
-                  <h4 className="d_profile_name">{db_selectedPassenger.name}</h4>
-                  <span className="d_profile_status">
-                    {db_selectedPassenger.status}
-                  </span>
+                  <h4 className="d_profile_name">
+                    {db_selectedPassenger.name}
+                  </h4>
                 </div>
               </div>
 
@@ -237,7 +131,10 @@ export default function SA_ManagePassengersContent() {
                   </p>
                   <p>
                     <i className="fa fa-calendar me-2 text-secondary"></i>
-                    Joined {db_selectedPassenger.createdAt}
+                    Joined{" "}
+                    {new Date(
+                      db_selectedPassenger.createdAt
+                    ).toLocaleDateString()}
                   </p>
                 </div>
               </div>

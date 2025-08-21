@@ -3,6 +3,9 @@ const Vehicle = require('../models/Vehicle');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const twilio = require('twilio');
+const { USER_ROLES } = require('../utils/constants');
+const Booking = require('../models/Booking');
+const Payment = require('../models/Payment');
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
@@ -106,6 +109,35 @@ exports.login = async (req, res) => {
         bankDetails: user.bankDetails || null,
         paymentMethods: user.paymentMethods || []
       }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    // Get token from authorization header
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
+      });
+    }
+
+    // Add token to blacklist in memory (in production use Redis/DB)
+    global.blacklistedTokens = global.blacklistedTokens || new Set();
+    global.blacklistedTokens.add(token);
+
+    // Since token is sent in response body during login, not as cookie,
+    // we just need to send success response. Token invalidation is now
+    // handled server-side by blacklisting the token.
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
     });
   } catch (err) {
     console.error(err);
@@ -221,4 +253,102 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getAllDrivers = async (req, res) => {
+  try {
+    const drivers = await User.find({ role: USER_ROLES.DRIVER })
+      .populate('vehicle')
+      .select('-password -otp -otpExpires');
+
+    res.json({
+      success: true,
+      count: drivers.length,
+      drivers
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Get all passengers
+exports.getAllPassengers = async (req, res) => {
+  try {
+    const passengers = await User.find({ role: USER_ROLES.PASSENGER })
+      .select('-password -otp -otpExpires');
+
+    res.json({
+      success: true, 
+      count: passengers.length,
+      passengers
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+  /**
+   * Admin Stats API
+   * Returns: total drivers, total passengers, rides today, today's revenue, pending verification
+   */
+  exports.getAdminStats = async (req, res) => {
+    try {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      // Total drivers
+      const totalDrivers = await User.countDocuments({ role: USER_ROLES.DRIVER });
+      // Total passengers
+      const totalPassengers = await User.countDocuments({ role: USER_ROLES.PASSENGER });
+
+      // Rides today (completed bookings)
+      const ridesToday = await Booking.countDocuments({
+        status: 'completed',
+        createdAt: { $gte: todayStart, $lte: todayEnd }
+      });
+
+      // Today's revenue (sum of completed payments for today's bookings)
+      const payments = await Payment.aggregate([
+        {
+          $lookup: {
+            from: 'bookings',
+            localField: 'booking',
+            foreignField: '_id',
+            as: 'bookingInfo'
+          }
+        },
+        { $unwind: '$bookingInfo' },
+        {
+          $match: {
+            status: 'completed',
+            'bookingInfo.createdAt': { $gte: todayStart, $lte: todayEnd }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$amount' }
+          }
+        }
+      ]);
+      const todaysRevenue = payments.length > 0 ? Math.round(payments[0].total) : 0;
+      // Pending verification (drivers with documentsVerified: false)
+      const pendingVerification = await Booking.countDocuments({ status: 'assigned' });
+      res.json({
+        success: true,
+        stats: {
+          totalDrivers,
+          totalPassengers,
+          ridesToday,
+          todaysRevenue,
+          pendingVerification
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error', error: err.message });
+    }
+  };
 

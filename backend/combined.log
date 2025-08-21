@@ -1181,3 +1181,265 @@
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T10:54:59.114Z"}
 {"level":"info","message":"Server listening on 5000","timestamp":"2025-08-19T12:10:20.159Z"}
 {"level":"info","message":"MongoDB connected","timestamp":"2025-08-19T12:10:20.702Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T04:09:50.593Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T04:09:50.960Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T04:17:15.838Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T04:17:16.209Z"}
+{"_message":"Contact validation failed","errors":{"subject":{"kind":"required","message":"Path `subject` is required.","name":"ValidatorError","path":"subject","properties":{"message":"Path `subject` is required.","path":"subject","type":"required","value":""},"value":""}},"level":"error","message":"Error creating contact Contact validation failed: subject: Path `subject` is required.","stack":"ValidationError: Contact validation failed: subject: Path `subject` is required.\n    at Document.invalidate (C:\\denisha\\Ucab\\backend\\node_modules\\mongoose\\lib\\document.js:3219:32)\n    at C:\\denisha\\Ucab\\backend\\node_modules\\mongoose\\lib\\document.js:3012:17\n    at C:\\denisha\\Ucab\\backend\\node_modules\\mongoose\\lib\\schematype.js:1368:9\n    at process.processTicksAndRejections (node:internal/process/task_queues:77:11)","timestamp":"2025-08-20T04:18:25.209Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:19:48.420Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:31:16.003Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:31:46.402Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:37:19.574Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:38:12.047Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:40:53.278Z"}
+{"level":"info","message":"Contact created successfully","timestamp":"2025-08-20T04:52:07.144Z"}
+{"level":"info","message":"Contact deleted: 68a2c1a733f5c7b767bbef2f","timestamp":"2025-08-20T04:58:31.762Z"}
+{"level":"info","message":"Contact deleted: 68a55477923ec5089f164334","timestamp":"2025-08-20T05:01:26.557Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:15:36.408Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:15:36.829Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:21:11.520Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:21:11.915Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:23:48.102Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:23:48.515Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:28:15.589Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:28:15.990Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:28:30.872Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:28:31.258Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:31:37.713Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:31:38.073Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:31:44.246Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:31:44.636Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:31:47.778Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:31:48.175Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:33:37.798Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:33:38.239Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:34:18.355Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:34:18.728Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:34:22.935Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:34:23.343Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:34:25.577Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:34:25.944Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:34:27.559Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:34:27.927Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:45:00.117Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:45:00.502Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:52:31.940Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:52:32.353Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:54:18.755Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:54:19.146Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:56:50.553Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:56:50.940Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:57:06.891Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:57:07.300Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T05:58:27.871Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T05:58:28.263Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:00:31.013Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:00:31.384Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:29:57.411Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:29:57.852Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:30:00.722Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:30:01.162Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:30:49.291Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:30:49.664Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:36:49.470Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:36:49.851Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:44:10.689Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:44:11.086Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:44:33.561Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:44:34.055Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:44:35.883Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:44:36.263Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:45:01.677Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:45:02.095Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:48:08.431Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:48:08.810Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:48:22.946Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:48:23.329Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:49:06.966Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:49:07.328Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:51:57.014Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:51:57.388Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:52:26.431Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:52:26.842Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:52:29.455Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:52:29.846Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:52:56.952Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:52:58.529Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:52:58.898Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:54:48.658Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:54:49.093Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:57:26.970Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:57:27.336Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:58:45.714Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:58:46.110Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:59:19.072Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:59:19.453Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T06:59:51.979Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T06:59:52.342Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:00:28.223Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:00:28.601Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:01:24.381Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:01:24.754Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:02:45.562Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:02:45.940Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:02:55.895Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:02:56.252Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:12:33.082Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:12:33.457Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T07:13:10.532Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T07:13:10.946Z"}
+{"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:27:59.736Z"}
+{"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:28:12.458Z"}
+{"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"Unexpected field","name":"MulterError","storageErrors":[],"timestamp":"2025-08-20T10:28:13.032Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:39:32.036Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:39:32.404Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:39:55.051Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:39:55.479Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:43:25.051Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:43:25.447Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:44:11.051Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:44:11.451Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:44:43.070Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:44:43.482Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:44:45.643Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:44:46.008Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:44:47.336Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:44:47.706Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:44:52.572Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:44:52.944Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:45:36.712Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:45:37.110Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:45:40.368Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:45:40.791Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:47:37.129Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:47:37.523Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T10:48:43.160Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T10:48:43.520Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:32:32.610Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:32:33.022Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:32:37.773Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:32:38.190Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:33:07.888Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:33:08.329Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:33:11.531Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:33:11.910Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:00.421Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:00.904Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:39.562Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:39.998Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:42.661Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:43.058Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:48.183Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:48.619Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:50.619Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:50.976Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:34:53.292Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:34:53.723Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:04.882Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:05.246Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:06.982Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:08.448Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:08.938Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:12.910Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:13.305Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:18.117Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:18.487Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:22.309Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:22.707Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:25.178Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:25.547Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:35:34.987Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:35:35.358Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:42:44.037Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:42:44.412Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:42:53.597Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:42:54.019Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:43:59.718Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:44:00.127Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:44:06.171Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:44:06.599Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:44:24.846Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:44:25.262Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:44:28.514Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:44:28.917Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:05.263Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:05.695Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:15.936Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:16.307Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:20.038Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:20.413Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:24.946Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:25.325Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:27.777Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:28.179Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:45:30.404Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:45:30.786Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:47:07.106Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:47:07.478Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:47:13.346Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:47:13.746Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:47:22.190Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:47:22.558Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:50:12.905Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:50:13.257Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:50:41.340Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:50:41.710Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:50:45.867Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:50:46.280Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:50:57.541Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:50:57.901Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:09.076Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:10.996Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:11.365Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:15.521Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:15.944Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:20.978Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:21.419Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:25.496Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:25.881Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:33.191Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:33.546Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:51:35.172Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:51:35.545Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:52:47.561Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:52:47.965Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:52:59.208Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:52:59.594Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:54:18.721Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:54:19.176Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:54:51.409Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:54:51.773Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:55:57.958Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:55:58.308Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:57:10.667Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:57:11.149Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T11:57:14.387Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T11:57:14.775Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:05:33.864Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:05:34.240Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:05:43.825Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:05:44.245Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:12:12.520Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:12:12.913Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:13:02.574Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:13:03.756Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:13:38.053Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:13:38.466Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:14:10.611Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:14:10.968Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:15:46.726Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:15:47.198Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:16:40.631Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:16:40.987Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:17:04.235Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:17:04.640Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:17:15.847Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:17:16.226Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:20:04.232Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:20:04.709Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:20:05.973Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:20:06.346Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:20:09.641Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:20:09.984Z"}
+{"level":"info","message":"Server listening on 5000","timestamp":"2025-08-20T12:32:43.249Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-08-20T12:32:44.776Z"}
