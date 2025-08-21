@@ -1,8 +1,65 @@
-import React, { useState } from 'react';
-import { IoSearch } from "react-icons/io5";
-import { IoCloseSharp } from "react-icons/io5";
+import React, { useEffect, useState, useCallback } from 'react';
+import { IoSearch, IoCloseSharp } from "react-icons/io5";
 import '../style/x_app.css';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBlog, getAllBlogs } from '../redux/slice/blog.slice';
+import nofound from '../image/space.png';
+
+// Move SidebarContent outside the main component
+const SidebarContent = React.memo(({
+  searchTerm,
+  setSearchTerm,
+  setCurrentPage,
+  isSearching,
+  handleSearch,
+  handleClear,
+  blogPosts
+}) => (
+  <>
+    <div className="x_sidebar_widget">
+      <h4 className="x_widget_title">Search</h4>
+      <div className="x_search_bar">
+        <input
+          type="text"
+          placeholder="Search blog posts..."
+          className="x_search_input"
+          value={searchTerm}
+          onChange={e => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
+        <button
+          className="x_search_btn"
+          onClick={isSearching ? handleClear : () => handleSearch(searchTerm)}
+        >
+          {isSearching ? (
+            <IoCloseSharp style={{ fontSize: "1.5rem", color: "#fff" }} />
+          ) : (
+            <IoSearch style={{ fontSize: "1.5rem", color: "#fff" }} />
+          )}
+        </button>
+      </div>
+    </div>
+
+
+    <div className="x_sidebar_widget">
+      <h4 className="x_widget_title">Recent Posts</h4>
+      <div className="x_recent_posts">
+        {blogPosts.slice(0, 6).map((post) => (
+          <div key={post.id} className="x_recent_post">
+            <img src={post.image} alt={post.title} className="x_recent_post_image" />
+            <div className="x_recent_post_content">
+              <h5 className="x_recent_post_title">{post.subject}</h5>
+              <span className="x_recent_post_date">{post.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </>
+));
 
 export default function Blog({ onSearch }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,138 +68,97 @@ export default function Blog({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  // Trigger search
-  const handleSearch = () => {
-    if (searchTerm.trim() !== "") {
-      setIsSearching(true);
-      if (onSearch) onSearch(searchTerm); // Call parent search if needed
+  const dispatch = useDispatch();
+
+  // ✅ Correct way
+  const { blogs = [], loading, error, success } = useSelector((state) => state.blog);
+
+  // fetch blogs on mount
+  useEffect(() => {
+    dispatch(getAllBlogs());
+  }, [dispatch]);
+
+  // local state for form
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    date: "",
+    subject: "",
+    message: "",
+    image: null,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (files) {
+      setFormData({ ...formData, [name]: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const blogData = new FormData();
+    blogData.append("name", formData.name);
+    blogData.append("email", formData.email);
+    blogData.append("date", formData.date);
+    blogData.append("subject", formData.subject);
+    blogData.append("message", formData.message);
+    if (formData.image) {
+      blogData.append("image", formData.image);
+    }
+
+    dispatch(createBlog(blogData));
+  };
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      handleSearch(searchTerm);
+    }, 400); // wait 400ms after typing
+    return () => clearTimeout(delay);
+  }, [searchTerm]);
+
+  // Use useCallback to memoize these functions
+  const handleSearch = useCallback((value = searchTerm) => {
+    if (value.trim() !== "") {
+      setIsSearching(true);
+      if (onSearch) onSearch(value); // pass search text to parent
+    } else {
+      setIsSearching(false);
+      if (onSearch) onSearch("");
+    }
+  }, [searchTerm, onSearch]);
+
   // Clear search
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setSearchTerm("");
     setIsSearching(false);
     if (onSearch) onSearch("");
-  };
+  }, [onSearch]);
 
-  // Sample blog data
-  const blogPosts = [
-    {
-      id: 1,
-      title: "Best Taxi Services in New York City",
-      excerpt: "Discover the top-rated taxi services that provide reliable transportation across the city that never sleeps. Our comprehensive guide covers everything from luxury rides to budget-friendly options, ensuring you find the perfect transportation solution for your needs in the Big Apple.",
-      image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=250&fit=crop",
-      date: "March 15, 2024",
-      author: "John Smith",
-      category: "Transportation"
-    },
-    {
-      id: 2,
-      title: "How to Choose the Right Taxi Service",
-      excerpt: "Essential tips and guidelines for selecting the best taxi service for your transportation needs. Learn about safety considerations, pricing factors, and how to identify reliable providers. Make informed decisions for stress-free travel experiences.",
-      image: "https://images.unsplash.com/photo-1549924231-f129b911e442?w=400&h=250&fit=crop",
-      date: "March 12, 2024",
-      author: "Sarah Johnson",
-      category: "Tips"
-    },
-    {
-      id: 3,
-      title: "Nightlife Transportation Guide",
-      excerpt: "Safe and reliable transportation options for your night out in the city. From late-night rides to special event transportation, we cover all the essential services you need for a memorable and secure nightlife experience.",
-      image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&h=250&fit=crop",
-      date: "March 10, 2024",
-      author: "Mike Wilson",
-      category: "Nightlife"
-    },
-    {
-      id: 4,
-      title: "Airport Transfer Services",
-      excerpt: "Professional airport transfer services for stress-free travel to and from airports. Our comprehensive guide covers booking tips, pricing information, and how to ensure a smooth journey from your doorstep to the terminal.",
-      image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=250&fit=crop",
-      date: "March 8, 2024",
-      author: "Lisa Brown",
-      category: "Airport"
-    },
-    {
-      id: 5,
-      title: "Corporate Transportation Solutions",
-      excerpt: "Reliable transportation services for business meetings and corporate events. From executive car services to group transportation for conferences, we provide professional solutions that enhance your business travel experience.",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop",
-      date: "March 5, 2024",
-      author: "David Lee",
-      category: "Business"
-    },
-    {
-      id: 6,
-      title: "Wedding Transportation Services",
-      excerpt: "Elegant and reliable transportation for your special day and wedding celebrations. Our wedding transportation services ensure that you and your guests arrive in style and comfort, making your wedding day truly memorable.",
-      image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=250&fit=crop",
-      date: "March 3, 2024",
-      author: "Emma Davis",
-      category: "Events"
-    },
-    {
-      id: 7,
-      title: "Luxury Car Services in Manhattan",
-      excerpt: "Experience premium luxury car services in the heart of Manhattan. From high-end sedans to limousines, our luxury fleet provides the ultimate in comfort and style for discerning clients who demand excellence.",
-      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=250&fit=crop",
-      date: "March 1, 2024",
-      author: "Robert Chen",
-      category: "Luxury"
-    },
-    {
-      id: 8,
-      title: "Group Transportation for Events",
-      excerpt: "Efficient group transportation solutions for large events and gatherings. Whether it's a corporate function, wedding, or special celebration, our group transportation services ensure everyone arrives together and on time.",
-      image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=250&fit=crop",
-      date: "February 28, 2024",
-      author: "Jennifer White",
-      category: "Events"
-    },
-    {
-      id: 9,
-      title: "Emergency Transportation Services",
-      excerpt: "24/7 emergency transportation services for urgent travel needs. Our reliable emergency services are available round the clock to provide immediate assistance when you need transportation the most.",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop",
-      date: "February 25, 2024",
-      author: "Michael Brown",
-      category: "Emergency"
-    },
-    {
-      id: 10,
-      title: "Tourist Transportation Guide",
-      excerpt: "Complete transportation guide for tourists visiting New York City. From airport transfers to sightseeing tours, discover the best transportation options to explore the city's iconic landmarks and attractions.",
-      image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=250&fit=crop",
-      date: "February 22, 2024",
-      author: "Amanda Garcia",
-      category: "Tourism"
-    },
-    {
-      id: 11,
-      title: "Business Travel Transportation",
-      excerpt: "Professional transportation services tailored for business travelers. Our business travel solutions include airport transfers, meeting transportation, and executive car services designed for the modern professional.",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop",
-      date: "February 20, 2024",
-      author: "Thomas Wilson",
-      category: "Business"
-    },
-    {
-      id: 12,
-      title: "Weekend Getaway Transportation",
-      excerpt: "Reliable transportation for weekend getaways and short trips. Whether you're heading to the airport, train station, or a nearby destination, our weekend transportation services ensure a smooth and enjoyable journey.",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
-      date: "February 18, 2024",
-      author: "Rachel Martinez",
-      category: "Weekend"
-    }
-  ];
 
+
+  const filteredPosts = Array.isArray(blogs)
+    ? blogs.filter(post => {
+      const term = searchTerm.trim().toLowerCase();
+      if (!term) return true;
+      return (
+        (post.subject && post.subject.toLowerCase().includes(term)) ||
+        (post.title && post.title.toLowerCase().includes(term)) ||
+        (post.message && post.message.toLowerCase().includes(term)) ||
+        (post.excerpt && post.excerpt.toLowerCase().includes(term)) ||
+        (post.name && post.name.toLowerCase().includes(term)) ||
+        (post.author && post.author.toLowerCase().includes(term))
+      );
+    })
+    : [];
   const postsPerPage = 4;
-  const totalPages = Math.ceil(blogPosts.length / postsPerPage);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;
   const endIndex = startIndex + postsPerPage;
-  const currentPosts = blogPosts.slice(startIndex, endIndex);
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
 
   const toggleOffcanvas = () => {
     setIsOffcanvasOpen(!isOffcanvasOpen);
@@ -150,22 +166,17 @@ export default function Blog({ onSearch }) {
 
   // Function to truncate excerpt to 15 words
   const truncateExcerpt = (text, wordLimit = 15) => {
-    const words = text.split(' ');
-    if (words.length <= wordLimit) {
-      return text;
-    }
-    return words.slice(0, wordLimit).join(' ') + '...';
+    if (!text) return "";
+    const words = text.split(" ");
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : text;
   };
 
   // Function to toggle post expansion
   const togglePostExpansion = (postId) => {
-    setExpandedPosts(prev => {
+    setExpandedPosts((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
-        newSet.add(postId);
-      }
+      if (newSet.has(postId)) newSet.delete(postId);
+      else newSet.add(postId);
       return newSet;
     });
   };
@@ -192,73 +203,6 @@ export default function Blog({ onSearch }) {
 
     return numbers;
   };
-
-  // Sidebar content component
-
-  const SidebarContent = () => (
-    <>
-      <div className="x_sidebar_widget">
-        <h4 className="x_widget_title">Search</h4>
-        <div className="x_search_bar">
-          <input
-            type="text"
-            placeholder="Search blog posts..."
-            className="x_search_input"
-            value={searchTerm}
-            onChange={(e) => {
-              // Just update the state without triggering search here
-              setSearchTerm(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSearch();
-              }
-            }}
-          />
-          <button
-            className="x_search_btn"
-            onClick={isSearching ? handleClear : handleSearch}
-          >
-            {isSearching ? (
-              <IoCloseSharp style={{ fontSize: "1.5rem", color: "#fff" }} />
-            ) : (
-              <IoSearch style={{ fontSize: "1.5rem", color: "#fff" }} />
-            )}
-          </button>
-        </div>
-      </div>
-
-      <div className="x_sidebar_widget">
-        <h4 className="x_widget_title">Categories</h4>
-        <ul className="x_category_list">
-          <li><a href="#" className="x_category_link">Transportation</a></li>
-          <li><a href="#" className="x_category_link">Tips & Guides</a></li>
-          <li><a href="#" className="x_category_link">Nightlife</a></li>
-          <li><a href="#" className="x_category_link">Airport Services</a></li>
-          <li><a href="#" className="x_category_link">Business</a></li>
-          <li><a href="#" className="x_category_link">Events</a></li>
-        </ul>
-      </div>
-
-      <div className="x_sidebar_widget">
-        <h4 className="x_widget_title">Recent Posts</h4>
-        <div className="x_recent_posts">
-          {blogPosts.slice(0, 3).map((post) => (
-            <div key={post.id} className="x_recent_post">
-              <img src={post.image} alt={post.title} className="x_recent_post_image" />
-              <div className="x_recent_post_content">
-                <h5 className="x_recent_post_title">{post.title}</h5>
-                <span className="x_recent_post_date">{post.date}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-
-    </>
-  );
 
   return (
     <div>
@@ -297,27 +241,33 @@ export default function Blog({ onSearch }) {
 
               {/* Blog Posts Grid */}
               <div className="x_blog_posts">
-                {currentPosts.map((post) => (
-                  <article key={post.id} className="x_blog_post">
+                {currentPosts.length === 0 && !loading && (
+                  <div className='d-flex justify-content-center align-items-center flex-column' style={{ height: '100px' }}>
+                    <div> <img src={nofound} style={{ width: "100px" }} /></div>
+                   <div> <p style={{ textAlign: 'center', color: '#888' }}>No blogs found.</p></div>
+                  </div>
+                )}
+                {currentPosts.length > 0 && currentPosts.map((post) => (
+                  <article key={post._id || post.id} className="x_blog_post">
                     <div className="x_post_image">
-                      <img src={post.image} alt={post.title} />
-                      <div className="x_post_category">{post.category}</div>
+                      {post.image && <img src={`http://localhost:5000/${post.image}`} alt={post.subject || post.title} />}
+                      {/* <div className="x_post_category">{post.category || "General"}</div> */}
                     </div>
                     <div className="x_post_content">
-                      <h2 className="x_post_title">{post.title}</h2>
+                      <h2 className="x_post_title">{post.subject || post.title}</h2>
                       <p className="x_post_excerpt">
-                        {expandedPosts.has(post.id) ? post.excerpt : truncateExcerpt(post.excerpt)}
+                        {expandedPosts.has(post._id || post.id) ? post.message || post.excerpt : truncateExcerpt(post.message || post.excerpt)}
                       </p>
                       <div className="x_post_meta">
                         <span className="x_post_date">{post.date}</span>
-                        <span className="x_post_author">by {post.author}</span>
+                        <span className="x_post_author">by {post.name || post.author}</span>
                       </div>
                       <div className="x_post_buttons">
                         <button
                           className="x_read_more_btn"
-                          onClick={() => togglePostExpansion(post.id)}
+                          onClick={() => togglePostExpansion(post._id || post.id)}
                         >
-                          {expandedPosts.has(post.id) ? 'Read Less' : 'Read More'}
+                          {expandedPosts.has(post._id || post.id) ? "Read Less" : "Read More"}
                         </button>
                       </div>
                     </div>
@@ -326,77 +276,132 @@ export default function Blog({ onSearch }) {
               </div>
 
               {/* Pagination */}
-              <div className="x_pagination">
-                <button
-                  className="x_pagination_btn"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <FaChevronLeft style={{ "height": "14px" }} />
-                </button>
+              {currentPosts.length > 0 && (
+                <div className="x_pagination">
+                  <button
+                    className="x_pagination_btn"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <FaChevronLeft style={{ height: "14px" }} />
+                  </button>
 
-                <div className="x_page_numbers">
-                  {getPaginationNumbers().map((page) => (
-                    <button
-                      key={page}
-                      className={`x_page_btn ${currentPage === page ? 'x_active' : ''}`}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  <div className="x_page_numbers">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        className={`x_page_btn ${currentPage === page ? "x_active" : ""}`}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    className="x_pagination_btn"
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    <FaChevronRight style={{ height: "14px" }} />
+                  </button>
                 </div>
+              )}
 
-                <button
-                  className="x_pagination_btn"
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <FaChevronRight style={{ "height": "14px" }} />
-                </button>
-              </div>
 
               {/* Contact Form */}
               <div className="x_contact_form_section">
                 <h2 className="x_form_title">Leave a Blog</h2>
                 <p className="x_form_subtitle">Pen it. Post it. Inspire others — start by completing the form below.</p>
 
-                <form className="x_contact_form">
+                <form className="x_contact_form" onSubmit={handleSubmit}>
                   <div className="x_form_row">
                     <div className="x_form_group">
-                      <input type="text" placeholder="Your Name" className="x_form_input" />
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        className="x_form_input"
+                        value={formData.name}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="x_form_group">
-                      <input type="email" placeholder="Your Email" className="x_form_input" />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Your Email"
+                        className="x_form_input"
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
                     </div>
                   </div>
 
-                  {/* New Image Field */}
                   <div className="x_form_group">
-                    <input type="file" accept="image/*" className="x_form_input" />
-                  </div>
-
-                  {/* New Date Field */}
-                  <div className="x_form_group">
-                    <input type="date" className="x_form_input" />
-                  </div>
-
-                  <div className="x_form_group">
-                    <input type="text" placeholder="Subject" className="x_form_input" />
+                    <input
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      className="x_form_input"
+                      onChange={handleChange}
+                    />
                   </div>
 
                   <div className="x_form_group">
-                    <textarea placeholder="Your Message" rows="5" className="x_form_textarea"></textarea>
+                    <input
+                      type="date"
+                      name="date"
+                      className="x_form_input"
+                      value={formData.date}
+                      onChange={handleChange}
+                    />
                   </div>
 
-                  <button type="submit" className="x_submit_btn">Share My Story</button>
+                  <div className="x_form_group">
+                    <input
+                      type="text"
+                      name="subject"
+                      placeholder="Subject"
+                      className="x_form_input"
+                      value={formData.subject}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="x_form_group">
+                    <textarea
+                      name="message"
+                      placeholder="Your Message"
+                      rows="5"
+                      className="x_form_textarea"
+                      value={formData.message}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+
+                  <button type="submit" className="x_submit_btn" disabled={loading}>
+                    {loading ? "Submitting..." : "Share My Story"}
+                  </button>
+
+                  {success && <p style={{ color: "green" }}>Blog created successfully!</p>}
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                 </form>
+
               </div>
             </div>
 
             {/* Sidebar - Displayed by default above 991px */}
             <div className="x_blog_sidebar">
-              <SidebarContent />
+              <SidebarContent
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                setCurrentPage={setCurrentPage}
+                isSearching={isSearching}
+                handleSearch={handleSearch}
+                handleClear={handleClear}
+                blogPosts={[...blogs].reverse().slice(0, 6)} // <-- Show last 6 blogs from API
+              />
             </div>
           </div>
 
@@ -411,7 +416,15 @@ export default function Blog({ onSearch }) {
             </div>
 
             <div className="x_offcanvas_content">
-              <SidebarContent />
+              <SidebarContent
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                setCurrentPage={setCurrentPage}
+                isSearching={isSearching}
+                handleSearch={handleSearch}
+                handleClear={handleClear}
+                blogPosts={[...blogs].reverse().slice(0, 6)} // <-- Show last 6 blogs from API
+              />
             </div>
           </div>
 

@@ -139,6 +139,7 @@ body {
   color: #0f6e55;
 }
 
+/* Desktop dropdown */
 .x_profile_dropdown {
   position: absolute;
   right: 0;
@@ -153,6 +154,42 @@ body {
   /* above any page section */
 }
 
+/* Accordion style for mobile/offcanvas */
+@media (max-width: 850px) {
+  .x_profile_dropdown.x_profile_dropdown-accordion {
+    position: static;
+    min-width: unset;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    border: none;
+    background: #f9f9f9;
+    padding: 0;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+     transition: max-height 0.4s ease-in-out, padding 0.3s ease;
+  }
+  .x_profile_item {
+    border-radius: 0;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    padding: 14px 18px;
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    transition: background 0.2s, color 0.2s;
+  }
+  .x_profile_item:last-child {
+    border-bottom: none;
+  }
+  .x_profile_item:hover {
+    background: #e6f7f3;
+    color: #0f6e55;
+  }
+}
+
 .x_profile_item {
   width: 100%;
   text-align: left;
@@ -160,7 +197,7 @@ body {
   border: none;
   padding: 10px 12px;
   border-radius: 8px;
-  color: #333;
+  color: #5f5b5b;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }

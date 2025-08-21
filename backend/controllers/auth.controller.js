@@ -115,8 +115,13 @@ exports.login = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   try {
-    const { phone } = req.body;
-    const user = await User.findOne({ phone });
+    var { phone } = req.body;
+    console.log("Received phone number:", phone);
+    
+    const newphone = '+91' + phone;
+    var phone = newphone;
+    console.log("Formatted phone number for Twilio:", newphone);
+    const user = await User.findOne({ phone});
     if (!user) return res.status(404).json({ message: 'User with this phone not found' });
 
     const otp = Math.floor(100000 + Math.random() * 900000);
@@ -155,7 +160,9 @@ exports.forgotPassword = async (req, res) => {
  */
 exports.verifyOtp = async (req, res) => {
   try {
-    const { phone, otp } = req.body;
+    var { phone, otp } = req.body;
+    const newphone = '+91' + phone;
+    var phone = newphone;
     const user = await User.findOne({ phone });
     if (!user || !user.otp) return res.status(400).json({ message: 'OTP not found. Please request again.' });
     if (Date.now() > user.otpExpires) {
@@ -182,8 +189,9 @@ exports.verifyOtp = async (req, res) => {
  */
 exports.resetPassword = async (req, res) => {
   try {
-    const { phone, otp, newPassword, confirmPassword } = req.body;
-
+    var { phone, otp, newPassword, confirmPassword } = req.body;
+const newphone = '+91' + phone;
+    var phone = newphone;
     // Check if newPassword and confirmPassword match
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: 'New password and confirm password do not match.' });

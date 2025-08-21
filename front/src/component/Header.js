@@ -18,6 +18,14 @@ import "../style/x_app.css";
 import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword } from "../redux/slice/auth.slice";
 
 export default function Header() {
+  // Generic input change handler for all formData fields
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
   const dispatch = useDispatch();
   const { loading } = useSelector((s) => s.auth || {});
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,6 +49,7 @@ export default function Header() {
   });
   const location = useLocation();
   const navigate = useNavigate();
+const isAuthenticated = !!localStorage.getItem("token");
 
   // Close menu when screen is resized above 850px
   useEffect(() => {
@@ -123,22 +132,31 @@ export default function Header() {
   const closeProfileMenu = () => setProfileOpen(false);
 
   // Dropdown actions
+  // Helper to close menu if mobile/offcanvas
+  const closeMenuIfMobile = () => {
+    if (window.innerWidth <= 850) {
+      setMenuOpen(false);
+    }
+  };
+
   const onClickSignIn = (e) => {
     e.preventDefault();
     closeProfileMenu();
-    // Open login modal locally without navigation
+    closeMenuIfMobile();
     setShowLoginModal(true);
   };
 
   const onClickMyProfile = (e) => {
     e.preventDefault();
     closeProfileMenu();
+    closeMenuIfMobile();
     handleLinkClick();
     navigate('/pages');
   };
   const onClickFaq = (e) => {
     e.preventDefault();
     closeProfileMenu();
+    closeMenuIfMobile();
     handleLinkClick();
     navigate('/faq');
   };
@@ -146,6 +164,7 @@ export default function Header() {
   const onClickLogout = (e) => {
     e.preventDefault();
     closeProfileMenu();
+    closeMenuIfMobile();
     setShowLogoutModal(true); // open modal instead of direct logout
   };
 
@@ -153,23 +172,39 @@ export default function Header() {
     setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
 
+  const resetLoginForm = () => setLoginForm({ email: '', password: '' });
+  const resetFormData = () => setFormData({
+    email: '', phone: '', password: '', role: 'user', confirmPassword: '', otp: '', newPassword: '', confirmNewPassword: ''
+  });
+
+  const closeLoginModal = () => {
+    setShowLoginModal(false);
+    resetLoginForm();
+  };
+
+  const closeAllModals = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(false);
+    setShowForgotModal(false);
+    setShowOtpVerifyModal(false);
+    setShowResetPasswordModal(false);
+    resetFormData();
+    resetLoginForm();
+  };
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser(loginForm))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log('Login successful:', res);
         setShowLoginModal(false);
+        resetLoginForm();
       })
       .catch((err) => {
+        console.log('Login error:', err);
         alert(err || 'Login failed');
       });
-  };
-
-  const closeLoginModal = () => setShowLoginModal(false);
-
-  // Shared handlers for other forms
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleRegister = (e) => {
@@ -183,11 +218,14 @@ export default function Header() {
     };
     dispatch(registerUser(payload))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log('Registration successful:', res);
         setShowRegisterModal(false);
         setShowLoginModal(true);
+        resetFormData();
       })
       .catch((err) => {
+        console.log('Registration error:', err);
         alert(err || 'Registration failed');
       });
   };
@@ -196,6 +234,7 @@ export default function Header() {
     e.preventDefault();
     setShowLoginModal(false);
     setShowForgotModal(true);
+    resetFormData();
   };
 
   const handleSendOtp = () => {
@@ -205,22 +244,32 @@ export default function Header() {
     }
     dispatch(forgotPassword(formData.phone))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log('OTP sent successfully:', res);
         setShowForgotModal(false);
         setShowOtpVerifyModal(true);
+        setFormData((prev) => ({ ...prev, otp: '' }));
       })
-      .catch((err) => alert(err || 'Failed to send OTP'));
+      .catch((err) => {
+        console.log('OTP send error:', err);
+        alert(err || 'Failed to send OTP');
+      });
   };
 
   const handleOtpVerification = (e) => {
     e.preventDefault();
     dispatch(verifyOTP({ phone: formData.phone, otp: formData.otp }))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log('OTP verified successfully:', res);
         setShowOtpVerifyModal(false);
         setShowResetPasswordModal(true);
+        setFormData((prev) => ({ ...prev, newPassword: '', confirmNewPassword: '' }));
       })
-      .catch((err) => alert(err || 'Invalid OTP'));
+      .catch((err) => {
+        console.log('OTP verification error:', err);
+        alert(err || 'Invalid OTP');
+      });
   };
 
   const handlePasswordReset = (e) => {
@@ -237,28 +286,23 @@ export default function Header() {
     };
     dispatch(resetPassword(resetPayload))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log('Password reset successful:', res);
         setShowResetPasswordModal(false);
         setShowLoginModal(true);
+        resetFormData();
       })
-      .catch((err) => alert(err || 'Failed to reset password'));
-  };
-
-  const closeAllModals = () => {
-    setShowLoginModal(false);
-    setShowRegisterModal(false);
-    setShowForgotModal(false);
-    setShowOtpVerifyModal(false);
-    setShowResetPasswordModal(false);
-    setFormData({
-      email: '', phone: '', password: '', role: 'user', confirmPassword: '', otp: '', newPassword: '', confirmNewPassword: ''
-    });
+      .catch((err) => {
+        console.log('Password reset error:', err);
+        alert(err || 'Failed to reset password');
+      });
   };
 
   // Toggle menu function
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(!menuOpen);    
   };
+  
 
   return (
     <header>
@@ -301,12 +345,23 @@ export default function Header() {
             <Link to="/contact" onClick={handleLinkClick} className={isActive("/contact") ? "active" : ""}>Contact</Link>
             <div className={`x_profile ${profileOpen ? 'x_open' : ''}`}>
               <a href="#" className={`x_profile_btn ${isActive('/pages') ? 'active' : ''}`} onClick={toggleProfileMenu}>Profile ▾</a>
+              {/* Accordion style for mobile/offcanvas */}
               {profileOpen && (
-                <div className="x_profile_dropdown">
-                  <button className="x_profile_item" onClick={onClickSignIn}>Sign In</button>
+                <div className={`x_profile_dropdown${window.innerWidth <= 850 ? ' x_profile_dropdown-accordion' : ''}`}>
+                  {/* <button className="x_profile_item" onClick={onClickSignIn}>Sign In</button>
                   <button className="x_profile_item" onClick={onClickMyProfile}>My Profile</button>
                   <button className="x_profile_item" onClick={onClickFaq}>FAQ's</button>
-                  <button className="x_profile_item" onClick={onClickLogout}>Logout</button>
+                  <button className="x_profile_item" onClick={onClickLogout}>Logout</button> */}
+                      {!isAuthenticated && (
+                    <button className="x_profile_item" onClick={onClickSignIn}><FaSignInAlt style={{marginRight:8}}/>Sign In</button>
+                  )}
+                  <button className="x_profile_item" onClick={onClickMyProfile}><FaUserPlus style={{marginRight:8}}/>My Profile</button>
+                  <button className="x_profile_item" onClick={onClickFaq}><FaFacebookF style={{marginRight:8}}/>FAQ's</button>
+                  {/* Show Logout only if authenticated */}
+                  {isAuthenticated && (
+                    <button className="x_profile_item" onClick={onClickLogout}><FaTimes style={{marginRight:8}}/>Logout</button>
+                  )}
+                  
                 </div>
               )}
             </div>
