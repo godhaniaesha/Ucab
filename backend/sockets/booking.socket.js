@@ -101,7 +101,6 @@ async function findNearbyDrivers(
             }))
           );
         }
-
         return driversWithLocation;
       }
     }
