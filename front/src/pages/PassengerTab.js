@@ -10,7 +10,9 @@ import P_MyAccountContent from "./passengerTabs/MyAccountContent";
 import '../style/tab.css';
 
 export default function PassengerTab() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("passengerActiveTab") || "dashboard"
+  );
   const [rideRequest, setRideRequest] = useState(null);
   const [currentTrip, setCurrentTrip] = useState(null);
   const [isTripActive, setIsTripActive] = useState(false);
@@ -30,7 +32,10 @@ export default function PassengerTab() {
     otpExpires: null,
   });
 
-  // Simulate ride request for passenger
+  // Simulate  // ✅ Persist active tab in localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("passengerActiveTab", activeTab);
+  }, [activeTab]); 
   useEffect(() => {
     let requestTimeout;
     if (!rideRequest && !isTripActive) {

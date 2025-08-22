@@ -187,7 +187,10 @@ exports.driverCancelBooking = async (req, res) => {
     }
 
     // 🔹 Check driver is owner of this booking
-    if (!booking.assignedDriver || booking.assignedDriver.toString() !== driverId) {
+    if (
+      !booking.assignedDriver ||
+      booking.assignedDriver.toString() !== driverId
+    ) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -258,13 +261,20 @@ exports.completeBooking = async (req, res) => {
     }
 
     if (booking.status !== BOOKING_STATUS.IN_PROGRESS) {
-      return res.status(400).json({ message: "Trip not started or already completed" });
+      return res
+        .status(400)
+        .json({ message: "Trip not started or already completed" });
     }
 
     const [dropLng, dropLat] = booking.drop.location.coordinates;
     const [driverLng, driverLat] = coordinates;
 
-    const distanceKm = haversineDistance(driverLat, driverLng, dropLat, dropLng);
+    const distanceKm = haversineDistance(
+      driverLat,
+      driverLng,
+      dropLat,
+      dropLng
+    );
 
     if (distanceKm <= 0.2) {
       booking.status = BOOKING_STATUS.PENDING_COMPLETION;
@@ -281,15 +291,20 @@ exports.completeBooking = async (req, res) => {
       await Payment.create({
         booking: bookingId,
         amount: driverAmount,
-        status: 'completed',
+        status: "completed",
         payoutTo: driverId,
-        payoutType: 'driver',
+        payoutType: "driver",
         transactionId: `DRIVER_${Date.now()}`,
         completedAt: new Date(),
-        ownerCommission: ownerAmount
+        ownerCommission: ownerAmount,
       });
 
-      return res.json({ message: "Booking completed and driver paid", booking, driverAmount, ownerAmount });
+      return res.json({
+        message: "Booking completed and driver paid",
+        booking,
+        driverAmount,
+        ownerAmount,
+      });
     } else {
       return res.status(400).json({
         message: "Driver is too far from drop-off location to complete booking",
@@ -298,7 +313,9 @@ exports.completeBooking = async (req, res) => {
     }
   } catch (err) {
     console.error("completeBooking error", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: err.message });
   }
 };
 
@@ -317,7 +334,16 @@ exports.getHistory = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    let { name, email, phone, role, status, documentsVerified, bankDetails, paymentMethods } = req.body;
+    let {
+      name,
+      email,
+      phone,
+      role,
+      status,
+      documentsVerified,
+      bankDetails,
+      paymentMethods,
+    } = req.body;
 
     const updateData = {};
 
@@ -328,7 +354,8 @@ exports.updateProfile = async (req, res) => {
     if (role) updateData.role = role;
     if (status) updateData.status = status;
     if (documentsVerified !== undefined) {
-      updateData.documentsVerified = documentsVerified === "true" || documentsVerified === true;
+      updateData.documentsVerified =
+        documentsVerified === "true" || documentsVerified === true;
     }
 
     // Profile image
@@ -339,14 +366,20 @@ exports.updateProfile = async (req, res) => {
           const fs = require("fs");
           const path = require("path");
           const oldImagePath = existingUser.profileImage.split("/uploads/")[1];
-          const oldImageFullPath = path.join(__dirname, "../uploads", oldImagePath);
+          const oldImageFullPath = path.join(
+            __dirname,
+            "../uploads",
+            oldImagePath
+          );
           if (fs.existsSync(oldImageFullPath)) fs.unlinkSync(oldImageFullPath);
         } catch (error) {
           console.error("Error deleting old profile image:", error);
         }
       }
 
-      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${req.files.profileImage[0].filename}`;
+      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${
+        req.files.profileImage[0].filename
+      }`;
     }
 
     // Parse JSON fields if present
@@ -365,7 +398,9 @@ exports.updateProfile = async (req, res) => {
         if (Array.isArray(parsedPayments)) {
           updateData.paymentMethods = parsedPayments.map((method) => ({
             ...method,
-            last4: method.cardNumber ? method.cardNumber.slice(-4) : method.last4 || "",
+            last4: method.cardNumber
+              ? method.cardNumber.slice(-4)
+              : method.last4 || "",
             cardNumber: undefined,
           }));
         }
@@ -375,7 +410,9 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Update in DB
-    const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
 
     res.json({
       message: "Profile updated",
@@ -390,53 +427,51 @@ exports.getDriverStats = async (req, res) => {
   try {
     const driverId = req.user.id;
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
 
-    // Get total completed rides
+    // Total completed rides
     const totalRides = await Booking.countDocuments({
       assignedDriver: driverId,
-      status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] }
+      status: { $in: ["completed", "pending_completion"] },
     });
 
-    // Get today's rides 
+    // Today's rides
     const todayRides = await Booking.countDocuments({
       assignedDriver: driverId,
-      status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] },
-      completedAt: {
-        $gte: today
-      }
+      status: { $in: ["completed", "pending_completion"] },
+      updatedAt: { $gte: today },
     });
 
-    // Get total earnings
-    const earnings = await Booking.aggregate([
-      {
-        $match: {
-          assignedDriver: driverId,
-          status: { $in: [BOOKING_STATUS.COMPLETED, BOOKING_STATUS.PENDING_COMPLETION] }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalEarnings: {
-            $sum: {
-              $multiply: ["$fare", 0.8] // 80% of fare
-            }
-          }
-        }
-      }
-    ]);
+    const driverRides = await Booking.find({ assignedDriver: driverId });
+    const hasCompletedOrPending = driverRides.some(
+      (ride) =>
+        ride.status === "completed" || ride.status === "pending_completion"
+    );
 
-    const totalEarnings = earnings.length > 0 ? earnings[0].totalEarnings : 0;
+    let totalEarnings = 0;
+
+    if (hasCompletedOrPending) {
+      totalEarnings = driverRides
+        .filter(
+          (ride) =>
+            ride.status === "completed" || ride.status === "pending_completion"
+        )
+        .reduce((sum, ride) => sum + ride.fare * 0.8, 0); // 80% of fare
+    }
+
+    // 2 decimal places
+    totalEarnings = Number(totalEarnings.toFixed(2));
+
 
     return res.json({
       totalRides,
-      todayRides, 
-      totalEarnings
+      todayRides,
+      totalEarnings,
     });
-
   } catch (err) {
     console.error("Error getting driver stats:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: err.message });
   }
 };

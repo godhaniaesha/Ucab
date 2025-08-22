@@ -2325,7 +2325,7 @@ body {
 }
 
 .x_card:hover {
-  transform: translateY(-10px) scale(1.01);
+  transform: translateY(-1px) scale(1.01);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
@@ -3377,7 +3377,7 @@ body {
 
 /* Header */
 .tx_header {
-  background: url("https://electroneek.com/_next/image/?url=%2Faccess%2Fimg%2Fpage%2Flegal%2Fbg_legal.jpg&w=3840&q=75");
+  background: url("https://www.amd.com/content/dam/amd/en/images/backgrounds/abstract/2909511-solutions-background.jpg");
   background-size: cover;
   background-position: center;
   padding: 80px 20px;
@@ -3503,5 +3503,20 @@ body {
     padding: 20px 0px;
   }
 }
+.x_profile_header_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
+.x_edit_icon {
+  font-size: 20px;
+  color: #0f6e55;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.x_edit_icon:hover {
+  color: #0c5a45;
+}
 /* Terms & ConditionsPage end */

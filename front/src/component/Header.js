@@ -71,31 +71,35 @@ export default function Header() {
   }, []);
 
   // Close menu/profile when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const clickedInsideMenu = event.target.closest('.x_menu') || event.target.closest('.x_filter-btn');
-      if (menuOpen && !clickedInsideMenu) {
-        setMenuOpen(false);
-      }
-      const clickedInsideProfile = event.target.closest('.x_profile');
-      if (profileOpen && !clickedInsideProfile) {
-        setProfileOpen(false);
-      }
-    };
-
-    if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      // Prevent body scroll when menu is open
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+ useEffect(() => {
+  const handleClickOutside = (event) => {
+    // For menu
+    const clickedInsideMenu = event.target.closest('.x_menu') || event.target.closest('.x_filter-btn');
+    if (menuOpen && !clickedInsideMenu) {
+      setMenuOpen(false);
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
-    };
-  }, [menuOpen]);
+    // For profile dropdown
+    const clickedInsideProfile = event.target.closest('.x_profile');
+    if (profileOpen && !clickedInsideProfile) {
+      setProfileOpen(false);
+    }
+  };
+
+  if (menuOpen || profileOpen) {
+    document.addEventListener('mousedown', handleClickOutside);
+    // Prevent scroll if menu is open
+    if (menuOpen) document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+    document.body.style.overflow = 'unset';
+  };
+}, [menuOpen, profileOpen]);
+
 
   // Active link checker
   const isActive = (path) => {
@@ -110,8 +114,14 @@ export default function Header() {
     if (window.innerWidth <= 850) {
       setMenuOpen(false);
     }
+    
   };
-
+const handleLinktaxiClick = () => {
+    if (window.innerWidth <= 850) {
+      setMenuOpen(false);
+    }
+    window.location.href = '/taxi'
+  }
   // Handle Pages link click to show login modal (navigate to /pages then open modal)
   const handlePagesClick = (e) => {
     e.preventDefault();
@@ -399,12 +409,12 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <button className="x_book-btn x_mobile-book-btn" onClick={handleLinkClick}>BOOK A TAXI</button>
+            <button className="x_book-btn x_mobile-book-btn" onClick={handleLinktaxiClick} >BOOK A TAXI</button>
           </nav>
 
           {/* Right Actions */}
           <div className="x_actions">
-            <button className="x_book-btn x_desktop-book-btn">BOOK A TAXI</button>
+            <button className="x_book-btn x_desktop-book-btn" onClick={() => window.location.href = '/taxi'}>BOOK A TAXI</button>
             <button className="x_filter-btn" onClick={toggleMenu}>☰</button>
           </div>
         </div>

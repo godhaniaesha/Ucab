@@ -23,48 +23,51 @@ const D_NewRideRequestContent = () => {
     dispatch(checkNewRequests());
     dispatch(getHistory());
   }, [dispatch]);
-
+// Re-fetch data whenever a success occurs
+useEffect(() => {
+  if (success) {
+    dispatch(checkNewRequests());
+    dispatch(cancelBooking());
+    dispatch(getHistory());
+  }
+}, [success, dispatch]);
   // Show error toast
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
+ 
+
+ const handleStartTrip = (id) => {
+  if (!navigator.geolocation) {
+    toast.error("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const coordinates = [
+        position.coords.longitude,
+        position.coords.latitude,
+      ];
+
+      dispatch(startTrip({ id, coordinates }))
+        .unwrap()
+        .then(() => {
+          toast.success("Trip started successfully 🚖");
+          localStorage.setItem("driverActiveTab", "active-ride");
+
+          // Update active tab in state and localStorage
+          
+        })
+        .catch((err) => {
+          localStorage.setItem("driverActiveTab", "trip-history");
+          toast.error(err || "Failed to start trip");
+        });
+    },
+    () => {
+      localStorage.setItem("driverActiveTab", "trip-history");
+
+      toast.error("Unable to fetch location");
     }
-  }, [error]);
-
-  // Show success toast
-  useEffect(() => {
-    if (success) {
-      toast.success("Action completed successfully!");
-    }
-  }, [success]);
-
-  const handleStartTrip = (id) => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation not supported");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coordinates = [
-          position.coords.longitude,
-          position.coords.latitude,
-        ];
-
-        dispatch(startTrip({ id, coordinates }))
-          .unwrap()
-          .then(() => {
-            toast.success("Trip started successfully 🚖");
-          })
-          .catch((err) => {
-            toast.error(err || "Failed to start trip");
-          });
-      },
-      () => {
-        toast.error("Unable to fetch location");
-      }
-    );
-  };
+  );
+};
 
   const requests = [...pendingRequests, ...acceptedRequests];
 
@@ -146,8 +149,13 @@ const D_NewRideRequestContent = () => {
               <>
                 <button
                   className="btn btn-danger px-4 py-2 rounded-2 fw-semibold"
-                  onClick={() => dispatch(cancelBooking(rideRequest._id))}
-                >
+                  onClick={() => {
+    dispatch(cancelBooking(rideRequest._id))
+      .unwrap()
+      .then(() => {
+        localStorage.setItem("driverActiveTab", "trip-history");
+      });
+  }}                >
                   Decline
                 </button>
                 <button

@@ -500,27 +500,6 @@ export default function Home({ car }) {
             />
           </div>
 
-          <div className="form_group">
-            <FaCalendarAlt />
-            <input
-              type="date"
-              className="date-input"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form_group">
-            <FaClock />
-            <input
-              type="time"
-              className="time-input"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              required
-            />
-          </div>
 
           <div className="z_book_btn">
             <button className="book_btn" type="submit" disabled={loading}>
@@ -569,8 +548,7 @@ export default function Home({ car }) {
               <li>✔ Affordable pricing with no hidden charges</li>
               <li>✔ Experienced & verified drivers</li>
             </ul>
-            <button className="z_about_btn">Book Now</button>
-          </div>
+            <button className="z_about_btn" onClick={() => window.location.href = '/about'}>Read more</button>          </div>
         </div>
       </section>
 
@@ -788,7 +766,7 @@ export default function Home({ car }) {
               <span className="x_or_text">OR</span>
               <span className="x_separator_line"></span>
             </div>
-            <button className="x_book_online_btn">Book Online</button>
+            <button className="x_book_online_btn" onClick={() => window.location.href = '/taxi'}>Book Online</button>
           </div>
         </div>
       </section>
@@ -806,71 +784,65 @@ export default function Home({ car }) {
             </p>
           </div>
 
-          <div className="z_service_grid">
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">Deals For Every Budget</h3>
-              <p className="z_service_card_description">
+          <div class="z_service_grid">
+            {/* <!-- Service Card 1 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Deals For Every Budget</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
 
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">Cleanliness & Comfort</h3>
-              <p className="z_service_card_description">
+            {/* <!-- Service Card 2 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Cleanliness & Comfort</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
 
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">Best Prices Garanteed</h3>
-              <p className="z_service_card_description">
+            {/* <!-- Service Card 3 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Best Prices Garanteed</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
 
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">24/7 Order Available</h3>
-              <p className="z_service_card_description">
+            {/* <!-- Service Card 4 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">24/7 Order Available</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
 
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">Professional Drivers</h3>
-              <p className="z_service_card_description">
+            {/* <!-- Service Card 5 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Professional Drivers</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
 
-            <div className="z_service_card">
-              <h3 className="z_service_card_title">Fast Car Delivery</h3>
-              <p className="z_service_card_description">
+            {/* <!-- Service Card 6 --> */}
+            <div class="z_service_card">
+              <h3 class="z_service_card_title">Fast Car Delivery</h3>
+              <p class="z_service_card_description mb-0">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" className="z_service_view_more">
-                View More
-              </a>
+             
             </div>
           </div>
         </div>
