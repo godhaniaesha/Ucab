@@ -17,6 +17,7 @@ import { LuAlarmClock } from "react-icons/lu";
 import "../style/x_app.css";
 import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword } from "../redux/slice/auth.slice";
 
+
 export default function Header() {
   // Generic input change handler for all formData fields
   const handleInputChange = (e) => {
@@ -49,7 +50,7 @@ export default function Header() {
   });
   const location = useLocation();
   const navigate = useNavigate();
-const isAuthenticated = !!localStorage.getItem("token");
+  const isAuthenticated = !!localStorage.getItem("token");
 
   // Close menu when screen is resized above 850px
   useEffect(() => {
@@ -151,7 +152,26 @@ const isAuthenticated = !!localStorage.getItem("token");
     closeProfileMenu();
     closeMenuIfMobile();
     handleLinkClick();
-    navigate('/pages');
+    // Get token from localStorage and decode to get role
+    const token = localStorage.getItem("token");
+    let user = null;
+    if (token) {
+      try {
+      // JWT format: header.payload.signature
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      user = { role: payload.role };
+      console.log("Decoded user from token:", user);
+      } catch (err) {
+      user = null;
+      }
+    }
+    if (user?.role === "driver") {
+      navigate("/tab");
+    } else if (user?.role === "passenger") {
+      navigate("/PassengerTab");
+    } else {
+      navigate("/SuperAdminTab");
+    }
   };
   const onClickFaq = (e) => {
     e.preventDefault();
@@ -300,9 +320,9 @@ const isAuthenticated = !!localStorage.getItem("token");
 
   // Toggle menu function
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);    
+    setMenuOpen(!menuOpen);
   };
-  
+
 
   return (
     <header>
@@ -348,20 +368,17 @@ const isAuthenticated = !!localStorage.getItem("token");
               {/* Accordion style for mobile/offcanvas */}
               {profileOpen && (
                 <div className={`x_profile_dropdown${window.innerWidth <= 850 ? ' x_profile_dropdown-accordion' : ''}`}>
-                  {/* <button className="x_profile_item" onClick={onClickSignIn}>Sign In</button>
-                  <button className="x_profile_item" onClick={onClickMyProfile}>My Profile</button>
-                  <button className="x_profile_item" onClick={onClickFaq}>FAQ's</button>
-                  <button className="x_profile_item" onClick={onClickLogout}>Logout</button> */}
-                      {!isAuthenticated && (
-                    <button className="x_profile_item" onClick={onClickSignIn}><FaSignInAlt style={{marginRight:8}}/>Sign In</button>
+
+                  {!isAuthenticated && (
+                    <button className="x_profile_item" onClick={onClickSignIn}><FaSignInAlt style={{ marginRight: 8 }} />Sign In</button>
                   )}
-                  <button className="x_profile_item" onClick={onClickMyProfile}><FaUserPlus style={{marginRight:8}}/>My Profile</button>
-                  <button className="x_profile_item" onClick={onClickFaq}><FaFacebookF style={{marginRight:8}}/>FAQ's</button>
+                  <button className="x_profile_item" onClick={onClickMyProfile}><FaUserPlus style={{ marginRight: 8 }} />My Profile</button>
+                  <button className="x_profile_item" onClick={onClickFaq}><FaFacebookF style={{ marginRight: 8 }} />FAQ's</button>
                   {/* Show Logout only if authenticated */}
                   {isAuthenticated && (
-                    <button className="x_profile_item" onClick={onClickLogout}><FaTimes style={{marginRight:8}}/>Logout</button>
+                    <button className="x_profile_item" onClick={onClickLogout}><FaTimes style={{ marginRight: 8 }} />Logout</button>
                   )}
-                  
+
                 </div>
               )}
             </div>
@@ -394,7 +411,7 @@ const isAuthenticated = !!localStorage.getItem("token");
                 <label>Password</label>
                 <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} required placeholder="Enter your password" />
               </div>
-                <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
+              <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
               <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Login'}</button>
               <div className="x_modal_links">
                 <button type="button" className="x_link_btn text-decoration-none" onClick={() => { setShowLoginModal(false); setShowRegisterModal(true); }}>Don't have account? Register</button>

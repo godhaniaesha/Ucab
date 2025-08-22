@@ -11,7 +11,7 @@ const D_TripHistoryContent = () => {
   }, [dispatch]);
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light d-flex flex-column h-100">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light d-flex flex-column h-100">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">Trip History</h2>
       <p className="text-secondary leading-normal mb-lg-3 mb-1">
         Review details of all your past completed rides. You can filter by date or passenger.

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getActiveBooking, completeBooking } from "../../redux/slice/driver.slice";
+import trip from "../../image/notrip.png";
 
 const D_ActiveRideContent = ({ onStartTrip }) => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const D_ActiveRideContent = ({ onStartTrip }) => {
   // 🔹 Loading state
   if (loading) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
         <p className="text-primary">Fetching active booking...</p>
       </div>
     );
@@ -32,7 +33,7 @@ const D_ActiveRideContent = ({ onStartTrip }) => {
   // 🔹 Error state
   if (error) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
         <p className="text-danger">⚠ {error}</p>
       </div>
     );
@@ -41,7 +42,8 @@ const D_ActiveRideContent = ({ onStartTrip }) => {
   // 🔹 No Active Trip
   if (!currentTrip) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center d-flex flex-column align-items-center justify-content-center">
+        <img src={trip} style={{width:"150px", marginBottom:"10px"}}></img>
         <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">No Active Trip</h2>
         <p className="text-secondary leading-normal">
           You don't have an active trip right now. Accept a new request to get
@@ -55,7 +57,7 @@ const D_ActiveRideContent = ({ onStartTrip }) => {
   const isEnRouteDropoff = currentTrip.status === "on_trip";
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">Active Ride</h2>
       <p className="text-secondary leading-normal mb-lg-4 mb-md-2 mb-1">
         {isEnRoutePickup &&

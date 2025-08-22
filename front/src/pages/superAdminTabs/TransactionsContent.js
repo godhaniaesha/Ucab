@@ -26,7 +26,7 @@ export default function SA_TransactionsContent() {
   };
 
   return (
-    <div className="d_tab_page p-3 bg-white rounded-3 border border-light w-100">
+    <div className="d_tab_page w-100 h-100 p-3 bg-white rounded-3 border border-light w-100">
       {/* Header */}
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">

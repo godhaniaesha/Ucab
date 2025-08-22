@@ -68,7 +68,7 @@ export default function SuperAdminTab() {
         style={{ backgroundColor: "#e0f2f1" }}
       >
         <div
-          className="d_main_content_wrapper w-100 bg-white rounded-4 shadow-lg d-flex flex-column flex-lg-row overflow-hidden"
+          className="d_main_content_wrapper w-100 bg-white rounded-3 shadow-lg d-flex flex-column flex-lg-row overflow-hidden"
           style={{ maxWidth: "1200px", minHeight: "500px" }}
         >
           {/* Sidebar */}

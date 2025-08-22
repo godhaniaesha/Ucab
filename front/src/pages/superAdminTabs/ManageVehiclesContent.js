@@ -38,7 +38,7 @@ export default function SA_ManageVehiclesContent() {
   };
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 border border-light shadow-sm w-100">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 border border-light shadow-sm w-100">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>

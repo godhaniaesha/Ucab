@@ -42,7 +42,7 @@ function App() {
           <Route path="/HomeSlide" element={<HomeSlide />} />
 
           <Route path="/admin" element={<AdminLayout />}></Route>
-          <Route path="/tab" element={<Tab />} />
+          <Route path="/tab" element={<Main><Tab /></Main>} />
           <Route path="/SuperAdminTab" element={<SuperAdminTab />} />
           <Route path="/PassengerTab" element={<PassengerTab />} />
         </Routes>

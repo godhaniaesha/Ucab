@@ -3,7 +3,10 @@ import { useDispatch } from "react-redux";
 import { setAvailability, updateLocation } from "../../redux/slice/driver.slice";
 
 const D_AvailabilityContent = ({ setHasNewRequest, isTripActive }) => {
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(() => {
+    const stored = localStorage.getItem("driver_isOnline");
+    return stored === "true";
+  });
   const dispatch = useDispatch();
   const locationIntervalRef = useRef(null);
 
@@ -28,7 +31,8 @@ const D_AvailabilityContent = ({ setHasNewRequest, isTripActive }) => {
   // Handle switch toggle
   const handleToggle = async (e) => {
     const online = e.target.checked;
-    setIsOnline(online);
+  setIsOnline(online);
+  localStorage.setItem("driver_isOnline", online);
 
     // Update availability status
     dispatch(setAvailability({ available: online }));
@@ -55,8 +59,16 @@ const D_AvailabilityContent = ({ setHasNewRequest, isTripActive }) => {
   };
 
   // Stop location updates if trip is active or component unmounts
+  
+  // On mount, sync isOnline from localStorage (in case of navigation)
   useEffect(() => {
-    if (isTripActive && locationIntervalRef.current) {
+    const stored = localStorage.getItem("driver_isOnline");
+    if (stored !== null) {
+      setIsOnline(stored === "true");
+    }
+  }, []);
+  useEffect(() => {  
+  if (isTripActive && locationIntervalRef.current) {
       clearInterval(locationIntervalRef.current);
       locationIntervalRef.current = null;
     }
@@ -68,7 +80,7 @@ const D_AvailabilityContent = ({ setHasNewRequest, isTripActive }) => {
   }, [isTripActive]);
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
         Availability Control
       </h2>

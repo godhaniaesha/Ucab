@@ -40,7 +40,7 @@ const D_MyAccountContent = ({ userData, onSave }) => {
   };
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1"> My Account</h2>
       <Pages></Pages>
     </div>

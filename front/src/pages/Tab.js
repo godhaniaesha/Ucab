@@ -204,11 +204,11 @@ export default function Tab() {
 
       {/* Main App Container */}
       <div
-        className="d_app_container d_driver_tab container-fluid min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5"
+        className="d_app_container d_driver_tab container-fluid  d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5"
         style={{ backgroundColor: "#e0f2f1" }}
       >
         <div
-          className="d_main_content_wrapper w-100 bg-white rounded-4 shadow-lg d-flex flex-column flex-lg-row overflow-hidden"
+          className="d_main_content_wrapper w-100 bg-white rounded-3  shadow-lg d-flex flex-column flex-lg-row overflow-hidden"
           style={{ maxWidth: "1200px", minHeight: "600px" }}
         >
           {/* Left Navigation Sidebar */}
@@ -319,7 +319,7 @@ export default function Tab() {
           </div>
 
           {/* Right Tab Content Area */}
-          <div className="d_content_area flex-grow-1 p-2 p-md-3 p-lg-4 bg-light rounded-bottom-4 rounded-lg-end rounded-lg-bottom-0 d-flex align-items-lg-center align-items-start justify-content-lg-center justify-content-start  w-100 overflow-auto">
+          <div className="d_content_area flex-grow-1 p-2 p-md-3 p-lg-4 bg-light rounded-bottom-4 rounded-lg-end rounded-lg-bottom-0 d-flex  align-items-start justify-content-lg-center justify-content-start  w-100 overflow-auto">
             {tabs.find((tab) => tab.id === activeTab)?.component}
           </div>
         </div>

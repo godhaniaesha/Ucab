@@ -5,6 +5,7 @@ import {
   cancelBooking,   // 👈 import cancelBooking from slice
   checkNewRequests,
 } from "../../redux/slice/driver.slice";
+import ride from "../../image/ride.png";
 
 const D_NewRideRequestContent = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const D_NewRideRequestContent = () => {
   // Handle loading / error state
   if (loading) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
         <p className="text-primary">Checking for new ride requests...</p>
       </div>
     );
@@ -28,7 +29,7 @@ const D_NewRideRequestContent = () => {
 
   if (error) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
         <p className="text-danger">⚠ {error}</p>
       </div>
     );
@@ -39,8 +40,10 @@ const D_NewRideRequestContent = () => {
 
   if (requests.length === 0) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
-        <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
+      <div className="d_tab_page w-100 h-100 p-lg-4 p-2  bg-white rounded-3 shadow-sm border border-light text-center d-flex flex-column align-items-center justify-content-center">
+       
+       <img src={ride} style={{width:"200px", marginBottom:"10px"}}></img>
+        <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1 ">
           No New Ride Requests
         </h2>
         <p className="text-secondary leading-normal">
@@ -51,7 +54,7 @@ const D_NewRideRequestContent = () => {
   }
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
+    <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
         New Ride Requests
       </h2>
