@@ -65,7 +65,7 @@ export default function About() {
               <li>✔ Affordable pricing with no hidden charges</li>
               <li>✔ Experienced & verified drivers</li>
             </ul>
-            <button className="z_about_btn">Book Now</button>
+            <button className="z_about_btn" onClick={() => window.location.href = '/taxi'}>Explore More</button>
           </div>
         </div>
       </section>

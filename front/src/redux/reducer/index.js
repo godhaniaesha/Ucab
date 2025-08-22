@@ -7,6 +7,7 @@ import contactReducer from '../slice/contact.slice'; // Import the contactReduce
 import transactionReducer from '../slice/transaction.slice';
 import adminReducer from '../slice/admin.slice'
 import driverReducer from '../slice/driver.slice'
+import subscribeReducer from '../slice/subscribe.slice'
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -16,7 +17,8 @@ export const rootReducer = combineReducers({
   contact:contactReducer,
   transactions: transactionReducer,
   admin:adminReducer,
-  driver:driverReducer
+  driver:driverReducer,
+  subscribe:subscribeReducer
 });
 
 export default rootReducer;

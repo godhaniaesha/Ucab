@@ -12,7 +12,15 @@ import '../style/tab.css'; // Assuming you have a CSS file for styles
 // --- Main Tab Component ---
 export default function Tab() {
   // State to manage which tab is currently active
-  const [activeTab, setActiveTab] = useState("dashboard"); // Default to 'dashboard'
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("driverActiveTab") || "dashboard"
+  );
+
+  // Update localStorage whenever tab changes
+  const handleSetActiveTab = (tabId) => {
+    setActiveTab(tabId);
+    localStorage.setItem("driverActiveTab", tabId);
+  };
 
   // State for managing ride requests and active trips
   const [rideRequest, setRideRequest] = useState(null);
@@ -79,11 +87,31 @@ export default function Tab() {
     return () => clearTimeout(requestTimeout);
   }, [rideRequest, isTripActive]);
 
+  // Handle a change in localStorage and update the activeTab state
+  useEffect(() => {
+    // This function will be called whenever the 'storage' event fires
+    const handleStorageChange = () => {
+      const newActiveTab = localStorage.getItem("driverActiveTab");
+      // Only update the state if the localStorage value is different
+      if (activeTab !== newActiveTab) {
+        setActiveTab(newActiveTab);
+      }
+    };
+
+    // Add the event listener when the component mounts
+    window.addEventListener('storage', handleStorageChange);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [activeTab]); // The dependency array ensures this effect re-runs if activeTab changes
+
   const handleAcceptRide = (request) => {
     setCurrentTrip({ ...request, status: "en_route_pickup" }); // Set initial status
     setRideRequest(null); // Clear pending request
     setIsTripActive(true); // Mark trip as active
-    setActiveTab("active-ride"); // Automatically switch to Active Ride tab
+    handleSetActiveTab("active-ride"); // Automatically switch to Active Ride tab
     setUserData((prevData) => ({ ...prevData, status: "ON_TRIP" })); // Update user status
   };
 
@@ -111,7 +139,7 @@ export default function Tab() {
       setRideRequest(null);
       setCurrentTrip(null);
       setIsTripActive(false);
-      setActiveTab("dashboard"); // Go back to dashboard after completing
+      handleSetActiveTab("dashboard"); // Go back to dashboard after completing
       setUserData((prevData) => ({ ...prevData, status: "ONLINE" })); // Set status back to ONLINE after trip
     }
   };
@@ -243,14 +271,7 @@ export default function Tab() {
                     }
                     `}
                   onClick={() => {
-                    if (
-                      isTripActive &&
-                      (tab.id === "new-ride-request" ||
-                        tab.id === "availability")
-                    ) {
-                      return;
-                    }
-                    setActiveTab(tab.id);
+                    handleSetActiveTab(tab.id);
                   }}
                   disabled={
                     isTripActive &&
@@ -266,7 +287,7 @@ export default function Tab() {
             {/* Mobile Horizontal Navigation */}
             <div className="d-lg-none" style={{width:"100%",overflowX:"auto"}} >
               <h2 className="fs-4 fw-bold mb-md-3 mb-0 text-center"
-               style={{ color: "#0f6e55" }}
+                style={{ color: "#0f6e55" }}
               >
                 Driver Hub
               </h2>

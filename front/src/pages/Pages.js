@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import '../style/x_app.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, updateUserProfile } from '../redux/slice/auth.slice';
+import { FaEdit } from 'react-icons/fa';
 
 export default function Pages() {
   const dispatch = useDispatch();
@@ -142,6 +143,7 @@ export default function Pages() {
       {profileLoading && <div>Loading...</div>}
       {profileError && <div className="error">{profileError}</div>}
 
+
       <div className="x_profile_header">
         <div className="x_img_wrapper">
           <img
@@ -155,7 +157,15 @@ export default function Pages() {
       </div>
 
       <div className="x_card">
-        <h3 className="x_section_title">Contact Details</h3>
+        <div className="x_profile_header_title mb-3">
+  <h2 className="x_section_title mb-0">Contact Details</h2>
+  <FaEdit 
+    className="x_edit_icon" 
+    onClick={() => setEditMode((prev) => !prev)} 
+    style={{ cursor: "pointer", marginLeft: "10px" }} 
+  />
+</div>
+
         <div className="x_grid">
           <div className="x_form_group">
             <label>Full Name</label>

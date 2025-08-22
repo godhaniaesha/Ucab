@@ -12,6 +12,9 @@ import {
 import { PiTelegramLogoBold } from "react-icons/pi";
 import "../style/x_app.css";
 import { Link } from 'react-router-dom';
+import { createSubscribe } from '../redux/slice/subscribe.slice';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Footer() {
     const [isVisible, setIsVisible] = useState(false);
@@ -44,6 +47,30 @@ export default function Footer() {
             }
         };
     }, []);
+ const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+
+  const { loading, error, success, message } = useSelector((state) => state.subscribe);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    // Dispatch the createSubscribe thunk
+    dispatch(createSubscribe({ email }))
+      .unwrap()
+      .then(() => {
+        toast.success(message || "Subscribed successfully!");
+        setEmail(""); // Clear input after success
+      })
+      .catch((err) => {
+        toast.error(err || "Subscription failed");
+      });
+  };
 
     return (
         <footer className="x_footer" ref={footerRef}>
@@ -113,16 +140,23 @@ export default function Footer() {
                     </div>
 
                     {/* Col 4 - Newsletter */}
-                    <div className="x_footer-col">
-                        <div className="x_footer-ls">
-                            <h3>Newsletter</h3>
-                            <p>Subscribe our newsletter to get latest update and news.</p>
-                            <div className="x_footer-newsletter">
-                                <input type="email" placeholder="Your Email" />
-                                <button>SUBSCRIBE NOW <PiTelegramLogoBold /></button>
-                            </div>
-                        </div>
-                    </div>
+                   <div className="x_footer-col">
+      <div className="x_footer-ls">
+        <h3>Newsletter</h3>
+        <p>Subscribe our newsletter to get latest updates and news.</p>
+        <form className="x_footer-newsletter" onSubmit={handleSubscribe}>
+          <input
+            type="email"
+            placeholder="Your Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button type="submit">
+            SUBSCRIBE NOW <PiTelegramLogoBold />
+          </button>
+        </form>
+      </div>
+    </div>
                 </div>
             </div>
 
