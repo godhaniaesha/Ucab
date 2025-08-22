@@ -2,23 +2,72 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   acceptBooking,
-  cancelBooking,   // 👈 import cancelBooking from slice
+  cancelBooking,
   checkNewRequests,
+  getHistory,
+  startTrip, // 👈 import startTrip
 } from "../../redux/slice/driver.slice";
 import ride from "../../image/ride.png";
+import { toast } from "react-toastify"; // 👈 for toast notifications
 
 const D_NewRideRequestContent = () => {
   const dispatch = useDispatch();
-  const { newRequests, loading, error } = useSelector((state) => state.driver);
+  const { newRequests, history, loading, error, success } = useSelector(
+    (state) => state.driver
+  );
 
-  console.log(newRequests, "newRequests");
+  const acceptedRequests = history.filter((r) => r.status === "accepted");
+  const pendingRequests = newRequests;
 
-  // Fetch new ride requests when component mounts
   useEffect(() => {
     dispatch(checkNewRequests());
+    dispatch(getHistory());
   }, [dispatch]);
 
-  // Handle loading / error state
+  // Show error toast
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  // Show success toast
+  useEffect(() => {
+    if (success) {
+      toast.success("Action completed successfully!");
+    }
+  }, [success]);
+
+  const handleStartTrip = (id) => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coordinates = [
+          position.coords.longitude,
+          position.coords.latitude,
+        ];
+
+        dispatch(startTrip({ id, coordinates }))
+          .unwrap()
+          .then(() => {
+            toast.success("Trip started successfully 🚖");
+          })
+          .catch((err) => {
+            toast.error(err || "Failed to start trip");
+          });
+      },
+      () => {
+        toast.error("Unable to fetch location");
+      }
+    );
+  };
+
+  const requests = [...pendingRequests, ...acceptedRequests];
+
   if (loading) {
     return (
       <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
@@ -26,17 +75,6 @@ const D_NewRideRequestContent = () => {
       </div>
     );
   }
-
-  if (error) {
-    return (
-      <div className="d_tab_page w-100 h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
-        <p className="text-danger">⚠ {error}</p>
-      </div>
-    );
-  }
-
-  // 🔹 Handle case where response contains bookings
-  const requests = Array.isArray(newRequests) ? newRequests : [];
 
   if (requests.length === 0) {
     return (
@@ -96,19 +134,31 @@ const D_NewRideRequestContent = () => {
             </span>
           </p>
           <div className="d-flex justify-content-end gap-2 mt-3">
-            <button
-              className="btn btn-danger px-4 py-2 rounded-2 fw-semibold"
-              onClick={() => dispatch(cancelBooking(rideRequest._id))} // 👈 cancelBooking call
-            >
-              Decline
-            </button>
-            <button
-              className="btn text-white px-4 py-2 rounded-2 fw-semibold"
-              style={{ backgroundColor: "#0f6e55" }}
-              onClick={() => dispatch(acceptBooking(rideRequest._id))}
-            >
-              Accept Ride
-            </button>
+            {rideRequest.status === "accepted" ? (
+              <button
+                className="btn text-white px-4 py-2 rounded-2 fw-semibold"
+                style={{ backgroundColor: "#0f6e55" }}
+                onClick={() => handleStartTrip(rideRequest._id)} // 👈 call handler
+              >
+                Start Ride
+              </button>
+            ) : (
+              <>
+                <button
+                  className="btn btn-danger px-4 py-2 rounded-2 fw-semibold"
+                  onClick={() => dispatch(cancelBooking(rideRequest._id))}
+                >
+                  Decline
+                </button>
+                <button
+                  className="btn text-white px-4 py-2 rounded-2 fw-semibold"
+                  style={{ backgroundColor: "#0f6e55" }}
+                  onClick={() => dispatch(acceptBooking(rideRequest._id))}
+                >
+                  Accept Ride
+                </button>
+              </>
+            )}
           </div>
         </div>
       ))}
