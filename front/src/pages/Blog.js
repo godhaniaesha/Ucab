@@ -49,7 +49,7 @@ const SidebarContent = React.memo(({
       <div className="x_recent_posts">
         {blogPosts.slice(0, 6).map((post) => (
           <div key={post.id} className="x_recent_post">
-            <img src={post.image} alt={post.title} className="x_recent_post_image" />
+            <img src={`http://localhost:5000/uploads/${post.image}`} alt={post.title} className="x_recent_post_image" />
             <div className="x_recent_post_content">
               <h5 className="x_recent_post_title">{post.subject}</h5>
               <span className="x_recent_post_date">{post.date}</span>
@@ -250,7 +250,7 @@ export default function Blog({ onSearch }) {
                 {currentPosts.length > 0 && currentPosts.map((post) => (
                   <article key={post._id || post.id} className="x_blog_post">
                     <div className="x_post_image">
-                      {post.image && <img src={`http://localhost:5000/${post.image}`} alt={post.subject || post.title} />}
+                      {post.image && <img src={`http://localhost:5000/uploads/${post.image}`} alt={post.subject || post.title} />}
                       {/* <div className="x_post_category">{post.category || "General"}</div> */}
                     </div>
                     <div className="x_post_content">

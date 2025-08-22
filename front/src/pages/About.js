@@ -19,9 +19,9 @@ export default function About() {
           <div className="z_about_hero_content">
             <h1>About  <span className="z_default_txt"> UCAB </span></h1>
             <p>Your trusted partner for safe, reliable, and premium cab services.</p>
-            <a href="/booking" className="z_about_btn">
+            {/* <a href="/booking" className="z_about_btn">
               Book Now
-            </a>
+            </a> */}
           </div>
         </div>
       </section>

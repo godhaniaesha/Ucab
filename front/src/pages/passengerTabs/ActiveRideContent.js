@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getPendingPayments, payPendingPayment } from "../../redux/slice/passengers.slice";
+import pay from "../../image/nopay.png";
 
 const D_PaymentContent = () => {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const D_PaymentContent = () => {
 
   if (loading) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100  h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
         <p className="text-primary">Loading pending payments...</p>
       </div>
     );
@@ -55,7 +56,8 @@ const D_PaymentContent = () => {
 
   if (!pendingPayments || pendingPayments.length === 0) {
     return (
-      <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center">
+      <div className="d_tab_page w-100  h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light text-center d-flex flex-column align-items-center justify-content-center">
+         <img src={pay} style={{width:"200px", marginBottom:"10px"}}></img>
         <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
           No Pending Payments
         </h2>
@@ -67,7 +69,7 @@ const D_PaymentContent = () => {
   }
 
   return (
-    <div className="d_tab_page p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light">
+    <div className="d_tab_page w-100  h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light ">
       <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">
         Pending Payments
       </h2>

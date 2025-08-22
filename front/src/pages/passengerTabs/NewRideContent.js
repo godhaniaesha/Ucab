@@ -46,8 +46,8 @@ export default function P_MyRides() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="p-3" style={{ width: "100%" }}>
-      <h2 className="mb-3">My Rides</h2>
+    <div className="p-3 d_tab_page w-100  h-100 p-lg-4 p-2 bg-white rounded-3 shadow-sm border border-light ">
+      <h2 className="fs-3 fw-bold text-dark mb-lg-4 mb-md-2 mb-1">My Rides</h2>
 
       <div style={containerStyle}>
         {bookings.map((booking) => (

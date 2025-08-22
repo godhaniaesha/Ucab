@@ -476,16 +476,34 @@ const D_MyVehiclesContent = () => {
         {editingVehicleId || isAdding
           ? renderVehicleForm()
           : vehicles.map(renderVehicleCard)}
-        {!isAdding && !editingVehicleId && vehicles.length === 0 && (
-          <div className="text-center mt-3">
-            <button
-              className="btn text-white px-4 py-2 fw-semibold"
-              style={{ backgroundColor: "#0f6e55" }}
-              onClick={handleAddClick}
-            >
-              + Add New Vehicle
-            </button>
-          </div>
+        {!isAdding && !editingVehicleId && (
+          (() => {
+            // Get driverId from token
+            let token = localStorage.getItem("token");
+            let myId = null;
+            if (token) {
+              try {
+                let payload = JSON.parse(atob(token.split(".")[1]));
+                myId = payload.id || payload._id || payload.userId;
+              } catch {}
+            }
+            // Check if any vehicle exists for this driver
+            const hasVehicle = vehicles.some(v => v.provider === myId || (v.provider && v.provider._id === myId));
+            if (!hasVehicle) {
+              return (
+                <div className="text-center mt-3">
+                  <button
+                    className="btn text-white px-4 py-2 fw-semibold"
+                    style={{ backgroundColor: "#0f6e55" }}
+                    onClick={handleAddClick}
+                  >
+                    + Add New Vehicle
+                  </button>
+                </div>
+              );
+            }
+            return null;
+          })()
         )}
       </div>
     </div>

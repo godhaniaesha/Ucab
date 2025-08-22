@@ -64,7 +64,7 @@ export default function SuperAdminTab() {
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       />
       <div
-        className="d_app_container container-fluid min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5"
+        className="d_app_container container-fluid d_sup d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5"
         style={{ backgroundColor: "#e0f2f1" }}
       >
         <div

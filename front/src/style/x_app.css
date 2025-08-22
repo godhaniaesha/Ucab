@@ -43,6 +43,18 @@ body {
   padding: 8px 0;
 }
 
+.contact-link {
+  text-decoration: none;
+  color: inherit;
+  /* same color j raheshe je span ma hato */
+}
+
+.contact-link:hover {
+  color: #0d9370;
+  /* optional hover effect */
+}
+
+
 .x_top-left span {
   margin-right: 20px;
   display: inline-flex;
@@ -169,8 +181,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0;
-     transition: max-height 0.4s ease-in-out, padding 0.3s ease;
+    transition: max-height 0.4s ease-in-out, padding 0.3s ease;
   }
+
   .x_profile_item {
     border-radius: 0;
     border-bottom: 1px solid #eee;
@@ -181,9 +194,11 @@ body {
     text-align: left;
     transition: background 0.2s, color 0.2s;
   }
+
   .x_profile_item:last-child {
     border-bottom: none;
   }
+
   .x_profile_item:hover {
     background: #e6f7f3;
     color: #0f6e55;
@@ -330,7 +345,8 @@ body {
   .x_menu.x_menu-open {
     right: 0;
   }
-  .x_card{
+
+  .x_card {
     padding: 15px !important;
   }
 }
@@ -567,6 +583,9 @@ body {
   .x_footer-row {
     padding: 30px 15px 40px 15px;
     gap: 25px;
+  }
+  .site-info{
+    font-size: small;
   }
 }
 
@@ -913,7 +932,7 @@ body {
   height: 100px;
   right: 70%;
   bottom: 0;
-  animation: running-anim-left 35s linear infinite;
+  animation: running-anim-left 20s linear infinite;
 }
 
 .running-taxi {
@@ -940,6 +959,7 @@ body {
   /* Start outside screen */
   bottom: 0;
   animation: taxi-right-left 8s linear infinite;
+  animation-delay: 3s;
 
 }
 
@@ -955,7 +975,7 @@ body {
   right: -120px;
   bottom: 0;
   animation: taxi-right-left 8s linear infinite;
-  animation-delay: 3s;
+  
   /* Delay before Taxi 2 starts */
 }
 

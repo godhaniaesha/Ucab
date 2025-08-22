@@ -78,10 +78,10 @@ export const fetchUserProfile = createAsyncThunk(
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
             const response = await axiosInstance.get(`/auth/getuser`);
             // console.log("resposne",response);
-            
+
             // console.log("resposne",response.data.data);
-           
-            
+
+
             return response.data.user;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -93,38 +93,38 @@ export const fetchUserProfile = createAsyncThunk(
 export const updateUserProfile = createAsyncThunk(
     'auth/updateUserProfile',
     async (formData, { rejectWithValue }) => {   // 👈 accept FormData directly
-      try {
-        console.log('fggh',formData);
-        
-        const token = localStorage.getItem('token');
-        const config = token
-          ? {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-              },
+        try {
+            console.log('fggh', formData);
+
+            const token = localStorage.getItem('token');
+            const config = token
+                ? {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+                : {};
+
+            // Proper debug log
+            console.log("form-data sending:");
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
             }
-          : {};
-  
-        // Proper debug log
-        console.log("form-data sending:");
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
+
+            const response = await axios.post(
+                "http://localhost:5000/api/driver/update-profile",
+                formData,
+                config
+            );
+
+            return response.data.user; // 👈 make sure backend returns updated user
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || error.message);
         }
-  
-        const response = await axios.post(
-          "http://localhost:5000/api/driver/update-profile",
-          formData,
-          config
-        );
-  
-        return response.data.user; // 👈 make sure backend returns updated user
-      } catch (error) {
-        return rejectWithValue(error.response?.data?.message || error.message);
-      }
     }
-  );
-  
+);
+
 
 export const getUserById = createAsyncThunk(
     'auth/getUserById',
@@ -140,6 +140,38 @@ export const getUserById = createAsyncThunk(
         }
     }
 )
+
+export const logoutUser = createAsyncThunk(
+    "auth/logout",
+    async (_, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                return rejectWithValue("No token found");
+            }
+
+            const res = await axios.post(
+                "http://localhost:3000/logout",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            // Clear local storage after logout
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(
+                err.response?.data?.message || "Logout failed"
+            );
+        }
+    }
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -299,9 +331,9 @@ const authSlice = createSlice({
                 state.profileUpdateSuccess = true;
                 // If backend sends updated user, update state
                 if (action.payload) {
-                  state.profile = action.payload;
+                    state.profile = action.payload;
                 }
-              })
+            })
             .addCase(updateUserProfile.rejected, (state, action) => {
                 state.profileLoading = false;
                 state.profileError = action.payload;
@@ -318,6 +350,20 @@ const authSlice = createSlice({
                 state.user = action.payload.data;
             })
             .addCase(getUserById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Logout User
+            .addCase(logoutUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

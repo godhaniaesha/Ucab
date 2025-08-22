@@ -15,38 +15,35 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
     const [isVisible, setIsVisible] = useState(false);
-    const footerRef = useRef(null);
+    const copyrightRef = useRef(null);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                // When footer comes into view, show the taxi animation
+                // When copyright-area comes into view, show the taxi animation
                 if (entry.isIntersecting) {
                     setIsVisible(true);
                 } else {
-                    // Hide animation when footer is out of view
                     setIsVisible(false);
                 }
             },
             {
-                threshold: 0.1, // Trigger when 10% of footer is visible
-                rootMargin: '0px 0px -50px 0px' // Trigger slightly before footer is fully visible
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
             }
         );
-
-        if (footerRef.current) {
-            observer.observe(footerRef.current);
+        if (copyrightRef.current) {
+            observer.observe(copyrightRef.current);
         }
-
         return () => {
-            if (footerRef.current) {
-                observer.unobserve(footerRef.current);
+            if (copyrightRef.current) {
+                observer.unobserve(copyrightRef.current);
             }
         };
     }, []);
 
     return (
-        <footer className="x_footer" ref={footerRef}>
+        <footer className="x_footer">
             {/* Top Border Pattern */}
             <div className="x_footer-pattern"></div>
 
@@ -62,9 +59,32 @@ export default function Footer() {
                             suffered alteration in some form by injected humour words believable.
                         </p>
                         <div className="x_footer-contact">
-                            <p><FaPhoneAlt /> +2 123 654 7898</p>
-                            <p><FaMapMarkerAlt /> 25/B Milford Road, New York</p>
-                            <p><FaEnvelope /> info@example.com</p>
+
+
+
+                            <p>
+                                <a href="tel:+21236547898" className="contact-link">
+                                    <FaPhoneAlt fontSize={"18px"} /> +2 123 654 7898
+                                </a>
+                            </p>
+                            {/* <p><FaPhoneAlt /> +2 123 654 7898</p> */}
+                            <p>
+                                <a
+                                    href="https://www.google.com/maps?q=25/B+Milford+Road,+New+York"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ textDecoration: "none", color: "inherit" }}
+                                >
+                                    <FaMapMarkerAlt /> 25/B Milford Road, New York
+                                </a>
+                            </p>
+                            {/* <p><FaEnvelope /> info@example.com</p> */}
+                            <p>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
+                                    target="_blank" className="contact-link">
+                                    <FaEnvelope fontSize={"18px"} /> info@example.com
+                                </a>
+                            </p>
                         </div>
                     </div>
 
@@ -126,17 +146,8 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* Running Taxi Animation - Only visible when footer is in view */}
-            {isVisible && (
-                <div className="running-taxi">
-                    <div className="taxi"></div>
-                    <div className="taxi-2"></div>
-                    <div className="taxi-3"></div>
-                </div>
-            )}
-
             {/* Bottom Bar */}
-            <div className="copyright-area no-menu-set">
+            <div className="copyright-area no-menu-set" ref={copyrightRef}>
                 <div className="container">
                     <div className="copyright-inner">
                         <div className="site-info">
@@ -144,6 +155,15 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
+
+            {/* Running Taxi Animation - Only visible when copyright-area is in view */}
+            {isVisible && (
+                <div className="running-taxi">
+                    <div className="taxi"></div>
+                    <div className="taxi-2"></div>
+                    <div className="taxi-3"></div>
+                </div>
+            )}
 
 
         </footer>

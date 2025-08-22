@@ -43,8 +43,8 @@ function App() {
 
           <Route path="/admin" element={<AdminLayout />}></Route>
           <Route path="/tab" element={<Main><Tab /></Main>} />
-          <Route path="/SuperAdminTab" element={<SuperAdminTab />} />
-          <Route path="/PassengerTab" element={<PassengerTab />} />
+          <Route path="/SuperAdminTab" element={<Main><SuperAdminTab /></Main>} />
+          <Route path="/PassengerTab" element={<Main><PassengerTab /></Main>} />
         </Routes>
       </Router>
       <ToastContainer position="top-right" autoClose={4000} />

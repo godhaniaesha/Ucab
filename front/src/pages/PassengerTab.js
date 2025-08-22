@@ -88,7 +88,7 @@ export default function PassengerTab() {
     },
     {
       id: "active-ride",
-      name: "Active Ride",
+      name: "Payment",
       iconClass: "bi bi-geo-alt-fill",
       component: (
         <P_ActiveRideContent
@@ -123,7 +123,7 @@ export default function PassengerTab() {
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       />
-      <div className="d_app_container container-fluid min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5" style={{ backgroundColor: "#e0f2f1" }}>
+      <div className="d_app_container container-fluid d_pass d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5" style={{ backgroundColor: "#e0f2f1" }}>
         <div className="d_main_content_wrapper w-100 bg-white rounded-3 shadow-lg d-flex flex-column flex-lg-row overflow-hidden" style={{ maxWidth: "1200px", minHeight: "600px" }}>
           <div className="d_nav_sidebar p-3 p-lg-4 d-flex flex-column rounded-top-lg-4 p-2 rounded-lg-start rounded-lg-top-0 shadow-sm" style={{ backgroundColor: "#fff" }}>
             <h1 className="fs-3 fw-bold mb-lg-4 mb-md-2 mb-1 text-center text-lg-start d-none d-lg-block" style={{ color: "#0f6e55" }}>

@@ -4,8 +4,10 @@ import '../style/z_app.css';
 import '../style/Service.css'; // Assuming you have a CSS file for styling
 import { FaDoorClosed, FaMapMarkerAlt, FaSnowflake, FaStar, FaSuitcaseRolling, FaUsers } from 'react-icons/fa';
 import Footer from '../component/Footer';
+import { useNavigate } from 'react-router-dom';
 
 export default function Service() {
+  const navigate = useNavigate();
 
   const carFleet = [
     {
@@ -228,7 +230,10 @@ export default function Service() {
                 </p>
               </div>
               <div className="service-action">
-                <button className="support-btn">
+                <button
+                  className="support-btn"
+                  onClick={() => navigate("/contact")}
+                >
                   REACH OUR SUPPORT TEAM
                 </button>
               </div>
@@ -286,7 +291,7 @@ export default function Service() {
         </div>
       </section>
 
-     
+
     </>
   );
 }

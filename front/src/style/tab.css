@@ -116,9 +116,10 @@
   outline: none !important;
 }
 
-.d_driver_tab {
+.d_driver_tab, .d_sup, .d_pass {
   min-height: 87vh;
 }
+
 /* Responsive horizontal tabs for mobile */
 @media (max-width: 991.98px) {
   .d_nav_sidebar {

@@ -15,7 +15,7 @@ import { IoMailUnreadOutline, IoClose } from "react-icons/io5";
 import { PiPhoneCallBold } from "react-icons/pi";
 import { LuAlarmClock } from "react-icons/lu";
 import "../style/x_app.css";
-import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword } from "../redux/slice/auth.slice";
+import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword, logoutUser } from "../redux/slice/auth.slice";
 
 
 export default function Header() {
@@ -157,12 +157,12 @@ export default function Header() {
     let user = null;
     if (token) {
       try {
-      // JWT format: header.payload.signature
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      user = { role: payload.role };
-      console.log("Decoded user from token:", user);
+        // JWT format: header.payload.signature
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        user = { role: payload.role };
+        console.log("Decoded user from token:", user);
       } catch (err) {
-      user = null;
+        user = null;
       }
     }
     if (user?.role === "driver") {
@@ -186,6 +186,13 @@ export default function Header() {
     closeProfileMenu();
     closeMenuIfMobile();
     setShowLogoutModal(true); // open modal instead of direct logout
+  };
+
+  const onLogoutConfirm = () => {
+    dispatch(logoutUser());
+    localStorage.removeItem("token");
+    setShowLogoutModal(false);
+    navigate("/");
   };
 
   const handleLoginInputChange = (e) => {
@@ -331,8 +338,18 @@ export default function Header() {
         <div className="x_top-bar">
           <div className="x_container">
             <div className="x_top-left">
-              <span><IoMailUnreadOutline fontSize={"18px"} /> info@example.com</span>
-              <span><PiPhoneCallBold fontSize={"18px"} /> +2 123 654 7898</span>
+              <span>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
+                  target="_blank" className="contact-link">
+                  <IoMailUnreadOutline fontSize={"18px"} /> info@example.com
+                </a>
+              </span>
+
+              <span>
+                <a href="tel:+21236547898" className="contact-link">
+                  <PiPhoneCallBold fontSize={"18px"} /> +2 123 654 7898
+                </a>
+              </span>
 
             </div>
             <div className="x_top-right">
@@ -574,7 +591,7 @@ export default function Header() {
                 className="x_modal_btn confirm"
                 onClick={() => {
                   setShowLogoutModal(false);
-                  // onLogoutConfirm(); // your real logout handler
+                  onLogoutConfirm();
                 }}
               >
                 Logout

@@ -289,7 +289,7 @@ const handleSubmit = async (e) => {
               <div className="z_allcabs_hero_content">
                 <h1>Choose Your Perfect Ride</h1>
                 <p>From budget-friendly options to premium rides, find the ideal cab for your journey.</p>
-                <a href="#book" className="z_allcabs_btn">Book Now</a>
+                {/* <a href="#book" className="z_allcabs_btn">Book Now</a> */}
               </div>
             </div>
           </div>
