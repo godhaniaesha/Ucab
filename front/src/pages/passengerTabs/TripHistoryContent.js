@@ -6,7 +6,7 @@ import { getTripHistory } from "../../redux/slice/passengers.slice";
 const P_TripHistoryContent = () => {
   const dispatch = useDispatch();
   // Add null check for state.passengers
-  const { tripHistory = [], loading = false } = useSelector((state) => state?.passengers || {}); 
+  const { tripHistory = [], loading = false } = useSelector((state) => state?.passenger || {}); 
 
   useEffect(() => {
     dispatch(getTripHistory());

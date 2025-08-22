@@ -4,9 +4,11 @@ import { getTodayStats } from "../../redux/slice/passengers.slice";
 
 export default function P_DashboardContent() {
   const dispatch = useDispatch();
-  const passengersState = useSelector((state) => state.passengers) || {};
+  const passengersState = useSelector((state) => state.passenger) || {};
   const { todayStats, loading } = passengersState;
 
+  console.log(todayStats,'todayStats');
+  
   useEffect(() => {
     dispatch(getTodayStats());
   }, [dispatch]);
@@ -41,7 +43,7 @@ export default function P_DashboardContent() {
               <div className="bg-light p-lg-4 p-2 rounded-4 shadow-sm border border-light text-center h-100 d-flex flex-column justify-content-center">
                 <i className="bi bi-cash-stack fs-3 text-success mb-2"></i>
                 <p className="text-muted mb-0">Total Spent</p>
-                <h4 className="fs-4 fw-bold text-success mt-1">${loading ? "..." : stats.totalSpent.toFixed(2)}</h4>
+                <h4 className="fs-4 fw-bold text-success mt-1">${loading ? "..." : (stats.totalSpent || 0).toFixed(2)}</h4>
               </div>
             </div>
 
