@@ -30,7 +30,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getVehicles } from '../redux/slice/vehicles.slice';
 import { createBooking, resetBookingStatus } from "../redux/slice/passengers.slice";
 
-
 // Helper to decode JWT and extract userId
 const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
@@ -53,7 +52,7 @@ const getUserIdFromToken = () => {
   }
 };
 
-// Convert address → coordinates
+// Convert address → coordinates using Nominatim API
 const getCoordinates = async (address) => {
   try {
     const response = await fetch(
@@ -63,29 +62,32 @@ const getCoordinates = async (address) => {
     if (data && data.length > 0) {
       return [parseFloat(data[0].lon), parseFloat(data[0].lat)];
     }
-    return [0, 0];
+    return null;
   } catch (error) {
     console.error("Geocoding error:", error);
-    return [0, 0];
+    return null;
   }
 };
 
 export default function Home({ car }) {
   const [show, setShow] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    dispatch(resetBookingStatus()); // Reset booking status when modal closes
+  };
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Cab booked successfully!");
-    handleClose();
+  const handleShow = (car) => {
+    console.log("Selected Vehicle ID:", car._id);
+    console.log("Selected Vehicle Data:", car);
+    setSelectedCar(car);
+    setShow(true);
   };
 
   const dispatch = useDispatch();
-  const { vehicles, loading } = useSelector((state) => state.vehicle);
-
+  const { vehicles, loading: vehiclesLoading } = useSelector((state) => state.vehicle);
+  const { loading, error, success } = useSelector((state) => state.passenger || {});
 
   useEffect(() => {
     dispatch(getVehicles());
@@ -97,6 +99,188 @@ export default function Home({ car }) {
     }
   }, [vehicles]);
 
+  // Show success/error messages
+  useEffect(() => {
+    if (success) {
+      alert("🎉 Booking successful!");
+      // Reset form states after successful booking
+      if (show) {
+        setShow(false); // Close modal
+      } else {
+        // Reset main form
+        setPickup("");
+        setDropoff("");
+        setSelectedMake("");
+        setSelectedModel("");
+        setPassengers("");
+        setSelectedRate("");
+        setDate("");
+        setTime("");
+      }
+      dispatch(resetBookingStatus());
+    }
+    if (error) {
+      alert(`❌ Booking failed: ${error}`);
+      dispatch(resetBookingStatus());
+    }
+  }, [success, error, show, dispatch]);
+
+  // Main form states
+  const [pickup, setPickup] = useState("");
+  const [dropoff, setDropoff] = useState("");
+  const [selectedMake, setSelectedMake] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [passengers, setPassengers] = useState("");
+  const [selectedRate, setSelectedRate] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+
+  // Extract unique makes
+  const makes = [...new Set(vehicles.map(v => v.make))];
+
+  // Filter models based on make
+  const models = vehicles
+    .filter(v => v.make === selectedMake)
+    .map(v => v.model);
+
+  // When model changes, update passengers and rate
+  useEffect(() => {
+    if (selectedModel) {
+      const vehicle = vehicles.find(
+        (v) => v.model === selectedModel && v.make === selectedMake
+      );
+      setPassengers(vehicle ? vehicle.passengers : "");
+      setSelectedRate(vehicle ? vehicle.perKmRate : "");
+    }
+  }, [selectedModel, selectedMake, vehicles]);
+
+  // Main form booking handler
+  const handleBooking = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userId = getUserIdFromToken();
+      if (!userId) {
+        alert("You must be logged in to book.");
+        return;
+      }
+
+      // Validate required fields
+      if (!pickup || !dropoff || !selectedModel || !date || !time) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      // Geocode pickup address
+      const pickupCoords = await getCoordinates(pickup);
+      // Geocode drop address  
+      const dropCoords = await getCoordinates(dropoff);
+
+      if (!pickupCoords || !dropCoords) {
+        alert("Could not fetch coordinates for entered locations.");
+        return;
+      }
+
+      // Get selected vehicle
+      const selectedVehicle = vehicles.find(
+        (v) => v.model === selectedModel && v.make === selectedMake
+      );
+
+      if (!selectedVehicle) {
+        alert("Selected vehicle not found.");
+        return;
+      }
+
+      const bookingData = {
+        passenger: userId,
+        pickup: {
+          address: pickup,
+          type: "Point",
+          coordinates: pickupCoords,
+        },
+        drop: {
+          address: dropoff,
+          type: "Point",
+          coordinates: dropCoords,
+        },
+        vehicleType: selectedVehicle?.type || "standard",
+        preferredVehicleId: selectedVehicle?._id,
+        preferredVehicleModel: selectedModel,
+        pickupDate: date,
+        pickupTime: time,
+        ratePerKm: selectedVehicle?.perKmRate || selectedRate,
+      };
+
+      console.log("🚕 Main Form Booking Payload:", bookingData);
+
+      await dispatch(createBooking(bookingData)).unwrap();
+    } catch (err) {
+      console.error("❌ Main Form Booking failed:", err);
+    }
+  };
+
+  // Modal form booking handler
+  const handleModalSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userId = getUserIdFromToken();
+      if (!userId) {
+        alert("You must be logged in to book.");
+        return;
+      }
+
+      // Get form data from modal
+      const formData = new FormData(e.target);
+      const pickupLocation = formData.get('pickup');
+      const dropLocation = formData.get('drop');
+      const pickupDate = formData.get('date');
+      const pickupTime = formData.get('time');
+      const ratePerKm = formData.get('ratePerKm');
+
+      // Validate required fields
+      if (!pickupLocation || !dropLocation || !pickupDate || !pickupTime) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      // Geocode addresses
+      const pickupCoords = await getCoordinates(pickupLocation);
+      const dropCoords = await getCoordinates(dropLocation);
+
+      if (!pickupCoords || !dropCoords) {
+        alert("Could not fetch coordinates for entered locations.");
+        return;
+      }
+
+      const bookingData = {
+        passenger: userId,
+        pickup: {
+          address: pickupLocation,
+          type: "Point",
+          coordinates: pickupCoords,
+        },
+        drop: {
+          address: dropLocation,
+          type: "Point",
+          coordinates: dropCoords,
+        },
+        vehicleType: selectedCar?.type || "standard",
+        preferredVehicleId: selectedCar?._id,
+        preferredVehicleModel: selectedCar?.model || selectedCar?.name,
+        pickupDate: pickupDate,
+        pickupTime: pickupTime,
+        ratePerKm: selectedCar?.perKmRate || ratePerKm,
+      };
+
+      console.log("🚕 Modal Booking Payload:", bookingData);
+      console.log("Vehicle ID being booked:", selectedCar?._id);
+
+      await dispatch(createBooking(bookingData)).unwrap();
+    } catch (err) {
+      console.error("❌ Modal Booking failed:", err);
+    }
+  };
 
   const slides = [
     {
@@ -118,6 +302,7 @@ export default function Home({ car }) {
         "Perfect choice for corporate trips, airport transfers, and special occasions.",
     },
   ];
+
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
 
@@ -192,92 +377,6 @@ export default function Home({ car }) {
     ));
   };
 
-  // inside Home component
-  const [selectedMake, setSelectedMake] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [passengers, setPassengers] = useState("");
-  const [selectedRate, setSelectedRate] = useState("");
-  // extract unique makes
-  const makes = [...new Set(vehicles.map(v => v.make))];
-
-  // filter models based on make
-  const models = vehicles
-    .filter(v => v.make === selectedMake)
-    .map(v => v.model);
-
-  // when model changes, update passengers
-  useEffect(() => {
-    if (selectedModel) {
-      const vehicle = vehicles.find(
-        (v) => v.model === selectedModel && v.make === selectedMake
-      );
-      setPassengers(vehicle ? vehicle.passengers : "");
-      setSelectedRate(vehicle ? vehicle.perKmRate : "");
-    }
-  }, [selectedModel, selectedMake, vehicles]);
-
-
-  // form states
-  const [pickup, setPickup] = useState("");
-  const [dropoff, setDropoff] = useState("");
-  // const [selectedMake, setSelectedMake] = useState("");
-  // const [selectedModel, setSelectedModel] = useState("");
-  // const [passengers, setPassengers] = useState("");
-  // const [selectedRate, setSelectedRate] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-
-
-  const { bookings, error, success } = useSelector((state) => state.passenger || {});
-
-  console.log(bookings, "success");
-
-
-  // Submit booking
-  const handleBooking = async (e) => {
-    e.preventDefault();
-
-    try {
-      const userId = getUserIdFromToken(); // 👈 function to decode token
-      if (!userId) {
-        alert("You must be logged in to book.");
-        return;
-      }
-
-      const pickupCoords = await getCoordinates(pickup);
-      const dropCoords = await getCoordinates(dropoff);
-
-      // 🚖 Find vehicle info from your vehicles slice (Redux state)
-      const selectedVehicle = vehicles.find(v => v.model === selectedModel);
-
-      const bookingData = {
-        passenger: userId,
-        pickup: {
-          address: pickup,
-          type: "Point",
-          coordinates: pickupCoords,
-        },
-        drop: {
-          address: dropoff,
-          type: "Point",
-          coordinates: dropCoords,
-        },
-        vehicleType: selectedVehicle?.type || "standard",        // ✅ enum valid
-        preferredVehicleId: selectedVehicle?._id,                // ✅ actual ObjectId
-        preferredVehicleModel: selectedVehicle?.model || "",
-      };
-
-      console.log("🚕 Sending bookingData:", bookingData);
-
-      await dispatch(createBooking(bookingData)).unwrap();
-    } catch (err) {
-      console.error("Booking failed:", err);
-    }
-  };
-
-
-
-
   return (
     <>
       <section className="z_slide_section">
@@ -316,7 +415,7 @@ export default function Home({ car }) {
           ))}
         </Swiper>
 
-        {/* Booking Form outside SwiperSlide so it stays fixed */}
+        {/* Main Booking Form */}
         <form className="z_slide_form" onSubmit={handleBooking}>
           <div className="form_group">
             <FaMapMarkerAlt />
@@ -325,6 +424,7 @@ export default function Home({ car }) {
               placeholder="Pick Up Location"
               value={pickup}
               onChange={(e) => setPickup(e.target.value)}
+              required
             />
           </div>
 
@@ -335,6 +435,7 @@ export default function Home({ car }) {
               placeholder="Drop Off Location"
               value={dropoff}
               onChange={(e) => setDropoff(e.target.value)}
+              required
             />
           </div>
 
@@ -347,7 +448,9 @@ export default function Home({ car }) {
                 setSelectedMake(e.target.value);
                 setSelectedModel("");
                 setPassengers("");
+                setSelectedRate("");
               }}
+              required
             >
               <option value="">Choose Cab</option>
               {makes.map((make, index) => (
@@ -363,12 +466,9 @@ export default function Home({ car }) {
             <select
               className="z_drpdwn_select"
               value={selectedModel}
-              onChange={(e) => {
-                setSelectedModel(e.target.value);
-                setPassengers(e.target.value === "SUV" ? 6 : 4); // demo logic
-                setSelectedRate(e.target.value === "Luxury" ? 50 : 20); // demo logic
-              }}
+              onChange={(e) => setSelectedModel(e.target.value)}
               disabled={!selectedMake}
+              required
             >
               <option value="">Choose Model</option>
               {models.map((model, index) => (
@@ -407,6 +507,7 @@ export default function Home({ car }) {
               className="date-input"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              required
             />
           </div>
 
@@ -417,6 +518,7 @@ export default function Home({ car }) {
               className="time-input"
               value={time}
               onChange={(e) => setTime(e.target.value)}
+              required
             />
           </div>
 
@@ -425,12 +527,9 @@ export default function Home({ car }) {
               {loading ? "Booking..." : "BOOK TAXI"}
             </button>
           </div>
-
-          {success && <p style={{ color: "green" }}>✅ Booking successful!</p>}
-          {error && <p style={{ color: "red" }}>❌ {error}</p>}
         </form>
-
       </section>
+
       {/* About section */}
       <section className="z_about_section">
         <div className="z_about_container">
@@ -459,7 +558,7 @@ export default function Home({ car }) {
             </h2>
             <p>
               UCAB is your trusted ride partner, offering safe, reliable, and
-              affordable taxi services 24/7. Whether you’re heading to the
+              affordable taxi services 24/7. Whether you're heading to the
               airport, attending a meeting, or exploring the city, our modern
               fleet and professional drivers ensure a comfortable journey every
               time.
@@ -491,7 +590,7 @@ export default function Home({ car }) {
           {/* Car Cards */}
           <div className="z_cars_container">
             <div className="z_cars_row">
-              {loading ? (
+              {vehiclesLoading ? (
                 <div className="text-center">Loading...</div>
               ) : vehicles && vehicles.length > 0 ? (
                 vehicles.map((car) => (
@@ -575,7 +674,10 @@ export default function Home({ car }) {
                         className={`z_car_book_button ${hoveredButton === car._id ? "z_car_book_button_hover" : ""}`}
                         onMouseEnter={() => setHoveredButton(car._id)}
                         onMouseLeave={() => setHoveredButton(null)}
-                        onClick={() => handleShow(car)}
+                        onClick={() => {
+                          console.log("Button clicked for vehicle:", car._id);
+                          handleShow(car);
+                        }}
                       >
                         Book Taxi Now →
                       </button>
@@ -583,49 +685,43 @@ export default function Home({ car }) {
                   </div>
                 ))
               ) : (
-                <>
-                  <div className="text-center">No vehicles available</div>
-                </>
-
+                <div className="text-center">No vehicles available</div>
               )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Booking Form Modal */}
+      {/* Updated Modal Booking Form */}
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Book Your Cab</Modal.Title>
+          <Modal.Title>
+            Book Your Cab - {selectedCar?.model || selectedCar?.name}
+          </Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleModalSubmit}>
           <Modal.Body>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group controlId="name">
-                  <Form.Label>Full Name</Form.Label>
-                  <Form.Control type="text" placeholder="Enter your name" required />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="phone">
-                  <Form.Label>Phone Number</Form.Label>
-                  <Form.Control type="tel" placeholder="Enter phone number" required />
-                </Form.Group>
-              </Col>
-            </Row>
-
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="pickup">
                   <Form.Label>Pickup Location</Form.Label>
-                  <Form.Control type="text" placeholder="Enter pickup location" required />
+                  <Form.Control
+                    name="pickup"
+                    type="text"
+                    placeholder="Enter pickup location"
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="drop">
                   <Form.Label>Drop Location</Form.Label>
-                  <Form.Control type="text" placeholder="Enter drop location" required />
+                  <Form.Control
+                    name="drop"
+                    type="text"
+                    placeholder="Enter drop location"
+                    required
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -634,34 +730,41 @@ export default function Home({ car }) {
               <Col md={6}>
                 <Form.Group controlId="date">
                   <Form.Label>Pickup Date</Form.Label>
-                  <Form.Control type="date" required />
+                  <Form.Control name="date" type="date" required />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="time">
                   <Form.Label>Pickup Time</Form.Label>
-                  <Form.Control type="time" required />
+                  <Form.Control name="time" type="time" required />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Form.Group controlId="passengers" className="mb-3">
-              <Form.Label>Number of Passengers</Form.Label>
-              <Form.Control type="number" min="1" placeholder="Enter passengers" required />
+            <Form.Group controlId="ratePerKm" className="mb-3">
+              <Form.Label>Rate/km</Form.Label>
+              <Form.Control
+                name="ratePerKm"
+                type="number"
+                min="1"
+                placeholder="Rate per km"
+                defaultValue={selectedCar?.perKmRate || selectedCar?.price || ''}
+                required
+              />
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant="success" type="submit">
-              Confirm Booking
+            <Button variant="success" type="submit" disabled={loading}>
+              {loading ? "Booking..." : "Confirm Booking"}
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
 
-      {/* Video */}
+      {/* Video Section */}
       <section className="x_hero_section">
         <div className="x_video_background">
           <video autoPlay muted loop playsInline>
@@ -689,88 +792,83 @@ export default function Home({ car }) {
           </div>
         </div>
       </section>
+
       {/* Our Best Services For You */}
-      <section class="z_service_section">
-        <div class="container">
-          <div class="z_service_heading">
-            <h2 class="z_service_title">
+      <section className="z_service_section">
+        <div className="container">
+          <div className="z_service_heading">
+            <h2 className="z_service_title">
               Our Best <span className="z_default_txt">Services</span> For You
             </h2>
-            <p class="z_service_subtitle">
+            <p className="z_service_subtitle">
               We provide comprehensive car rental services with the best quality
               and competitive prices for all your transportation needs.
             </p>
           </div>
 
-          <div class="z_service_grid">
-            {/* <!-- Service Card 1 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Deals For Every Budget</h3>
-              <p class="z_service_card_description">
+          <div className="z_service_grid">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">Deals For Every Budget</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
 
-            {/* <!-- Service Card 2 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Cleanliness & Comfort</h3>
-              <p class="z_service_card_description">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">Cleanliness & Comfort</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
 
-            {/* <!-- Service Card 3 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Best Prices Garanteed</h3>
-              <p class="z_service_card_description">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">Best Prices Garanteed</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
 
-            {/* <!-- Service Card 4 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">24/7 Order Available</h3>
-              <p class="z_service_card_description">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">24/7 Order Available</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
 
-            {/* <!-- Service Card 5 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Professional Drivers</h3>
-              <p class="z_service_card_description">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">Professional Drivers</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
 
-            {/* <!-- Service Card 6 --> */}
-            <div class="z_service_card">
-              <h3 class="z_service_card_title">Fast Car Delivery</h3>
-              <p class="z_service_card_description">
+            <div className="z_service_card">
+              <h3 className="z_service_card_title">Fast Car Delivery</h3>
+              <p className="z_service_card_description">
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-              <a href="#" class="z_service_view_more">
+              <a href="#" className="z_service_view_more">
                 View More
               </a>
             </div>
@@ -838,7 +936,6 @@ export default function Home({ car }) {
           </Swiper>
         </div>
       </section>
-
     </>
   );
 }
