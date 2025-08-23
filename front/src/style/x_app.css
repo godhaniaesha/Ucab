@@ -2718,7 +2718,7 @@ body {
 /* Role Radio Group Layout */
 .x_role_group {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
 }
 
@@ -2757,7 +2757,7 @@ body {
 
 /* When checked → Fill inside */
 .x_radio input[type="radio"]:checked+.x_radio_custom {
-  border-color: green;
+  border-color: #0f6e55;
   background-color: transparent;
 }
 
@@ -2768,7 +2768,7 @@ body {
   left: 4px;
   width: 8px;
   height: 8px;
-  background: green;
+  background: #0f6e55;
   border-radius: 50%;
 }
 

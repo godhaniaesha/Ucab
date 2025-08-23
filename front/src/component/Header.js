@@ -8,7 +8,9 @@ import {
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
-  FaTimes
+  FaTimes,
+  FaRegEyeSlash,
+  FaRegEye
 } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
 import { IoMailUnreadOutline, IoClose } from "react-icons/io5";
@@ -48,6 +50,10 @@ export default function Header() {
     newPassword: '',
     confirmNewPassword: ''
   });
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showConfirmResetPassword, setShowConfirmResetPassword] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem("token");
@@ -71,34 +77,34 @@ export default function Header() {
   }, []);
 
   // Close menu/profile when clicking outside
- useEffect(() => {
-  const handleClickOutside = (event) => {
-    // For menu
-    const clickedInsideMenu = event.target.closest('.x_menu') || event.target.closest('.x_filter-btn');
-    if (menuOpen && !clickedInsideMenu) {
-      setMenuOpen(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // For menu
+      const clickedInsideMenu = event.target.closest('.x_menu') || event.target.closest('.x_filter-btn');
+      if (menuOpen && !clickedInsideMenu) {
+        setMenuOpen(false);
+      }
+
+      // For profile dropdown
+      const clickedInsideProfile = event.target.closest('.x_profile');
+      if (profileOpen && !clickedInsideProfile) {
+        setProfileOpen(false);
+      }
+    };
+
+    if (menuOpen || profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      // Prevent scroll if menu is open
+      if (menuOpen) document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
 
-    // For profile dropdown
-    const clickedInsideProfile = event.target.closest('.x_profile');
-    if (profileOpen && !clickedInsideProfile) {
-      setProfileOpen(false);
-    }
-  };
-
-  if (menuOpen || profileOpen) {
-    document.addEventListener('mousedown', handleClickOutside);
-    // Prevent scroll if menu is open
-    if (menuOpen) document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = 'unset';
-  }
-
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-    document.body.style.overflow = 'unset';
-  };
-}, [menuOpen, profileOpen]);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'unset';
+    };
+  }, [menuOpen, profileOpen]);
 
 
   // Active link checker
@@ -114,9 +120,9 @@ export default function Header() {
     if (window.innerWidth <= 850) {
       setMenuOpen(false);
     }
-    
+
   };
-const handleLinktaxiClick = () => {
+  const handleLinktaxiClick = () => {
     if (window.innerWidth <= 850) {
       setMenuOpen(false);
     }
@@ -434,9 +440,27 @@ const handleLinktaxiClick = () => {
                 <label>Email</label>
                 <input type="email" name="email" value={loginForm.email} onChange={handleLoginInputChange} required placeholder="Enter your email" />
               </div>
-              <div className="x_form_group">
+              <div className="x_form_group" style={{ position: "relative" }}>
                 <label>Password</label>
-                <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} required placeholder="Enter your password" />
+                <input
+                  type={showLoginPassword ? "text" : "password"}
+                  name="password"
+                  value={loginForm.password}
+                  onChange={handleLoginInputChange}
+                  required
+                  placeholder="Enter your password"
+                  style={{ paddingRight: "2.5rem" }}
+                />
+                <span
+                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  onClick={() => setShowLoginPassword((v) => !v)}
+                >
+                  {showLoginPassword ? (
+                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                  ) : (
+                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                  )}
+                </span>
               </div>
               <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
               <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Login'}</button>
@@ -463,11 +487,37 @@ const handleLinktaxiClick = () => {
               </div>
               <div className="x_form_group">
                 <label>Phone Number</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required placeholder="Enter your phone number" />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}
+                  required
+                  placeholder="Enter your phone number"
+                />
               </div>
-              <div className="x_form_group">
+              <div className="x_form_group" style={{ position: "relative" }}>
                 <label>Password</label>
-                <input type="password" name="password" value={formData.password} onChange={handleInputChange} required placeholder="Enter your password" />
+                <input
+                  type={showRegisterPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter your password"
+                  style={{ paddingRight: "2.5rem" }}
+                />
+                <span
+                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  onClick={() => setShowRegisterPassword((v) => !v)}
+                >
+                  {showRegisterPassword ? (
+                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                  ) : (
+                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                  )}
+                </span>
               </div>
               <div className="x_form_group">
                 <label>Role</label>
@@ -516,7 +566,15 @@ const handleLinktaxiClick = () => {
             <div className="x_modal_form">
               <div className="x_form_group">
                 <label>Phone Number</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required placeholder="Enter your phone number" />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}
+                  required
+                  placeholder="Enter your phone number"
+                />
               </div>
               <button type="button" onClick={handleSendOtp} className="x_modal_btn" disabled={loading}>{loading ? 'Sending...' : 'Send OTP'}</button>
               <div className="x_modal_links">
@@ -558,13 +616,49 @@ const handleLinktaxiClick = () => {
               <button className="x_modal_close" onClick={closeAllModals}><IoClose /></button>
             </div>
             <form onSubmit={handlePasswordReset} className="x_modal_form">
-              <div className="x_form_group">
+              <div className="x_form_group" style={{ position: "relative" }}>
                 <label>New Password</label>
-                <input type="password" name="newPassword" value={formData.newPassword} onChange={handleInputChange} required placeholder="Enter new password" />
+                <input
+                  type={showResetPassword ? "text" : "password"}
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter new password"
+                  style={{ paddingRight: "2.5rem" }}
+                />
+                <span
+                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  onClick={() => setShowResetPassword((v) => !v)}
+                >
+                  {showResetPassword ? (
+                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                  ) : (
+                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                  )}
+                </span>
               </div>
-              <div className="x_form_group">
+              <div className="x_form_group" style={{ position: "relative" }}>
                 <label>Confirm New Password</label>
-                <input type="password" name="confirmNewPassword" value={formData.confirmNewPassword} onChange={handleInputChange} required placeholder="Confirm new password" />
+                <input
+                  type={showConfirmResetPassword ? "text" : "password"}
+                  name="confirmNewPassword"
+                  value={formData.confirmNewPassword}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Confirm new password"
+                  style={{ paddingRight: "2.5rem" }}
+                />
+                <span
+                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  onClick={() => setShowConfirmResetPassword((v) => !v)}
+                >
+                  {showConfirmResetPassword ? (
+                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                  ) : (
+                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                  )}
+                </span>
               </div>
               <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Reset Password'}</button>
               <div className="x_modal_links">
