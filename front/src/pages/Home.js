@@ -25,6 +25,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "../style/z_app.css";
 import Footer from "../component/Footer";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getVehicles } from '../redux/slice/vehicles.slice';
@@ -102,7 +105,7 @@ export default function Home({ car }) {
   // Show success/error messages
   useEffect(() => {
     if (success) {
-      alert("🎉 Booking successful!");
+      toast.success("🎉 Booking successful!");
       // Reset form states after successful booking
       if (show) {
         setShow(false); // Close modal
@@ -114,13 +117,13 @@ export default function Home({ car }) {
         setSelectedModel("");
         setPassengers("");
         setSelectedRate("");
-        setDate("");
-        setTime("");
+        // setDate("");
+        // setTime("");
       }
       dispatch(resetBookingStatus());
     }
     if (error) {
-      alert(`❌ Booking failed: ${error}`);
+      toast.error(`❌ Booking failed: ${error}`);
       dispatch(resetBookingStatus());
     }
   }, [success, error, show, dispatch]);
@@ -132,8 +135,8 @@ export default function Home({ car }) {
   const [selectedModel, setSelectedModel] = useState("");
   const [passengers, setPassengers] = useState("");
   const [selectedRate, setSelectedRate] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  // const [date, setDate] = useState("");
+  // const [time, setTime] = useState("");
 
   // Extract unique makes
   const makes = [...new Set(vehicles.map(v => v.make))];
@@ -161,13 +164,13 @@ export default function Home({ car }) {
     try {
       const userId = getUserIdFromToken();
       if (!userId) {
-        alert("You must be logged in to book.");
+        toast.error("You must be logged in to book.");
         return;
       }
 
       // Validate required fields
-      if (!pickup || !dropoff || !selectedModel || !date || !time) {
-        alert("Please fill all required fields.");
+      if (!pickup || !dropoff || !selectedModel ) {
+        toast.error("Please fill all required fields.");
         return;
       }
 
@@ -177,7 +180,7 @@ export default function Home({ car }) {
       const dropCoords = await getCoordinates(dropoff);
 
       if (!pickupCoords || !dropCoords) {
-        alert("Could not fetch coordinates for entered locations.");
+        toast.error("Could not fetch coordinates for entered locations.");
         return;
       }
 
@@ -187,7 +190,7 @@ export default function Home({ car }) {
       );
 
       if (!selectedVehicle) {
-        alert("Selected vehicle not found.");
+        toast.error("Selected vehicle not found.");
         return;
       }
 
@@ -206,8 +209,8 @@ export default function Home({ car }) {
         vehicleType: selectedVehicle?.type || "standard",
         preferredVehicleId: selectedVehicle?._id,
         preferredVehicleModel: selectedModel,
-        pickupDate: date,
-        pickupTime: time,
+        // pickupDate: date,
+        // pickupTime: time,
         ratePerKm: selectedVehicle?.perKmRate || selectedRate,
       };
 
@@ -226,7 +229,7 @@ export default function Home({ car }) {
     try {
       const userId = getUserIdFromToken();
       if (!userId) {
-        alert("You must be logged in to book.");
+        toast.error("You must be logged in to book.");
         return;
       }
 
@@ -235,12 +238,12 @@ export default function Home({ car }) {
       const pickupLocation = formData.get('pickup');
       const dropLocation = formData.get('drop');
       const pickupDate = formData.get('date');
-      const pickupTime = formData.get('time');
+      // const pickupTime = formData.get('time');
       const ratePerKm = formData.get('ratePerKm');
 
       // Validate required fields
-      if (!pickupLocation || !dropLocation || !pickupDate || !pickupTime) {
-        alert("Please fill all required fields.");
+      if (!pickupLocation || !dropLocation ) {
+        toast.error("Please fill all required fields.");
         return;
       }
 
@@ -249,7 +252,7 @@ export default function Home({ car }) {
       const dropCoords = await getCoordinates(dropLocation);
 
       if (!pickupCoords || !dropCoords) {
-        alert("Could not fetch coordinates for entered locations.");
+        toast.error("Could not fetch coordinates for entered locations.");
         return;
       }
 
@@ -268,8 +271,8 @@ export default function Home({ car }) {
         vehicleType: selectedCar?.type || "standard",
         preferredVehicleId: selectedCar?._id,
         preferredVehicleModel: selectedCar?.model || selectedCar?.name,
-        pickupDate: pickupDate,
-        pickupTime: pickupTime,
+        // pickupDate: pickupDate,
+        // pickupTime: pickupTime,
         ratePerKm: selectedCar?.perKmRate || ratePerKm,
       };
 
