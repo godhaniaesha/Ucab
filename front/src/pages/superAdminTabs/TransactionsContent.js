@@ -89,8 +89,8 @@ export default function SA_TransactionsContent() {
                         {txn.booking?.vehicleType?.toUpperCase() || "N/A"}
                       </Badge>
                     </td>
-                    <td>{txn.booking?.fare}</td>
-                    <td>{txn.amount ? txn.amount.toFixed(2) : "0.00"}</td>
+                    <td>${txn.booking?.fare}</td>
+                    <td>${txn.amount ? txn.amount.toFixed(2) : "0.00"}</td>
                     <td>
                       <Badge
                         bg={txn.status === "completed" ? "success" : "warning"}
@@ -130,13 +130,13 @@ export default function SA_TransactionsContent() {
       {totals && (
         <div className="mt-3 p-3 border rounded bg-light">
           <h6 className="fw-bold">Summary</h6>
-          <p>Total Received: ${totals.totalReceived}</p>
-          <p>Total Sent: ${totals.totalSent}</p>
+          <p>Total Received: ${totals.totalReceived.toFixed(2)}</p>
+          <p>Total Sent: ${totals.totalSent.toFixed(2)}</p>
           <p>
-            Driver/Owner Earnings: ${totals.driverOwner.totalAmount} (
+            Driver/Owner Earnings: ${totals.driverOwner.totalAmount.toFixed(2)} (
             {totals.driverOwner.totalBookings} bookings)
           </p>
-          <p>Passengers Total Sent: ${totals.passenger.totalSent}</p>
+          <p>Passengers Total Sent: ${totals.passenger.totalSent.toFixed(2)}</p>
           <p>Total Passengers: {stats?.totalPassengers}</p>
         </div>
       )}

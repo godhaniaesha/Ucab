@@ -551,6 +551,7 @@ body {
   .x_footer-col {
     flex: 1;
     min-width: 200px;
+    max-width: 430px;
   }
 }
 

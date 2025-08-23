@@ -128,9 +128,7 @@ export default function Footer() {
                             <li>
                                 <FaCaretRight color="#199675" /> <Link className='xf_link' to="/about">About Us</Link>
                             </li>
-                            <li>
-                                <FaCaretRight color="#199675" /> <Link className='xf_link' to="/pages">My Account</Link>
-                            </li>
+                            
                             <li>
                                 <FaCaretRight color="#199675" /> <Link className='xf_link' to="/taxi">Book A Ride</Link>
                             </li>
