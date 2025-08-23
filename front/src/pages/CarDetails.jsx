@@ -23,6 +23,9 @@ import "../style/z_app.css";
 import Footer from "../component/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { getVehicles } from "../redux/slice/vehicles.slice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function CarDetails() {
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ export default function CarDetails() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Cab booked successfully!");
+    toast.success("Cab booked successfully!");
     handleClose();
   };
 

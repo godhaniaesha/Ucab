@@ -18,6 +18,9 @@ import { PiPhoneCallBold } from "react-icons/pi";
 import { LuAlarmClock } from "react-icons/lu";
 import "../style/x_app.css";
 import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword, logoutUser } from "../redux/slice/auth.slice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 
 export default function Header() {
@@ -246,7 +249,7 @@ export default function Header() {
       })
       .catch((err) => {
         console.log('Login error:', err);
-        alert(err || 'Login failed');
+        toast.error(err || 'Login failed');
       });
   };
 
@@ -269,7 +272,7 @@ export default function Header() {
       })
       .catch((err) => {
         console.log('Registration error:', err);
-        alert(err || 'Registration failed');
+        toast.error(err || 'Registration failed');
       });
   };
 
@@ -282,7 +285,7 @@ export default function Header() {
 
   const handleSendOtp = () => {
     if (!formData.phone) {
-      alert('Please enter phone number');
+      toast.error('Please enter phone number');
       return;
     }
     dispatch(forgotPassword(formData.phone))
@@ -295,7 +298,7 @@ export default function Header() {
       })
       .catch((err) => {
         console.log('OTP send error:', err);
-        alert(err || 'Failed to send OTP');
+        toast.error(err || 'Failed to send OTP');
       });
   };
 
@@ -311,14 +314,14 @@ export default function Header() {
       })
       .catch((err) => {
         console.log('OTP verification error:', err);
-        alert(err || 'Invalid OTP');
+        toast.error(err || 'Invalid OTP');
       });
   };
 
   const handlePasswordReset = (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmNewPassword) {
-      alert('Passwords do not match!');
+      toast.error('Passwords do not match!');
       return;
     }
     const resetPayload = {
@@ -337,7 +340,7 @@ export default function Header() {
       })
       .catch((err) => {
         console.log('Password reset error:', err);
-        alert(err || 'Failed to reset password');
+        toast.error(err || 'Failed to reset password');
       });
   };
 

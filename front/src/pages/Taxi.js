@@ -9,6 +9,9 @@ import Footer from '../component/Footer';
 import { getVehicles } from '../redux/slice/vehicles.slice';
 import { createBooking, resetBookingStatus } from '../redux/slice/passengers.slice';
 import { fetchUserProfile } from '../redux/slice/auth.slice';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function Taxi() {
   const navigate = useNavigate();
@@ -41,12 +44,12 @@ export default function Taxi() {
   // Show success/error messages - Same as Home.js
   useEffect(() => {
     if (success) {
-      alert("🎉 Booking successful!");
+      toast.success("🎉 Booking successful!");
       handleClose(); // Close modal on success
       dispatch(resetBookingStatus());
     }
     if (error) {
-      alert(`❌ Booking failed: ${error}`);
+      toast.error(`❌ Booking failed: ${error}`);
       dispatch(resetBookingStatus());
     }
   }, [success, error, dispatch]);
@@ -233,7 +236,7 @@ export default function Taxi() {
   // Modal handlers
   const handleShow = (car = null) => {
     if (!checkBankDetails()) {
-      alert('Please add your bank details in Profile section before booking a taxi. Required: Account Number, Account Holder Name, IFSC Code, and Bank Name.');
+      toast.error('Please add your bank details in Profile section before booking a taxi. Required: Account Number, Account Holder Name, IFSC Code, and Bank Name.');
       return;
     }
 
@@ -269,7 +272,7 @@ export default function Taxi() {
     try {
       const userId = getUserIdFromToken();
       if (!userId) {
-        alert("You must be logged in to book.");
+        toast.error("You must be logged in to book.");
         return;
       }
 
@@ -283,13 +286,13 @@ export default function Taxi() {
 
       // Validate required fields
       if (!pickupLocation || !dropLocation || !pickupDate || !pickupTime) {
-        alert("Please fill all required fields.");
+        toast.error("Please fill all required fields.");
         return;
       }
       const pickupCoords = await getCoordinates(pickupLocation);
 
       if (!pickupCoords) {
-        alert(`Could not find location: "${pickupLocation}". Please check the spelling or try a more specific address (include city, state).`);
+        toast.error(`Could not find location: "${pickupLocation}". Please check the spelling or try a more specific address (include city, state).`);
         return;
       }
 
@@ -297,7 +300,7 @@ export default function Taxi() {
       const dropCoords = await getCoordinates(dropLocation);
 
       if (!dropCoords) {
-        alert(`Could not find location: "${dropLocation}". Please check the spelling or try a more specific address (include city, state).`);
+        toast.error(`Could not find location: "${dropLocation}". Please check the spelling or try a more specific address (include city, state).`);
         return;
       }
 
@@ -315,7 +318,7 @@ export default function Taxi() {
 
       if (!isValidCoordinate(pickupCoords) || !isValidCoordinate(dropCoords)) {
         console.error("❌ Invalid coordinate format detected");
-        alert("Invalid coordinates received. Please try different locations.");
+        toast.error("Invalid coordinates received. Please try different locations.");
         return;
       }
 
@@ -356,16 +359,16 @@ export default function Taxi() {
       // Provide more specific error messages
       if (err.message) {
         if (err.message.includes('No cab available')) {
-          alert(`❌ ${err.message}\n\nThis might be because:\n• No drivers are currently active in your area\n• Service not available in this location\n• Try a different pickup location or time`);
+          toast.error(`❌ ${err.message}\n\nThis might be because:\n• No drivers are currently active in your area\n• Service not available in this location\n• Try a different pickup location or time`);
         } else if (err.message.includes('coordinates')) {
-          alert("Failed to get location coordinates. Please try again with more specific addresses.");
+          toast.error("Failed to get location coordinates. Please try again with more specific addresses.");
         } else if (err.message.includes('network')) {
-          alert("Network error. Please check your internet connection and try again.");
+          toast.error("Network error. Please check your internet connection and try again.");
         } else {
-          alert(`Booking failed: ${err.message}`);
+          toast.error(`Booking failed: ${err.message}`);
         }
       } else {
-        alert(`Booking failed: ${err}`);
+        toast.error(`Booking failed: ${err}`);
       }
     }
   };
