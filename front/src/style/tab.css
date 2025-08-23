@@ -130,10 +130,10 @@
   .d_nav_tabs_container {
     display: flex;
     overflow-x: auto;
-    gap: 0.5rem;
+    gap: 0rem;
     padding: 1rem 0;
     scrollbar-width: thin;
-    justify-content: start;
+    justify-content: space-around;
     width: 100% !important;
   }
  
