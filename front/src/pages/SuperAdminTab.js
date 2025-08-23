@@ -8,6 +8,7 @@ import SA_ManageVehiclesContent from "./superAdminTabs/ManageVehiclesContent";
 import SA_TransactionsContent from "./superAdminTabs/TransactionsContent";
 import ContactContent from "./superAdminTabs/ContactContent"; 
 import '../style/tab.css';
+import SA_MyAccountContent from "./superAdminTabs/MyAccountContent";
 
 export default function SuperAdminTab() {
   // ✅ Load from localStorage if exists
@@ -22,6 +23,8 @@ export default function SuperAdminTab() {
     { id: "manage-vehicles", name: "Manage Vehicles", iconClass: "bi bi-car-front-fill", component: <SA_ManageVehiclesContent /> },
     { id: "transactions", name: "Transactions", iconClass: "bi bi-cash-stack", component: <SA_TransactionsContent /> },
     { id: "contacts", name: "Manage Contacts", iconClass: "bi bi-envelope-fill", component: <ContactContent /> },
+    { id: "my-account", name: "My Account", iconClass: "bi bi-person-circle", component: <SA_MyAccountContent /> }, // ✅ NEW TAB
+
   ];
 
   // ✅ Save active tab to localStorage whenever it changes

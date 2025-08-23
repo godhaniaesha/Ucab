@@ -130,15 +130,13 @@
   .d_nav_tabs_container {
     display: flex;
     overflow-x: auto;
-    gap: 0.5rem;
+    gap: 0rem;
     padding: 1rem 0;
     scrollbar-width: thin;
-    justify-content: center;
+    justify-content: space-around;
     width: 100% !important;
   }
-  .d_nav_tabs_container .d_nav_tab:first-child {
-    margin-left: 46px;
-  }
+ 
   .d_driver_tab .d_nav_tabs_container .d_nav_tab:first-child {
     margin-left: 0px !important;
   }
@@ -180,7 +178,7 @@
   }
   .d_nav_tabs_container {
     display: flex !important;
-    justify-content: center !important;
+    justify-content: space-between !important;
     padding: 0rem;
     margin: auto;
     padding-top: 0.5rem;

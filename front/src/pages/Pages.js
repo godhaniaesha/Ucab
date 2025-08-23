@@ -17,7 +17,6 @@ export default function Pages() {
     password: "********",
     phone: "",
     role: "",
-    status: "",
     documentsVerified: false,
     profileImage: "",
     bankDetails: {
@@ -45,7 +44,6 @@ export default function Pages() {
         email: profile.email || "",
         phone: profile.phone || "",
         role: profile.role || "",
-        status: profile.status || "",
         documentsVerified: profile.documentsVerified || false,
         profileImage: profile.profileImage || "",
         password: "********",
@@ -108,7 +106,6 @@ export default function Pages() {
     formData.append('email', profileData.email || '');
     formData.append('phone', profileData.phone || '');
     formData.append('role', profileData.role || '');
-    formData.append('status', profileData.status || '');
     formData.append('documentsVerified', profileData.documentsVerified ? "true" : "false");
   
     // Objects as JSON strings
@@ -189,10 +186,10 @@ export default function Pages() {
         </div>
 
         <div className="x_grid">
-          <div className="x_form_group">
+          {/* <div className="x_form_group">
             <label>Status</label>
             <input type="text" name="status" value={profileData.status} disabled={true} />
-          </div>
+          </div> */}
           <div className="x_form_group">
             <label>Documents Verified</label>
             <input type="text" value={profileData.documentsVerified ? "Yes" : "No"} disabled={true} />
