@@ -429,9 +429,9 @@
 /* Our Best Services For You */
 
 .z_service_section {
-  padding-top: 10px !important;
+  padding-top: 3rem !important;
   background-color: #f8f9fa;
-  padding-bottom: 2rem !important;
+  padding-bottom: 3rem !important;
 }
 
 .z_service_heading {
@@ -976,8 +976,8 @@
   border-radius: 20px;
   padding: 30px 25px;
   position: relative;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -26px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -36px inset;
   transition: all 0.4s ease;
   text-align: left;
   height: 280px;
@@ -1002,7 +1002,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 2px solid #ff9500;
+  border: 2px solid #0f6e55;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -1019,7 +1019,7 @@
 }
 
 .z_testi_role {
-  color: #ff9500;
+  color: #0f6e55;
   font-size: 0.85rem;
   font-weight: 500;
   margin: 0;

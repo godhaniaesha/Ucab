@@ -44,30 +44,30 @@ export default function Footer() {
             }
         };
     }, []);
- const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
+    const dispatch = useDispatch();
+    const [email, setEmail] = useState("");
 
-  const { loading, error, success, message } = useSelector((state) => state.subscribe);
+    const { loading, error, success, message } = useSelector((state) => state.subscribe);
 
-  const handleSubscribe = (e) => {
-    e.preventDefault();
+    const handleSubscribe = (e) => {
+        e.preventDefault();
 
-    if (!email) {
-      toast.error("Please enter your email");
-      return;
-    }
+        if (!email) {
+            toast.error("Please enter your email");
+            return;
+        }
 
-    // Dispatch the createSubscribe thunk
-    dispatch(createSubscribe({ email }))
-      .unwrap()
-      .then(() => {
-        toast.success(message || "Subscribed successfully!");
-        setEmail(""); // Clear input after success
-      })
-      .catch((err) => {
-        toast.error(err || "Subscription failed");
-      });
-  };
+        // Dispatch the createSubscribe thunk
+        dispatch(createSubscribe({ email }))
+            .unwrap()
+            .then(() => {
+                toast.success(message || "Subscribed successfully!");
+                setEmail(""); // Clear input after success
+            })
+            .catch((err) => {
+                toast.error(err || "Subscription failed");
+            });
+    };
 
     return (
         <footer className="x_footer">
@@ -102,7 +102,7 @@ export default function Footer() {
                                     rel="noopener noreferrer"
                                     style={{ textDecoration: "none", color: "inherit" }}
                                 >
-                                    <FaMapMarkerAlt /> 25/B Milford Road, New York
+                                    <FaMapMarkerAlt /> 456 Business Avenue, Australia. 
                                 </a>
                             </p>
                             {/* <p><FaEnvelope /> info@example.com</p> */}
@@ -128,7 +128,7 @@ export default function Footer() {
                             <li>
                                 <FaCaretRight color="#199675" /> <Link className='xf_link' to="/about">About Us</Link>
                             </li>
-                            
+
                             <li>
                                 <FaCaretRight color="#199675" /> <Link className='xf_link' to="/taxi">Book A Ride</Link>
                             </li>
@@ -158,23 +158,23 @@ export default function Footer() {
                     </div>
 
                     {/* Col 4 - Newsletter */}
-                   <div className="x_footer-col">
-      <div className="x_footer-ls">
-        <h3>Newsletter</h3>
-        <p>Subscribe our newsletter to get latest updates and news.</p>
-        <form className="x_footer-newsletter" onSubmit={handleSubscribe}>
-          <input
-            type="email"
-            placeholder="Your Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button type="submit">
-            SUBSCRIBE NOW <PiTelegramLogoBold />
-          </button>
-        </form>
-      </div>
-    </div>
+                    <div className="x_footer-col">
+                        <div className="x_footer-ls">
+                            <h3>Newsletter</h3>
+                            <p>Subscribe our newsletter to get latest updates and news.</p>
+                            <form className="x_footer-newsletter" onSubmit={handleSubscribe}>
+                                <input
+                                    type="email"
+                                    placeholder="Your Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                <button type="submit">
+                                    SUBSCRIBE NOW <PiTelegramLogoBold />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -30,38 +30,38 @@ export default function Contact() {
   );
 
   // ✅ Formik Setup
-const formik = useFormik({
-  initialValues: {
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  },
-  validationSchema,
-  onSubmit: (values) => {
-    dispatch(createContact(values));
-  },
-});
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      dispatch(createContact(values));
+    },
+  });
 
 
   // ✅ Handle toast messages
-useEffect(() => {
-  if (success) {
-    toast.success("Message sent successfully!");
-    formik.resetForm();   // <-- clear form here after success
-  }
-  if (error) {
-    toast.error(error);
-  }
+  useEffect(() => {
+    if (success) {
+      toast.success("Message sent successfully!");
+      formik.resetForm();   // <-- clear form here after success
+    }
+    if (error) {
+      toast.error(error);
+    }
 
-  if (success || error) {
-    const timer = setTimeout(() => {
-      dispatch(clearContactSuccess());
-      dispatch(clearContactError());
-    }, 4000);
-    return () => clearTimeout(timer);
-  }
-}, [success, error, message, dispatch]);
+    if (success || error) {
+      const timer = setTimeout(() => {
+        dispatch(clearContactSuccess());
+        dispatch(clearContactError());
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error, message, dispatch]);
 
   return (
     <>
@@ -179,14 +179,23 @@ useEffect(() => {
       {/* Map Section */}
       <section className="container mb-5">
         <div className="z_cntct_map_section">
-          <iframe
+          {/* <iframe
             className="z_cntct_map"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3683.8914058748824!2d72.5713625749929!3d22.58904567948078!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e84f2be0a4f97%3A0x64b6ab7e9e8f4c25!2sAhmedabad%2C%20Gujarat%2C%20India!5e0!3m2!1sen!2sin!4v1690284576826!5m2!1sen!2sin"
             allowFullScreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             title="Our Location"
-          ></iframe>
+          ></iframe> */}
+          <iframe
+           className="z_cntct_map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6304.080007782037!2d144.95645279824618!3d-37.81253196188106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d3d1412ac51%3A0x234488535eb9350a!2sClarence%20%7C%20456%20Lonsdale%20Street%20-%20Serviced%20Offices%20%26%20Workspaces!5e0!3m2!1sen!2sin!4v1756095683853!5m2!1sen!2sin"
+            width="600"
+            height="450"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
       </section>
 

@@ -880,7 +880,7 @@ export default function Home({ car }) {
             spaceBetween={25}
             slidesPerView={4}
             pagination={{ clickable: true }}
-            autoplay={{ delay: 3500, disableOnInteraction: false }}
+            // autoplay={{ delay: 3500, disableOnInteraction: false }}
             loop={true}
             className="z_testi_slider"
             breakpoints={{
