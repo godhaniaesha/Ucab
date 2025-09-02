@@ -267,7 +267,7 @@ export default function Header() {
       .then((res) => {
         console.log('Registration successful:', res);
         setShowRegisterModal(false);
-        setShowLoginModal(true);
+        // setShowLoginModal(true);
         resetFormData();
       })
       .catch((err) => {
@@ -464,8 +464,11 @@ export default function Header() {
                     <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
                   )}
                 </span>
+               
               </div>
+               <div className="x_modal_links">                  
               <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
+                </div>
               <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Login'}</button>
               <div className="x_modal_links">
                 <button type="button" className="x_link_btn text-decoration-none" onClick={() => { setShowLoginModal(false); setShowRegisterModal(true); }}>Don't have account? Register</button>

@@ -4,7 +4,10 @@ import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { TbArrowMoveRightFilled } from "react-icons/tb";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import {
+  FaAngleLeft,
   FaCalendarAlt,
+  FaChevronLeft,
+  FaChevronRight,
   FaClock,
   FaEnvelope,
   FaMapMarkerAlt,
@@ -169,7 +172,7 @@ export default function Home({ car }) {
       }
 
       // Validate required fields
-      if (!pickup || !dropoff || !selectedModel ) {
+      if (!pickup || !dropoff || !selectedModel) {
         toast.error("Please fill all required fields.");
         return;
       }
@@ -242,7 +245,7 @@ export default function Home({ car }) {
       const ratePerKm = formData.get('ratePerKm');
 
       // Validate required fields
-      if (!pickupLocation || !dropLocation ) {
+      if (!pickupLocation || !dropLocation) {
         toast.error("Please fill all required fields.");
         return;
       }
@@ -385,7 +388,10 @@ export default function Home({ car }) {
       <section className="z_slide_section">
         <Swiper
           modules={[Navigation, Autoplay]}
-          navigation
+          navigation={{
+            nextEl: '.custom-swiper-next',
+            prevEl: '.custom-swiper-prev',
+          }}
           autoplay={{ delay: 4000, disableOnInteraction: false }}
           loop={true}
           className="z_slide_wrapper"
@@ -416,6 +422,36 @@ export default function Home({ car }) {
               </div>
             </SwiperSlide>
           ))}
+          {/* Custom navigation buttons */}
+          <div className="custom-swiper-prev"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "20px",
+              zIndex: 10,
+              width: "48px",
+              height: "48px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ fontSize: "28px", color: "#fff" }}><FaChevronLeft /></span>
+          </div>
+          <div className="custom-swiper-next" style={{
+            position: "absolute",
+            top: "50%",
+            right: "20px",
+            zIndex: 10,
+            width: "48px",
+            height: "48px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <span style={{ fontSize: "28px", color: "#fff" }}><FaChevronRight /></span>
+          </div>
+
         </Swiper>
 
         {/* Main Booking Form */}
@@ -795,7 +831,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
 
             {/* <!-- Service Card 2 --> */}
@@ -805,7 +841,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
 
             {/* <!-- Service Card 3 --> */}
@@ -815,7 +851,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
 
             {/* <!-- Service Card 4 --> */}
@@ -825,7 +861,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
 
             {/* <!-- Service Card 5 --> */}
@@ -835,7 +871,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
 
             {/* <!-- Service Card 6 --> */}
@@ -845,7 +881,7 @@ export default function Home({ car }) {
                 Corporis suscipit laboriosa, nisl ut aliquid ex commodi vel
                 conset? Et harum quidem est.
               </p>
-             
+
             </div>
           </div>
         </div>

@@ -14,14 +14,14 @@ const otpStore = {};
 
 exports.register = async (req, res) => {
   try {
-    const { 
-      name, 
-      email, 
-      password, 
-      role, 
-      phone, 
-      vehicle, 
-      bankDetails, 
+    const {
+      name,
+      email,
+      password,
+      role,
+      phone,
+      vehicle,
+      bankDetails,
       paymentMethods // array of { provider, customerId, paymentMethodId, methodType, last4 }
     } = req.body;
 
@@ -34,16 +34,24 @@ exports.register = async (req, res) => {
     // Hash password
     const hash = await bcrypt.hash(password, 12);
 
+    // ✅ Always prepend +91 to phone
+    // let formattedPhone = phone ? phone.toString().trim() : '';
+    // if (formattedPhone && !formattedPhone.startsWith('+91')) {
+    //   formattedPhone = `+91${formattedPhone}`;
+    // }
+    const formattedPhone = `+91${phone}`;
     // Create user
     const user = await User.create({
       name,
       email,
       password: hash,
       role: role || 'passenger',
-      phone,
+      phone: formattedPhone,   // ✅ save with +91
       bankDetails: bankDetails || undefined,
       paymentMethods: Array.isArray(paymentMethods) ? paymentMethods : []
     });
+    console.log(user.phone,"phone number");
+    
 
     // If driver, create vehicle
     if (role === 'driver' && vehicle) {
@@ -61,7 +69,7 @@ exports.register = async (req, res) => {
         gpsNavigation: vehicle.gpsNavigation,
         perKmRate: vehicle.perKmRate,
         extraKmRate: vehicle.extraKmRate,
-        description : vehicle.description || '', // optional description
+        description: vehicle.description || '', // optional description
       });
 
       user.vehicle = newVehicle._id;
@@ -73,6 +81,7 @@ exports.register = async (req, res) => {
         id: user._id,
         email: user.email,
         role: user.role,
+        phone: user.phone,   // ✅ return phone with +91
         vehicle: user.vehicle || null,
         bankDetails: user.bankDetails || null,
         paymentMethods: user.paymentMethods || []
@@ -83,6 +92,7 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {
@@ -102,9 +112,9 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
-      user: { 
-        id: user._id, 
-        role: user.role, 
+      user: {
+        id: user._id,
+        role: user.role,
         vehicle: user.vehicle || null,
         bankDetails: user.bankDetails || null,
         paymentMethods: user.paymentMethods || []
@@ -120,7 +130,7 @@ exports.logout = async (req, res) => {
   try {
     // Get token from authorization header
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -149,17 +159,18 @@ exports.forgotPassword = async (req, res) => {
   try {
     var { phone } = req.body;
     console.log("Received phone number:", phone);
+
     
-    const newphone = '+91' + phone;
-    var phone = newphone;
-    console.log("Formatted phone number for Twilio:", newphone);
-    const user = await User.findOne({ phone});
+    console.log("Formatted phone number for Twilio:", phone);
+    const user = await User.findOne({ phone });
     if (!user) return res.status(404).json({ message: 'User with this phone not found' });
 
     const otp = Math.floor(100000 + Math.random() * 900000);
 
     // Save OTP and expiry in user document
     user.otp = otp;
+    console.log(otp,"otp");
+    
     user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 min
     await user.save();
 
@@ -205,7 +216,7 @@ exports.verifyOtp = async (req, res) => {
     }
     if (parseInt(otp) !== user.otp) return res.status(400).json({ message: 'Invalid OTP' });
 
-    
+
     await user.save();
 
     res.json({ message: 'OTP verified successfully' });
@@ -222,7 +233,7 @@ exports.verifyOtp = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     var { phone, otp, newPassword, confirmPassword } = req.body;
-const newphone = '+91' + phone;
+    const newphone = '+91' + phone;
     var phone = newphone;
     // Check if newPassword and confirmPassword match
     if (newPassword !== confirmPassword) {
@@ -265,20 +276,20 @@ exports.getUser = async (req, res) => {
   try {
     // Get token from header
     const token = req.headers.authorization?.split(' ')[1];
-    console.log(token,'token');
-    
+    console.log(token, 'token');
+
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
     }
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // Get user data
     const user = await User.findById(decoded.id)
       .select('-password -otp -otpExpires')
       .populate('vehicle');
-      
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -343,7 +354,7 @@ exports.getAllPassengers = async (req, res) => {
       .select('-password -otp -otpExpires');
 
     res.json({
-      success: true, 
+      success: true,
       count: passengers.length,
       passengers
     });
@@ -352,68 +363,68 @@ exports.getAllPassengers = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-  /**
-   * Admin Stats API
-   * Returns: total drivers, total passengers, rides today, today's revenue, pending verification
-   */
-  exports.getAdminStats = async (req, res) => {
-    try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
+/**
+ * Admin Stats API
+ * Returns: total drivers, total passengers, rides today, today's revenue, pending verification
+ */
+exports.getAdminStats = async (req, res) => {
+  try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
 
-      // Total drivers
-      const totalDrivers = await User.countDocuments({ role: USER_ROLES.DRIVER });
-      // Total passengers
-      const totalPassengers = await User.countDocuments({ role: USER_ROLES.PASSENGER });
+    // Total drivers
+    const totalDrivers = await User.countDocuments({ role: USER_ROLES.DRIVER });
+    // Total passengers
+    const totalPassengers = await User.countDocuments({ role: USER_ROLES.PASSENGER });
 
-      // Rides today (completed bookings)
-      const ridesToday = await Booking.countDocuments({
-        status: 'completed',
-        createdAt: { $gte: todayStart, $lte: todayEnd }
-      });
+    // Rides today (completed bookings)
+    const ridesToday = await Booking.countDocuments({
+      status: 'completed',
+      createdAt: { $gte: todayStart, $lte: todayEnd }
+    });
 
-      // Today's revenue (sum of completed payments for today's bookings)
-      const payments = await Payment.aggregate([
-        {
-          $lookup: {
-            from: 'bookings',
-            localField: 'booking',
-            foreignField: '_id',
-            as: 'bookingInfo'
-          }
-        },
-        { $unwind: '$bookingInfo' },
-        {
-          $match: {
-            status: 'completed',
-            'bookingInfo.createdAt': { $gte: todayStart, $lte: todayEnd }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: '$amount' }
-          }
+    // Today's revenue (sum of completed payments for today's bookings)
+    const payments = await Payment.aggregate([
+      {
+        $lookup: {
+          from: 'bookings',
+          localField: 'booking',
+          foreignField: '_id',
+          as: 'bookingInfo'
         }
-      ]);
-      const todaysRevenue = payments.length > 0 ? Math.round(payments[0].total) : 0;
-      // Pending verification (drivers with documentsVerified: false)
-      const pendingVerification = await Booking.countDocuments({ status: 'assigned' });
-      res.json({
-        success: true,
-        stats: {
-          totalDrivers,
-          totalPassengers,
-          ridesToday,
-          todaysRevenue,
-          pendingVerification
+      },
+      { $unwind: '$bookingInfo' },
+      {
+        $match: {
+          status: 'completed',
+          'bookingInfo.createdAt': { $gte: todayStart, $lte: todayEnd }
         }
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error', error: err.message });
-    }
-  };
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+    const todaysRevenue = payments.length > 0 ? Math.round(payments[0].total) : 0;
+    // Pending verification (drivers with documentsVerified: false)
+    const pendingVerification = await Booking.countDocuments({ status: 'assigned' });
+    res.json({
+      success: true,
+      stats: {
+        totalDrivers,
+        totalPassengers,
+        ridesToday,
+        todaysRevenue,
+        pendingVerification
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
 

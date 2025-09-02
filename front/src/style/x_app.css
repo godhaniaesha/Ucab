@@ -585,7 +585,8 @@ body {
     padding: 30px 15px 40px 15px;
     gap: 25px;
   }
-  .site-info{
+
+  .site-info {
     font-size: small;
   }
 }
@@ -959,7 +960,7 @@ body {
   right: -120px;
   /* Start outside screen */
   bottom: 0;
-  animation: taxi-right-left 8s linear infinite;
+  animation: taxi-left-right 8s linear infinite;
   animation-delay: 3s;
 
 }
@@ -976,7 +977,7 @@ body {
   right: -120px;
   bottom: 0;
   animation: taxi-right-left 8s linear infinite;
-  
+
   /* Delay before Taxi 2 starts */
 }
 
@@ -2164,11 +2165,16 @@ body {
   .x_offcanvas_toggle {
     /* top: 60px; */
     right: 15px;
-    width: 45px;
-    height: 45px;
+    width: 30px;
+    height: 30px;
   }
 
+  .x_offcanvas_toggle span {
+    width: 16px;
+  }
 }
+
+
 
 @media (max-width: 376px) {
   .x_offcanvas {
@@ -2262,16 +2268,6 @@ body {
     font-size: 0.9rem;
   }
 
-  .x_offcanvas_toggle {
-    /* top: 10px; */
-    right: 10px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .x_offcanvas_toggle span {
-    width: 18px;
-  }
 }
 
 /* end blog section */
@@ -3504,6 +3500,7 @@ body {
     padding: 20px 0px;
   }
 }
+
 .x_profile_header_title {
   display: flex;
   align-items: center;
@@ -3520,6 +3517,7 @@ body {
 .x_edit_icon:hover {
   color: #0c5a45;
 }
+
 /* Terms & ConditionsPage end */
 
 /* pay model */

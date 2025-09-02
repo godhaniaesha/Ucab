@@ -3,12 +3,17 @@ import axiosInstance from '../../util/axiosInstance';
 import axios from 'axios';
 
 
+
 // Async thunk for user registration (name, email, password, role, phone)
 export const registerUser = createAsyncThunk(
     'auth/registerUser',
     async (userData, { rejectWithValue }) => {
         try {
+            console.log("userData",userData);
+            
             const response = await axiosInstance.post(`/auth/register`, userData);
+            console.log(response.data,"rrrrrrrrrr");
+            
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -31,11 +36,31 @@ export const loginUser = createAsyncThunk(
 );
 
 // Async thunk for forgot password (send OTP to phone)
+// export const forgotPassword = createAsyncThunk(
+//     'auth/forgotPassword',
+//     async (phone, { rejectWithValue }) => {
+//         try {
+//             const response = await axiosInstance.post(`/auth/forgot-password`, { phone });
+//             return response.data;
+//         } catch (error) {
+//             return rejectWithValue(error.response?.data?.message || error.message);
+//         }
+//     }
+// );
+
 export const forgotPassword = createAsyncThunk(
     'auth/forgotPassword',
     async (phone, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post(`/auth/forgot-password`, { phone });
+            // Always prepend +91
+            const formattedPhone = `+91${phone}`;
+           console.log("formattedPhone",formattedPhone);
+
+            const response = await axiosInstance.post(`/auth/forgot-password`, { 
+                phone:formattedPhone
+            });
+            console.log("response.data",response.data);
+
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
