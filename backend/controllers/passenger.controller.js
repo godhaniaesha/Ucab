@@ -53,16 +53,16 @@ exports.createBooking = async (req, res) => {
     }
 
     // Check for active booking
-    const activeBooking = await Booking.findOne({
-      passenger: req.user.id,
-      status: { $in: ["pending", "assigned", "accepted", "on_trip"] },
-    });
-    if (activeBooking) {
-      return res.status(400).json({
-        message: "Active booking exists",
-        bookingId: activeBooking._id,
-      });
-    }
+    // const activeBooking = await Booking.findOne({
+    //   passenger: req.user.id,
+    //   status: { $in: ["pending", "assigned", "accepted", "on_trip"] },
+    // });
+    // if (activeBooking) {
+    //   return res.status(400).json({
+    //     message: "Active booking exists",
+    //     bookingId: activeBooking._id,
+    //   });
+    // }
 
     // Check for pending payment (block booking if any transaction is pending_completion)
     const pendingPaymentBooking = await Booking.findOne({

@@ -67,6 +67,7 @@ export default function Blog({ onSearch }) {
   const [expandedPosts, setExpandedPosts] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -99,6 +100,46 @@ export default function Blog({ onSearch }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Proper frontend validation
+    const errors = {};
+    // Name validation: required, only letters and spaces
+    if (!formData.name) errors.name = "Name is required.";
+    else if (!/^[A-Za-z\s]{2,50}$/.test(formData.name)) errors.name = "Name must be 2-50 letters only.";
+
+    // Email validation: required, regex
+    if (!formData.email) errors.email = "Email is required.";
+    else if (!/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/.test(formData.email)) errors.email = "Invalid email format.";
+
+    // Date validation: required, must be today or earlier
+    if (!formData.date) errors.date = "Date is required.";
+    else {
+      const selectedDate = new Date(formData.date);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      if (selectedDate > today) errors.date = "Date cannot be in the future.";
+    }
+
+    // Subject validation: required, 3-100 chars, letters/numbers/spaces
+    if (!formData.subject) errors.subject = "Subject is required.";
+    else if (!/^[A-Za-z0-9\s,.!?-]{3,100}$/.test(formData.subject)) errors.subject = "Subject must be 3-100 characters.";
+
+    // Message validation: required, min 10 chars
+    if (!formData.message) errors.message = "Message is required.";
+    else if (formData.message.length < 10) errors.message = "Message must be at least 10 characters.";
+
+    // Image validation: required, type and size
+    if (!formData.image) errors.image = "Image is required.";
+    else if (formData.image) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!allowedTypes.includes(formData.image.type)) {
+        errors.image = "Only JPG, JPEG, PNG images allowed.";
+      } else if (formData.image.size > 2 * 1024 * 1024) {
+        errors.image = "Image size must be less than 2MB.";
+      }
+    }
+
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     const blogData = new FormData();
     blogData.append("name", formData.name);
@@ -109,9 +150,23 @@ export default function Blog({ onSearch }) {
     if (formData.image) {
       blogData.append("image", formData.image);
     }
-
     dispatch(createBlog(blogData));
   };
+  useEffect(() => {
+  if (success) {
+    // Reset the form state
+    setFormData({
+      name: "",
+      email: "",
+      date: "",
+      subject: "",
+      message: "",
+      image: null,
+    });
+    // Re-fetch all blogs to show the newly added one
+    dispatch(getAllBlogs());
+  }
+}, [success, dispatch]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -320,11 +375,13 @@ export default function Blog({ onSearch }) {
                       <input
                         type="text"
                         name="name"
+                        required
                         placeholder="Your Name"
                         className="x_form_input"
                         value={formData.name}
                         onChange={handleChange}
                       />
+                      {formErrors.name && <p style={{ color: "red", margin: 0 }}>{formErrors.name}</p>}
                     </div>
                     <div className="x_form_group">
                       <input
@@ -335,6 +392,7 @@ export default function Blog({ onSearch }) {
                         value={formData.email}
                         onChange={handleChange}
                       />
+                      {formErrors.email && <p style={{ color: "red", margin: 0 }}>{formErrors.email}</p>}
                     </div>
                   </div>
 
@@ -346,6 +404,7 @@ export default function Blog({ onSearch }) {
                       className="x_form_input"
                       onChange={handleChange}
                     />
+                    {formErrors.image && <p style={{ color: "red", margin: 0 }}>{formErrors.image}</p>}
                   </div>
 
                   <div className="x_form_group">
@@ -356,6 +415,7 @@ export default function Blog({ onSearch }) {
                       value={formData.date}
                       onChange={handleChange}
                     />
+                    {formErrors.date && <p style={{ color: "red", margin: 0 }}>{formErrors.date}</p>}
                   </div>
 
                   <div className="x_form_group">
@@ -367,6 +427,7 @@ export default function Blog({ onSearch }) {
                       value={formData.subject}
                       onChange={handleChange}
                     />
+                    {formErrors.subject && <p style={{ color: "red", margin: 0 }}>{formErrors.subject}</p>}
                   </div>
 
                   <div className="x_form_group">
@@ -378,13 +439,14 @@ export default function Blog({ onSearch }) {
                       value={formData.message}
                       onChange={handleChange}
                     ></textarea>
+                    {formErrors.message && <p style={{ color: "red", margin: 0 }}>{formErrors.message}</p>}
                   </div>
 
                   <button type="submit" className="x_submit_btn" disabled={loading}>
                     {loading ? "Submitting..." : "Share My Story"}
                   </button>
 
-                  {success && <p style={{ color: "green" }}>Blog created successfully!</p>}
+                  {/* {success && <p style={{ color: "green" }}>Blog created successfully!</p>} */}
                   {error && <p style={{ color: "red" }}>{error}</p>}
                 </form>
 
