@@ -236,8 +236,8 @@ const cabBookingContent = [
     {cabBookingContent.map((item) => (
       <div key={item.id} className="z_fleet_item">
         <div className="z_fleet_header" onClick={() => toggleCar(item.id)}>
-          <h4 className="z_fleet_title">
-            {item.icon} {item.title}
+          <h4 className="z_fleet_title d-flex align-items-center gap-1">
+            {item.icon} <p className='mb-0 '>{item.title}</p>
           </h4>
           <span className="z_fleet_icon">
             {activeCar === item.id ? "−" : "+"}

@@ -284,6 +284,22 @@
   .z_slide_overlay {
     width: 100%;
   }
+  .z_slide_form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.z_slide_form .form_group {
+  flex: 1 1 auto;
+  padding: 2px 8px;
+}
+
+.z_slide_form .form_group input,
+.z_slide_form .form_group select {
+  min-width: 180px; /* placeholder won’t get squeezed smaller than this */
+  padding: 10px;
+}
 }
 
 @media only screen and (max-width: 425px) {
@@ -400,7 +416,7 @@
 
 @media (max-width: 576px) {
   .z_about_section {
-    margin-top: 6rem;
+    margin-top: 10rem;
   }
 
   .z_slide_item {
@@ -416,13 +432,13 @@
 
 @media (max-width: 375px) {
   .z_about_section {
-    margin-top: 14rem;
+    margin-top: 12rem;
   }
 }
 
 @media (max-width: 320px) {
   .z_about_section {
-    margin-top: 18rem;
+    margin-top: 14rem;
   }
 }
 
