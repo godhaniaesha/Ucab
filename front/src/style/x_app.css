@@ -3033,7 +3033,7 @@ body {
 }
 
 .x_btn {
-  width: 233px !important;
+  width: 75% !important;
   margin: auto;
   margin-top: 20px;
   padding: 10px 20px;
@@ -3073,7 +3073,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0rem;
-  z-index: 1000;
+  z-index: 1022;
 }
 
 .x_modal {

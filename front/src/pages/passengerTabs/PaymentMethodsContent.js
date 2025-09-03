@@ -4,11 +4,21 @@ import { Card, Button, Modal, Form, Row, Col, Badge } from "react-bootstrap";
 // Dummy user data (replace with API fetch)
 const dummyUser = {
   paymentMethods: [
-    { provider: "stripe", methodType: "card", last4: "4242", paymentMethodId: "pm_123" },
-    { provider: "razorpay", methodType: "card", last4: "1111", paymentMethodId: "pm_456" },
+    {
+      provider: "stripe",
+      methodType: "card",
+      last4: "4242",
+      paymentMethodId: "pm_123",
+    },
+    {
+      provider: "razorpay",
+      methodType: "card",
+      last4: "1111",
+      paymentMethodId: "pm_456",
+    },
   ],
   bankDetails: {
-    accountHolderName: "John Doe", 
+    accountHolderName: "John Doe",
     accountNumber: "1234567890",
     ifscCode: "HDFC0001234",
     bankName: "HDFC Bank",
@@ -50,13 +60,18 @@ export default function P_PaymentMethodsContent() {
 
   const handlePaymentSave = () => {
     if (selectedPaymentMethod) {
-      setPaymentMethods(prev => 
-        prev.map(pm => pm.paymentMethodId === selectedPaymentMethod.paymentMethodId ? 
-          {...pm, ...paymentForm} : pm
+      setPaymentMethods((prev) =>
+        prev.map((pm) =>
+          pm.paymentMethodId === selectedPaymentMethod.paymentMethodId
+            ? { ...pm, ...paymentForm }
+            : pm
         )
       );
     } else {
-      setPaymentMethods(prev => [...prev, {...paymentForm, paymentMethodId: `pm_${Date.now()}`}]);
+      setPaymentMethods((prev) => [
+        ...prev,
+        { ...paymentForm, paymentMethodId: `pm_${Date.now()}` },
+      ]);
     }
     setShowPaymentModal(false);
     setSelectedPaymentMethod(null);
@@ -77,7 +92,9 @@ export default function P_PaymentMethodsContent() {
   return (
     <div className="p-3">
       <h2 className="mb-3">Payment Methods</h2>
-      <p className="text-secondary mb-4">Manage your saved cards and bank accounts here.</p>
+      <p className="text-secondary mb-4">
+        Manage your saved cards and bank accounts here.
+      </p>
 
       <Row xs={1} md={2} lg={3} className="g-3">
         {/* Card Payment Methods */}
@@ -86,14 +103,25 @@ export default function P_PaymentMethodsContent() {
             <Card className="h-100 shadow-sm">
               <Card.Body>
                 <Card.Title>
-                  {pm.provider.toUpperCase()} <Badge bg="info">{pm.methodType}</Badge>
+                  {pm.provider.toUpperCase()}{" "}
+                  <Badge bg="info">{pm.methodType}</Badge>
                 </Card.Title>
                 <Card.Text>•••• {pm.last4}</Card.Text>
                 <div className="d-flex gap-2">
-                  <Button variant="outline-primary" size="sm" onClick={() => handleEditPaymentMethod(pm)}>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => handleEditPaymentMethod(pm)}
+                  >
                     Edit
                   </Button>
-                  <Button variant="outline-danger" size="sm" onClick={() => handleDeletePaymentMethod(pm.paymentMethodId)}>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() =>
+                      handleDeletePaymentMethod(pm.paymentMethodId)
+                    }
+                  >
                     Delete
                   </Button>
                 </div>
@@ -106,7 +134,10 @@ export default function P_PaymentMethodsContent() {
         <Col>
           <Card className="h-100 shadow-sm border-success d-flex align-items-center justify-content-center">
             <Card.Body className="text-center">
-              <Button variant="success" onClick={() => setShowPaymentModal(true)}>
+              <Button
+                variant="success"
+                onClick={() => setShowPaymentModal(true)}
+              >
                 + Add Payment Method
               </Button>
             </Card.Body>
@@ -121,18 +152,28 @@ export default function P_PaymentMethodsContent() {
               {bankDetails.accountNumber ? (
                 <>
                   <Card.Text>
-                    <strong>Account Holder:</strong> {bankDetails.accountHolderName} <br />
-                    <strong>Account No:</strong> ****{bankDetails.accountNumber.slice(-4)} <br />
+                    <strong>Account Holder:</strong>{" "}
+                    {bankDetails.accountHolderName} <br />
+                    <strong>Account No:</strong> ****
+                    {bankDetails.accountNumber.slice(-4)} <br />
                     <strong>Bank:</strong> {bankDetails.bankName} <br />
                     <strong>Branch:</strong> {bankDetails.branchName} <br />
                     <strong>IFSC:</strong> {bankDetails.ifscCode}
                   </Card.Text>
-                  <Button variant="primary" size="sm" onClick={() => setShowBankModal(true)}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setShowBankModal(true)}
+                  >
                     Edit
                   </Button>
                 </>
               ) : (
-                <Button variant="success" size="sm" onClick={() => setShowBankModal(true)}>
+                <Button
+                  variant="success"
+                  size="sm"
+                  onClick={() => setShowBankModal(true)}
+                >
                   Add Bank
                 </Button>
               )}
@@ -144,7 +185,11 @@ export default function P_PaymentMethodsContent() {
       {/* Bank Edit Modal */}
       <Modal show={showBankModal} onHide={() => setShowBankModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{bankDetails.accountNumber ? "Edit Bank Details" : "Add Bank Details"}</Modal.Title>
+          <Modal.Title>
+            {bankDetails.accountNumber
+              ? "Edit Bank Details"
+              : "Add Bank Details"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -168,15 +213,30 @@ export default function P_PaymentMethodsContent() {
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>IFSC Code</Form.Label>
-              <Form.Control type="text" name="ifscCode" value={bankForm.ifscCode || ""} onChange={handleBankChange} />
+              <Form.Control
+                type="text"
+                name="ifscCode"
+                value={bankForm.ifscCode || ""}
+                onChange={handleBankChange}
+              />
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Bank Name</Form.Label>
-              <Form.Control type="text" name="bankName" value={bankForm.bankName || ""} onChange={handleBankChange} />
+              <Form.Control
+                type="text"
+                name="bankName"
+                value={bankForm.bankName || ""}
+                onChange={handleBankChange}
+              />
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Branch Name</Form.Label>
-              <Form.Control type="text" name="branchName" value={bankForm.branchName || ""} onChange={handleBankChange} />
+              <Form.Control
+                type="text"
+                name="branchName"
+                value={bankForm.branchName || ""}
+                onChange={handleBankChange}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -191,13 +251,20 @@ export default function P_PaymentMethodsContent() {
       </Modal>
 
       {/* Payment Method Modal */}
-      <Modal show={showPaymentModal} onHide={() => {
-        setShowPaymentModal(false);
-        setSelectedPaymentMethod(null);
-        setPaymentForm({});
-      }}>
+      <Modal
+        show={showPaymentModal}
+        onHide={() => {
+          setShowPaymentModal(false);
+          setSelectedPaymentMethod(null);
+          setPaymentForm({});
+        }}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>{selectedPaymentMethod ? "Edit Payment Method" : "Add Payment Method"}</Modal.Title>
+          <Modal.Title>
+            {selectedPaymentMethod
+              ? "Edit Payment Method"
+              : "Add Payment Method"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -232,11 +299,14 @@ export default function P_PaymentMethodsContent() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => {
-            setShowPaymentModal(false);
-            setSelectedPaymentMethod(null);
-            setPaymentForm({});
-          }}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowPaymentModal(false);
+              setSelectedPaymentMethod(null);
+              setPaymentForm({});
+            }}
+          >
             Cancel
           </Button>
           <Button variant="primary" onClick={handlePaymentSave}>

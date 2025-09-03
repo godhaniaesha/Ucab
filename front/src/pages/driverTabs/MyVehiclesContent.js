@@ -162,7 +162,8 @@ const D_MyVehiclesContent = () => {
   // Vehicle card
   const renderVehicleCard = (vehicle) =>
     
-    driverId && vehicle.provider._id == driverId ? (
+    driverId && vehicle.provider && vehicle.provider._id === driverId
+ ? (
       // console.log(vehicle),
       <div key={vehicle._id} className="p-3 rounded-3 border bg-light">
         <div className="d-flex flex-column flex-md-row gap-3">

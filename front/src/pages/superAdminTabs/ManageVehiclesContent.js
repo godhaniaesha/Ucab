@@ -71,7 +71,7 @@ export default function SA_ManageVehiclesContent() {
             {vehicles.map((vehicle, index) => (
               <tr key={vehicle._id}>
                 <td>{index + 1}</td>
-                <td>{vehicle.provider.name}</td>
+                <td>{vehicle.provider?.name || "Unknown"}</td>
                 <td>
                   {vehicle.make} {vehicle.model} ({vehicle.year})
                 </td>
@@ -120,7 +120,9 @@ export default function SA_ManageVehiclesContent() {
                     {db_selectedVehicle.make} {db_selectedVehicle.model} (
                     {db_selectedVehicle.year})
                   </h4>
-                  <p className="mb-1">Provider: <strong>{db_selectedVehicle.provider.name}</strong></p>
+                  <p className="mb-1">
+  Provider: <strong>{db_selectedVehicle.provider?.name || "Unknown"}</strong>
+</p>
                   <p className="mb-1">Plate: <strong>{db_selectedVehicle.plate}</strong></p>
                   <Badge bg="secondary">{db_selectedVehicle.type.toUpperCase()}</Badge>
                 </div>
