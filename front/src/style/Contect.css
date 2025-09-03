@@ -94,6 +94,17 @@
   border-radius: 5px;
 }
 
+.input-error {
+  border: 1px solid #b90f20;
+}
+.x_text-danger {
+  color: #b90f20;
+  font-size: 15px;
+  margin-top: -10px;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .z_cntct_container {

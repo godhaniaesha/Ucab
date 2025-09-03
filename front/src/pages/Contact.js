@@ -92,39 +92,65 @@ export default function Contact() {
                       ride today.
                     </p>
                     <ul>
-                      <li>
-                        <FaPhoneAlt /> +91 98765 43210
-                      </li>
-                      <li>
+                    <li>
+                      <a
+                        href="tel:+61234567890"
+                       style={{ textDecoration: "none", color: "inherit", gap: "8px", display: 'flex', alignItems: 'center' }}
+                      >
+                        <FaPhoneAlt /> +61 2 3456 7890
+                      </a>
+                    </li>
+
+                    <li>
+                      <a
+                        href="mailto:info@cabbooking.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                       style={{ textDecoration: "none", color: "inherit", gap: "8px", display: 'flex', alignItems: 'center' }}
+                      >
                         <FaEnvelope /> info@cabbooking.com
-                      </li>
-                      <li>
-                        <FaMapMarkerAlt /> 123 Green Street, Ahmedabad, India
-                      </li>
-                      <li>
-                        <FaClock /> Mon - Sun: 24/7 Service
-                      </li>
-                    </ul>
-                  </div>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.google.com/maps/search/?api=1&query=456+Business+Avenue,+Australia"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                       style={{ textDecoration: "none", color: "inherit", gap: "8px", display: 'flex', alignItems: 'center' }}
+                      >
+                        <FaMapMarkerAlt /> 456 Business Avenue, Australia.
+                      </a>
+                    </li>
+
+                    <li>
+                      <FaClock /> Mon - Sun: 24/7 Service
+                    </li>
+                  </ul>
                 </div>
               </div>
+            </div>
 
-              {/* Right Side - Form */}
-              <div className="col-md-6 pb-4" style={{ padding: "0 20px" }}>
-                <div className="z_cntct_form h-100 d-flex align-items-center">
-                  <form className="w-100" onSubmit={formik.handleSubmit}>
+            {/* Right Side - Form */}
+            <div className="col-md-6 pb-4" style={{ padding: "0 20px" }}>
+              <div className="z_cntct_form h-100 d-flex align-items-center">
+                <form className="w-100" onSubmit={formik.handleSubmit}>
+                  {/* Example for Name field */}
+                  <div className="z_cntct_form_group">
                     <input
                       type="text"
-                      name="name"
                       placeholder="Your Name"
                       value={formik.values.name}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      className={formik.errors.name ? "input-error" : ""}
                     />
                     {formik.touched.name && formik.errors.name && (
-                      <p className="text-danger">{formik.errors.name}</p>
+                      <div className="x_text-danger" style={{ marginTop: "-10px", marginBottom: "8px" }}>
+                        {formik.errors.name}
+                      </div>
                     )}
-
+                  </div>
+                  <div className="z_cntct_form_group">
                     <input
                       type="email"
                       name="email"
@@ -134,9 +160,10 @@ export default function Contact() {
                       onBlur={formik.handleBlur}
                     />
                     {formik.touched.email && formik.errors.email && (
-                      <p className="text-danger">{formik.errors.email}</p>
+                      <div className="x_text-danger" style={{ marginTop: "-10px", marginBottom: "8px" }}>{formik.errors.email}</div>
                     )}
-
+                  </div>
+                  <div className="z_cntct_form_group">
                     <input
                       type="text"
                       name="subject"
@@ -146,9 +173,10 @@ export default function Contact() {
                       onBlur={formik.handleBlur}
                     />
                     {formik.touched.subject && formik.errors.subject && (
-                      <p className="text-danger">{formik.errors.subject}</p>
+                      <div className="x_text-danger" style={{ marginTop: "-10px", marginBottom: "8px" }}>{formik.errors.subject}</div>
                     )}
-
+                  </div>
+                  <div className="z_cntct_form_group">
                     <textarea
                       name="message"
                       placeholder="Your Message"
@@ -158,26 +186,27 @@ export default function Contact() {
                       onBlur={formik.handleBlur}
                     ></textarea>
                     {formik.touched.message && formik.errors.message && (
-                      <p className="text-danger">{formik.errors.message}</p>
+                      <div className="x_text-danger" style={{ marginTop: "-16px", marginBottom: "8px" }}>{formik.errors.message}</div>
                     )}
+                  </div>
 
-                    <button
-                      type="submit"
-                      className="z_cntct_btn"
-                      disabled={loading}
-                    >
-                      {loading ? "Sending..." : "Send Message"}
-                    </button>
-                  </form>
-                </div>
+                  <button
+                    type="submit"
+                    className="z_cntct_btn"
+                    disabled={loading}
+                  >
+                    {loading ? "Sending..." : "Send Message"}
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section >
 
-      {/* Map Section */}
-      <section className="container mb-5">
+      {/* Map Section */ }
+      < section className = "container mb-5" >
         <div className="z_cntct_map_section">
           {/* <iframe
             className="z_cntct_map"
@@ -188,7 +217,7 @@ export default function Contact() {
             title="Our Location"
           ></iframe> */}
           <iframe
-           className="z_cntct_map"
+            className="z_cntct_map"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6304.080007782037!2d144.95645279824618!3d-37.81253196188106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d3d1412ac51%3A0x234488535eb9350a!2sClarence%20%7C%20456%20Lonsdale%20Street%20-%20Serviced%20Offices%20%26%20Workspaces!5e0!3m2!1sen!2sin!4v1756095683853!5m2!1sen!2sin"
             width="600"
             height="450"
@@ -197,7 +226,7 @@ export default function Contact() {
             referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
-      </section>
+      </section >
 
     </>
   );

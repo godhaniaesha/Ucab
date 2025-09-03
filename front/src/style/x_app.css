@@ -625,7 +625,7 @@ body {
 /* About Page Base */
 .about-page {
   min-height: auto;
-  background: rgb(249, 249, 255);
+  background: #f8fdfbe8;
   padding: 50px 0 50px 0;
 }
 
@@ -761,6 +761,10 @@ body {
   .x_img_com {
     margin-bottom: 15px;
   }
+   .about-header h2 {
+    font-size: 1.8rem;
+        margin-bottom: 9px;
+}
 }
 
 /* Extra Small Mobile (≤320px) */
@@ -2281,7 +2285,7 @@ body {
 
 .x_section_header {
   text-align: center;
-  margin-bottom: 3rem;
+  /* margin-bottom: 3rem; */
 }
 
 .x_section_subtitle {
@@ -2297,7 +2301,7 @@ body {
   color: #0f6e55;
   font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 .x_cards_grid {
@@ -2529,7 +2533,10 @@ body {
 
 
   .x_card_number {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+  .x_card {
+    min-height: 230px;
   }
 }
 
@@ -3521,3 +3528,66 @@ body {
 /* Terms & ConditionsPage end */
 
 /* pay model */
+
+/* Image Preview Modal Styles */
+.x_img_preview_overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.x_img_preview_modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  position: relative;
+   width: 30vw;
+  max-width: 30vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.x_img_preview_img {
+  max-width: 80vw;
+  max-height: 70vh;
+  width: 30vw;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.x_img_preview_close {
+  position: absolute;
+  top: 10px; right: 14px;
+  background: #0f6e55;
+  color: #fff;
+  border: none;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  padding-bottom: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.x_img_preview_close:hover {
+  background: #199675;
+}
+@media (max-width: 1200px) {
+.x_img_preview_modal {
+   width: 40vw;
+  max-width: 40vw;
+}
+.x_img_preview_img {
+  width: 40vw;
+}
+}
+@media (max-width: 768px) {
+  .x_img_preview_overlay {
+    display: none !important;
+  }
+}

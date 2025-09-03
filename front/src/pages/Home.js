@@ -766,7 +766,8 @@ export default function Home({ car }) {
                 min="1"
                 placeholder="Rate per km"
                 defaultValue={selectedCar?.perKmRate || selectedCar?.price || ''}
-                required
+                readOnly
+                disabled
               />
             </Form.Group>
           </Modal.Body>

@@ -233,7 +233,8 @@ export default function Tab() {
       {/* Main App Container */}
       <div
         className="d_app_container d_driver_tab container-fluid  d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5"
-        style={{ backgroundColor: "#e0f2f1" }}
+        // style={{ backgroundColor: "#e0f2f1" }}
+        style={{ backgroundColor: "#e1edea" }}
       >
         <div
           className="d_main_content_wrapper w-100 bg-white rounded-3  shadow-lg d-flex flex-column flex-lg-row overflow-hidden"
@@ -257,17 +258,15 @@ export default function Tab() {
                 <button
                   key={tab.id}
                   className={`d_nav_tab btn text-start py-3 px-4 rounded-3 text-nowrap d-flex align-items-center
-                    ${
-                      activeTab === tab.id
-                        ? "active bg-white text-success shadow"
-                        : "text-light"
+                    ${activeTab === tab.id
+                      ? "active bg-white text-success shadow"
+                      : "text-light"
                     }
-                    ${
-                      isTripActive &&
+                    ${isTripActive &&
                       (tab.id === "new-ride-request" ||
                         tab.id === "availability")
-                        ? "opacity-50 disabled"
-                        : ""
+                      ? "opacity-50 disabled"
+                      : ""
                     }
                     `}
                   onClick={() => {
@@ -285,7 +284,7 @@ export default function Tab() {
             </div>
 
             {/* Mobile Horizontal Navigation */}
-            <div className="d-lg-none" style={{width:"100%",overflowX:"auto"}} >
+            <div className="d-lg-none" style={{ width: "100%", overflowX: "auto" }} >
               <h2 className="fs-4 fw-bold mb-md-3 mb-0 text-center"
                 style={{ color: "#0f6e55" }}
               >
@@ -296,17 +295,15 @@ export default function Tab() {
                   <button
                     key={tab.id}
                     className={`d_nav_tab btn py-2 px-3 rounded-3 d-flex flex-column align-items-center justify-content-center
-                      ${
-                        activeTab === tab.id
-                          ? "active bg-white text-success shadow"
-                          : "text-light"
+                      ${activeTab === tab.id
+                        ? "active bg-white text-success shadow"
+                        : "text-light"
                       }
-                      ${
-                        isTripActive &&
+                      ${isTripActive &&
                         (tab.id === "new-ride-request" ||
                           tab.id === "availability")
-                          ? "opacity-50 disabled"
-                          : ""
+                        ? "opacity-50 disabled"
+                        : ""
                       }
                       `}
                     onClick={() => {

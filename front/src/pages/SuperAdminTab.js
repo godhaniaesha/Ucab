@@ -44,7 +44,7 @@ export default function SuperAdminTab() {
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       />
-      <div className="d_app_container container-fluid min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5" style={{ backgroundColor: "#e0f2f1" }}>
+      <div className="d_app_container container-fluid min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-4 p-lg-5" style={{ backgroundColor: "#e1edea" }}>
         <div className="d_main_content_wrapper w-100 bg-white rounded-3 shadow-lg d-flex flex-column flex-lg-row overflow-hidden" style={{ maxWidth: "1200px", minHeight: "500px" }}>
           {/* Sidebar */}
           <div className="d_nav_sidebar p-3 p-lg-4 d-flex flex-column rounded-top-lg-4 p-2 rounded-lg-start rounded-lg-top-0 shadow-sm" style={{ backgroundColor: "#fff" }}>

@@ -90,11 +90,11 @@ export default function Footer() {
 
 
                             <p>
-                                <a href="tel:+21236547898" className="contact-link">
-                                    <FaPhoneAlt fontSize={"18px"} /> +2 123 654 7898
+                                <a href="tel:+61234567890" className="contact-link">
+                                    <FaPhoneAlt fontSize={"18px"} /> +61 2 3456 7890
                                 </a>
                             </p>
-                            {/* <p><FaPhoneAlt /> +2 123 654 7898</p> */}
+                            {/* <p><FaPhoneAlt /> +61 2 3456 7890</p> */}
                             <p>
                                 <a
                                     href="https://www.google.com/maps?q=25/B+Milford+Road,+New+York"
@@ -105,11 +105,11 @@ export default function Footer() {
                                     <FaMapMarkerAlt /> 456 Business Avenue, Australia. 
                                 </a>
                             </p>
-                            {/* <p><FaEnvelope /> info@example.com</p> */}
+                            {/* <p><FaEnvelope /> info@cabbooking.com</p> */}
                             <p>
                                 <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
                                     target="_blank" className="contact-link">
-                                    <FaEnvelope fontSize={"18px"} /> info@example.com
+                                    <FaEnvelope fontSize={"18px"} /> info@cabbooking.com
                                 </a>
                             </p>
                         </div>
@@ -183,7 +183,7 @@ export default function Footer() {
                 <div className="container">
                     <div className="copyright-inner">
                         <div className="site-info">
-                            © Copyright 2025 <a href="https://themeforest.net/user/dynamiclayers">DynamicLayers</a>. All Rights Reserved. </div>
+                            © Copyright 2025 <a href="https://themeforest.net/user/dynamiclayers">Ucab</a>. All Rights Reserved. </div>
                     </div>
                 </div>
             </div>

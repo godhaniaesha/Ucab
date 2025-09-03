@@ -360,13 +360,13 @@ export default function Header() {
               <span>
                 <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
                   target="_blank" className="contact-link">
-                  <IoMailUnreadOutline fontSize={"18px"} /> info@example.com
+                  <IoMailUnreadOutline fontSize={"18px"} /> info@cabbooking.com
                 </a>
               </span>
 
               <span>
-                <a href="tel:+21236547898" className="contact-link">
-                  <PiPhoneCallBold fontSize={"18px"} /> +2 123 654 7898
+                <a href="tel:+61234567890" className="contact-link">
+                  <PiPhoneCallBold fontSize={"18px"} /> +61 2 3456 7890
                 </a>
               </span>
 
