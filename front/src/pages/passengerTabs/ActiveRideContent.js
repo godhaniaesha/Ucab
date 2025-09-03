@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getPendingPayments, payPendingPayment } from "../../redux/slice/passengers.slice";
 import pay from "../../image/nopay.png";
-import { Modal, Form } from "react-bootstrap";
+import { Modal, Form, Button } from "react-bootstrap";
 import { FaTimes } from "react-icons/fa";
 
 const D_PaymentContent = () => {
@@ -59,6 +59,65 @@ const D_PaymentContent = () => {
     );
     setShowPaymentModal(false);
   };
+
+  // Add Razorpay script loader
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (document.getElementById("razorpay-script")) return resolve(true);
+      const script = document.createElement("script");
+      script.id = "razorpay-script";
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+const handleRazorpayPayment = async (ride) => {
+  const res = await loadRazorpayScript();
+  if (!res) {
+    toast.error("Razorpay SDK failed to load. Are you online?");
+    return;
+  }
+
+  try {
+    // ✅ Request backend to create order
+    const response = await fetch("http://localhost:5000/api/payment/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: Math.round((ride.fare || 100) * 100) }),
+    });
+
+    const order = await response.json();
+
+    const options = {
+      key: "rzp_test_hN631gyZ1XbXvp", // ✅ Only key_id
+      amount: order.amount,
+      currency: order.currency,
+      name: "UCAB Taxi",
+      description: "Cab Booking Payment",
+      order_id: order.id, // ✅ Order ID from backend
+      handler: function (response) {
+        toast.success("Payment Successful! ID: " + response.razorpay_payment_id);
+        handlePayment(ride); 
+        handleClose();
+      },
+      prefill: {
+        name: "Passenger",
+        email: "passenger@email.com",
+        contact: "9123456789",
+      },
+      theme: {
+        color: "#0f6e55",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    toast.error("Error creating order: " + err.message);
+  }
+};
 
   if (loading) {
     return (
@@ -131,7 +190,7 @@ const D_PaymentContent = () => {
 
       <Modal
         show={show}
-        onHide={() => { }} // disable outside click close
+        onHide={() => { }}
         centered
         backdrop="static"
         keyboard={false}
@@ -153,7 +212,12 @@ const D_PaymentContent = () => {
             {["visa", "paypal", "razorpay"].map((item) => (
               <button
                 key={item}
-                onClick={() => setMethod(item)}
+                onClick={() => {
+                  setMethod(item);
+                  if (item === "razorpay" && selectedRide) {
+                    handleRazorpayPayment(selectedRide);
+                  }
+                }}
                 className="mb-2 text-start fw-semibold"
                 style={{
                   border: "1px solid #0f6e55",
@@ -208,65 +272,54 @@ const D_PaymentContent = () => {
             )}
 
             {method === "razorpay" && (
-              <Form id="razorpayForm">
-                <Form.Group className="mb-3">
-                  <Form.Label>Mobile Number</Form.Label>
-                  <Form.Control type="text" id="razorpayMobile" placeholder="+91 XXXXX XXXXX" />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>UPI ID</Form.Label>
-                  <Form.Control type="text" id="razorpayUpi" placeholder="example@upi" />
-                </Form.Group>
-              </Form>
+              <div className="d-flex flex-column align-items-start">
+                <p className="mb-2">Pay securely via Razorpay gateway.</p>
+                {/* Razorpay opens directly on option click, no button shown */}
+              </div>
             )}
           </div>
         </Modal.Body>
 
         <Modal.Footer>
-          <button
-            style={{
-              backgroundColor: "#0f6e55",
-              border: "none",
-              color: "#fff",
-              padding: "8px 18px",
-              borderRadius: "6px",
-              fontWeight: "500",
-            }}
-            onClick={() => {
-              if (method === "visa") {
-                const cardNumber = document.getElementById("cardNumber").value.trim();
-                const expDate = document.getElementById("expDate").value.trim();
-                const cvv = document.getElementById("cvv").value.trim();
-                const holder = document.getElementById("cardHolder").value.trim();
+          {method !== "razorpay" && (
+            <button
+              style={{
+                backgroundColor: "#0f6e55",
+                border: "none",
+                color: "#fff",
+                padding: "8px 18px",
+                borderRadius: "6px",
+                fontWeight: "500",
+              }}
+              onClick={() => {
+                if (method === "visa") {
+                  const cardNumber = document.getElementById("cardNumber").value.trim();
+                  const expDate = document.getElementById("expDate").value.trim();
+                  const cvv = document.getElementById("cvv").value.trim();
+                  const holder = document.getElementById("cardHolder").value.trim();
 
-                if (!cardNumber || cardNumber.length < 16) return toast.error("Enter valid card number");
-                if (!expDate) return toast.error("Enter expiration date");
-                if (!cvv || cvv.length < 3) return toast.error("Enter valid CVV");
-                if (!holder) return toast.error("Enter card holder name");
-              }
+                  if (!cardNumber || cardNumber.length < 16) return toast.error("Enter valid card number");
+                  if (!expDate) return toast.error("Enter expiration date");
+                  if (!cvv || cvv.length < 3) return toast.error("Enter valid CVV");
+                  if (!holder) return toast.error("Enter card holder name");
+                }
 
-              if (method === "paypal") {
-                const email = document.getElementById("paypalEmail").value.trim();
-                const pass = document.getElementById("paypalPassword").value.trim();
+                if (method === "paypal") {
+                  const email = document.getElementById("paypalEmail").value.trim();
+                  const pass = document.getElementById("paypalPassword").value.trim();
 
-                if (!email.includes("@")) return toast.error("Enter valid PayPal email");
-                if (!pass || pass.length < 6) return toast.error("Enter valid password");
-              }
+                  if (!email.includes("@")) return toast.error("Enter valid PayPal email");
+                  if (!pass || pass.length < 6) return toast.error("Enter valid password");
+                }
 
-              if (method === "razorpay") {
-                const mobile = document.getElementById("razorpayMobile").value.trim();
-                const upi = document.getElementById("razorpayUpi").value.trim();
-
-                if (!/^[0-9]{10}$/.test(mobile)) return toast.error("Enter valid 10-digit mobile number");
-                if (!upi.includes("@")) return toast.error("Enter valid UPI ID");
-              }
-              handlePayment(selectedRide);
-              toast.success("Payment Processed Successfully!");
-              handleClose();
-            }}
-          >
-            Confirm Payment
-          </button>
+                handlePayment(selectedRide);
+                toast.success("Payment Processed Successfully!");
+                handleClose();
+              }}
+            >
+              Confirm Payment
+            </button>
+          )}
         </Modal.Footer>
       </Modal>
 

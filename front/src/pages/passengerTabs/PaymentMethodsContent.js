@@ -16,6 +16,19 @@ const dummyUser = {
   },
 };
 
+// Razorpay script loader
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (document.getElementById("razorpay-script")) return resolve(true);
+    const script = document.createElement("script");
+    script.id = "razorpay-script";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function P_PaymentMethodsContent() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [bankDetails, setBankDetails] = useState({});
@@ -24,6 +37,7 @@ export default function P_PaymentMethodsContent() {
   const [bankForm, setBankForm] = useState({});
   const [paymentForm, setPaymentForm] = useState({});
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [paymentErrors, setPaymentErrors] = useState({});
 
   useEffect(() => {
     // Replace with API call
@@ -48,7 +62,18 @@ export default function P_PaymentMethodsContent() {
     // Call API to save bank details
   };
 
+  const validatePaymentForm = () => {
+    const errors = {};
+    if (!paymentForm.provider?.trim()) errors.provider = "Provider is required";
+    if (!paymentForm.methodType?.trim()) errors.methodType = "Method type is required";
+    if (!paymentForm.last4?.trim()) errors.last4 = "Last 4 digits are required";
+    else if (!/^\d{4}$/.test(paymentForm.last4)) errors.last4 = "Enter exactly 4 digits";
+    setPaymentErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handlePaymentSave = () => {
+    if (!validatePaymentForm()) return;
     if (selectedPaymentMethod) {
       setPaymentMethods(prev => 
         prev.map(pm => pm.paymentMethodId === selectedPaymentMethod.paymentMethodId ? 
@@ -61,6 +86,7 @@ export default function P_PaymentMethodsContent() {
     setShowPaymentModal(false);
     setSelectedPaymentMethod(null);
     setPaymentForm({});
+    setPaymentErrors({});
   };
 
   const handleEditPaymentMethod = (pm) => {
@@ -72,6 +98,50 @@ export default function P_PaymentMethodsContent() {
   const handleDeletePaymentMethod = (id) => {
     setPaymentMethods((prev) => prev.filter((pm) => pm.paymentMethodId !== id));
     // Call API to delete payment method
+  };
+
+  // Dummy order creation (replace with backend API)
+  const createOrder = async (amount = 100) => {
+    alert("Razorpay Payment Gateway is currently in test mode. Use test card 4111 1111 1111 1111 with any future expiry and CVC 12345678.");
+    // In production, call your backend to create order and get order_id
+    return {
+      id: "order_" + Date.now(),
+      amount: amount * 100, // Razorpay expects amount in paise
+      currency: "INR"
+    };
+  };
+
+  // Razorpay payment handler
+  const handleRazorpayPay = async () => {
+  alert("Razorpay Payment Gateway is currently in test mode. Use test card 4111 1111 1111 1111 with any future expiry and CVC.");
+    const res = await loadRazorpayScript();
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+    const order = await createOrder(100); // Amount can be dynamic
+    const options = {
+      key: "rzp_test_hN631gyZ1XbXvp", // Replace with your Razorpay Key ID
+      amount: order.amount,
+      currency: order.currency,
+      name: "UCAB Taxi",
+      description: "Cab Booking Payment",
+      order_id: order.id,
+      handler: function (response) {
+        alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+        // You can save payment details to backend here
+      },
+      prefill: {
+        name: "Passenger",
+        email: "passenger@email.com",
+        contact: "9123456789"
+      },
+      theme: {
+        color: "#0f6e55"
+      }
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -139,6 +209,17 @@ export default function P_PaymentMethodsContent() {
             </Card.Body>
           </Card>
         </Col>
+
+        {/* Razorpay Payment Option */}
+        <Col>
+          <Card className="h-100 shadow-sm border-warning d-flex align-items-center justify-content-center">
+            <Card.Body className="text-center">
+              <Button variant="warning" onClick={handleRazorpayPay}>
+                Pay with Razorpay
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
 
       {/* Bank Edit Modal */}
@@ -195,6 +276,7 @@ export default function P_PaymentMethodsContent() {
         setShowPaymentModal(false);
         setSelectedPaymentMethod(null);
         setPaymentForm({});
+        setPaymentErrors({});
       }}>
         <Modal.Header closeButton>
           <Modal.Title>{selectedPaymentMethod ? "Edit Payment Method" : "Add Payment Method"}</Modal.Title>
@@ -208,7 +290,13 @@ export default function P_PaymentMethodsContent() {
                 name="provider"
                 value={paymentForm.provider || ""}
                 onChange={handlePaymentChange}
+                isInvalid={!!paymentErrors.provider}
               />
+              {paymentErrors.provider && (
+                <div className="text-danger" style={{ marginTop: "-8px", fontSize: "14px" }}>
+                  {paymentErrors.provider}
+                </div>
+              )}
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Method Type</Form.Label>
@@ -217,7 +305,13 @@ export default function P_PaymentMethodsContent() {
                 name="methodType"
                 value={paymentForm.methodType || ""}
                 onChange={handlePaymentChange}
+                isInvalid={!!paymentErrors.methodType}
               />
+              {paymentErrors.methodType && (
+                <div className="text-danger" style={{ marginTop: "-8px", fontSize: "14px" }}>
+                  {paymentErrors.methodType}
+                </div>
+              )}
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Last 4 Digits</Form.Label>
@@ -227,7 +321,13 @@ export default function P_PaymentMethodsContent() {
                 value={paymentForm.last4 || ""}
                 onChange={handlePaymentChange}
                 maxLength={4}
+                isInvalid={!!paymentErrors.last4}
               />
+              {paymentErrors.last4 && (
+                <div className="text-danger" style={{ marginTop: "-8px", fontSize: "14px" }}>
+                  {paymentErrors.last4}
+                </div>
+              )}
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -236,6 +336,7 @@ export default function P_PaymentMethodsContent() {
             setShowPaymentModal(false);
             setSelectedPaymentMethod(null);
             setPaymentForm({});
+            setPaymentErrors({});
           }}>
             Cancel
           </Button>

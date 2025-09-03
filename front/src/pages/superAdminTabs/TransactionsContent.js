@@ -33,7 +33,7 @@ export default function SA_TransactionsContent() {
         <div>
           <h2 className="fs-4 fw-bold text-dark mb-1">Transactions</h2>
           <p className="text-secondary mb-0">
-            Monitor and review all payment transactions.
+            Monitor and view all payment transactions.
           </p>
         </div>
       </div>

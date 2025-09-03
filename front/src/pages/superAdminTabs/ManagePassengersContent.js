@@ -31,7 +31,7 @@ export default function SA_ManagePassengersContent() {
         <div>
           <h2 className="fs-3 fw-bold text-dark mb-1">Manage Passengers</h2>
           <p className="text-secondary">
-            View, approve, block, or edit passenger accounts.
+            View all Passengers account details.
           </p>
         </div>
       </div>

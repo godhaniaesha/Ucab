@@ -80,6 +80,35 @@ connectDB();
 app.get('/health', (req, res) =>
   res.json({ status: 'OK', time: new Date().toISOString() })
 );
+const Razorpay = require("razorpay");
+
+// ✅ Razorpay instance
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_hN631gyZ1XbXvp",   // keep in .env
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "your_secret_key",  // never expose to frontend
+});
+
+// ✅ Route: Create Razorpay order
+app.post("/api/payment/create-order", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount) {
+      return res.status(400).json({ message: "Amount is required" });
+    }
+
+    const options = {
+      amount: amount, // amount in paise (₹100 = 10000)
+      currency: "INR",
+      receipt: "receipt_" + Date.now(),
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (err) {
+    logger.error(err);
+    res.status(500).json({ message: "Failed to create order", error: err.message });
+  }
+});
 app.use('/api', routes);
 // ✅ Error handler
 app.use((err, req, res, next) => {

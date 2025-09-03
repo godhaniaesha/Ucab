@@ -31,7 +31,7 @@ export default function SA_ManageDriversContent() {
         <div>
           <h2 className="fs-3 fw-bold text-dark mb-1">Manage Drivers</h2>
           <p className="text-secondary">
-            View, approve, block, or edit driver accounts.
+            View all Drivers account details.
           </p>
         </div>
       </div>
@@ -87,11 +87,11 @@ export default function SA_ManageDriversContent() {
                   <td>
                     <Badge
                       bg={
-                        driver.status === "ONLINE"
-                          ? "dark"
-                          : driver.status === "OFFLINE"
+                        driver.status === "available"
+                          ? "success"
+                          : driver.status === "offline"
                           ? "secondary"
-                          : "secondary"
+                          : "danger"
                       }
                     >
                       {driver.status}

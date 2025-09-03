@@ -3,7 +3,7 @@ import "../style/x_app.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile, updateUserProfile } from "../redux/slice/auth.slice";
 import { FaEdit } from "react-icons/fa";
-
+import user from "../image/user.jpg";
 export default function Pages() {
   const dispatch = useDispatch();
   const { profile, profileLoading, profileError } = useSelector(
@@ -207,9 +207,12 @@ export default function Pages() {
       <div className="x_profile_header">
         <div className="x_img_wrapper">
           <img
-            src={`${profileData.profileImage}`}
+            src={profileData.profileImage ? profileData.profileImage : user}
             alt="profile"
             className="x_profile_img"
+            onError={(e) => {
+              e.target.src = user;
+            }}
           />
           <div
             className="x_camera_icon"
@@ -295,10 +298,6 @@ export default function Pages() {
         </div>
 
         <div className="x_grid">
-          {/* <div className="x_form_group">
-            <label>Status</label>
-            <input type="text" name="status" value={profileData.status} disabled={true} />
-          </div> */}
           <div className="x_form_group">
             <label>Documents Verified</label>
             <input
@@ -508,7 +507,7 @@ export default function Pages() {
                     {
                       provider: "",
                       customerId: "",
-                      paymentMethodId: Date.now().toString(), // temporary unique ID
+                      paymentMethodId: Date.now().toString(),
                       methodType: "",
                       last4: "",
                     },

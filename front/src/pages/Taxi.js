@@ -26,7 +26,7 @@ export default function Taxi() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 8;
 
   // Redux state
   const vehicles = useSelector((state) => state.vehicle.vehicles);
