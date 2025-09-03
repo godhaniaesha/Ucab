@@ -595,6 +595,7 @@ body {
   .z_taxi_logo {
     height: 35px !important;
   }
+  
 }
 
 @media (max-width: 430px) {
@@ -3053,6 +3054,9 @@ body {
 @media (max-width: 600px) {
   .x_grid {
     grid-template-columns: 1fr;
+  }
+  .x_profile_wrapper {
+    padding: 3px;
   }
 }
 
