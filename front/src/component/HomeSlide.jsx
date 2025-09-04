@@ -267,7 +267,7 @@ const HomeSlide = () => {
             <input type="text" placeholder="Drop Off Location" />
           </div>
           <div className="form_group">
-            <input type="number" placeholder="Passengers" />
+            <input type="number" min={1} placeholder="Passengers" />
           </div>
           <div className="form_group">
             <select className="z_drpdwn_select">

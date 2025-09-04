@@ -57,10 +57,10 @@ export default function P_MyRides() {
             </Badge>
 
             <div style={metaStyle}>
-              <strong>Pickup:</strong> {booking.pickup.address}
+              <strong>Pickup:</strong> {booking.pickup?.address || "N/A"}
             </div>
             <div style={metaStyle}>
-              <strong>Dropoff:</strong> {booking.drop.address}
+              <strong>Dropoff:</strong> {booking.drop?.address || "N/A"}
             </div>
             <div style={metaStyle}>
               <strong>Vehicle Type:</strong> {booking.vehicleType}

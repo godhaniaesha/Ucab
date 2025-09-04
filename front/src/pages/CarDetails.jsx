@@ -68,6 +68,35 @@ export default function CarDetails() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Get form data
+    const formData = new FormData(e.target);
+    const pickupDate = formData.get('date');
+    const pickupTime = formData.get('time');
+
+    // Date and time validation
+    const today = new Date();
+    const selectedDate = new Date(pickupDate);
+    selectedDate.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+
+    if (selectedDate < today) {
+      toast.error("Pickup date cannot be in the past.");
+      return;
+    }
+
+    if (selectedDate.getTime() === today.getTime()) {
+      // Today selected, check time
+      const now = new Date();
+      const [hour, minute] = pickupTime.split(":");
+      const selectedTime = new Date();
+      selectedTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+      if (selectedTime < now) {
+        toast.error("Pickup time cannot be in the past for today.");
+        return;
+      }
+    }
+    // If future date, any time is allowed
+
     toast.success("Cab booked successfully!");
     handleClose();
   };

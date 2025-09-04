@@ -20,7 +20,7 @@ export const tokenExpiryMiddleware = (store) => (next) => (action) => {
     // Dispatch logout
     store.dispatch(logout());
     // Redirect
-    window.location.href = '/login';
+    window.location.href = '/';
   }
   return next(action);
 };

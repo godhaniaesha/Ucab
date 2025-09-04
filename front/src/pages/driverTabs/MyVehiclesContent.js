@@ -272,6 +272,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label mt-2">Year</label>
             <input
               type="number"
+              min={0}
               name="year"
               className="form-control"
               value={formData.year}
@@ -306,6 +307,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label">Doors</label>
             <input
               type="number"
+              min={0}
               name="taxiDoors"
               className="form-control"
               value={formData.taxiDoors}
@@ -315,6 +317,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label mt-2">Passengers</label>
             <input
               type="number"
+              min={1}
               name="passengers"
               className="form-control"
               value={formData.passengers}
@@ -324,6 +327,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label mt-2">Luggage Capacity</label>
             <input
               type="number"
+              min={0}
               name="luggageCarry"
               className="form-control"
               value={formData.luggageCarry}
@@ -333,6 +337,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label mt-2">Per Km Rate</label>
             <input
               type="number"
+              min={0}
               name="perKmRate"
               className="form-control"
               value={formData.perKmRate}
@@ -342,6 +347,7 @@ const D_MyVehiclesContent = () => {
             <label className="form-label mt-2">Extra Km Rate</label>
             <input
               type="number"
+              min={0}
               name="extraKmRate"
               className="form-control"
               value={formData.extraKmRate}

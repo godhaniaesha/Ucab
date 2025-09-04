@@ -522,6 +522,7 @@ export default function Home({ car }) {
           <div className="form_group">
             <input
               type="number"
+              min={1}
               placeholder="Passengers"
               value={passengers}
               readOnly

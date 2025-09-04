@@ -8,12 +8,12 @@ const {
 const { authMiddleware } = require('../middlewares/auth.middleware');
 
 // Get pending payments for passenger
-router.get('/pending',authMiddleware(['passenger']),  getPendingPayments);
+router.get('/pending',authMiddleware(['passenger','driver','superadmin']),  getPendingPayments);
 
 // Get payment details for specific booking
-router.get('/:bookingId',authMiddleware(['passenger']), getPaymentDetails);
+router.get('/:bookingId',authMiddleware(['passenger','driver','superadmin']), getPaymentDetails);
 
 // Process payment for booking
-router.post('/:bookingId/pay',authMiddleware(['passenger']), processPayment);
+router.post('/:bookingId/pay',authMiddleware(['passenger','driver','superadmin']), processPayment);
 
 module.exports = router;

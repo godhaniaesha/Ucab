@@ -100,6 +100,24 @@ export const payPendingPayment = createAsyncThunk(
     }
   }
 );
+// Cancel booking thunk
+export const cancelBooking = createAsyncThunk(
+  'passengers/cancelBooking',
+  async (bookingId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const response = await axios.put(
+        `http://localhost:5000/api/passenger/booking/${bookingId}`,
+        {}, // agar cancel karva extra data lagse to aa object ma mokli sako
+        config
+      );
+      return response.data; // assume response ma updated booking return thay che
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to cancel booking' });
+    }
+  }
+);
 
 const passengersSlice = createSlice({
   name: 'passengers',
@@ -134,6 +152,29 @@ const passengersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(cancelBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelBooking.fulfilled, (state, action) => {
+        state.loading = false;
+        toast.success('Booking cancelled successfully!');
+
+        // state.bookings ma booking update karo
+        state.bookings = state.bookings.map((booking) =>
+          booking.id === action.payload.id ? action.payload : booking
+        );
+
+        // tripHistory ma bhi update karva hoy to
+        state.tripHistory = state.tripHistory.map((trip) =>
+          trip.id === action.payload.id ? action.payload : trip
+        );
+      })
+      .addCase(cancelBooking.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || 'Failed to cancel booking';
+      })
+
       .addCase(getBookings.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -158,35 +199,35 @@ const passengersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-       // getPendingPayments
-    .addCase(getPendingPayments.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(getPendingPayments.fulfilled, (state, action) => {
-      state.loading = false;
-      state.pendingPayments = action.payload; // 👈 new state property
-    })
-    .addCase(getPendingPayments.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.error?.message || 'Failed to fetch pending payments';
-    })
-    .addCase(payPendingPayment.pending, (state) => {
-  state.loading = true;
-  state.error = null;
-})
-.addCase(payPendingPayment.fulfilled, (state, action) => {
-  state.loading = false;
-  toast.success('Payment successful!');
-  // Optionally, remove the paid ride from pendingPayments
-  state.pendingPayments = state.pendingPayments.filter(
-    (ride) => ride.payment.id !== action.meta.arg.paymentId
-  );
-})
-.addCase(payPendingPayment.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.error?.message || 'Payment failed';
-})
+      // getPendingPayments
+      .addCase(getPendingPayments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPendingPayments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pendingPayments = action.payload; // 👈 new state property
+      })
+      .addCase(getPendingPayments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to fetch pending payments';
+      })
+      .addCase(payPendingPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(payPendingPayment.fulfilled, (state, action) => {
+        state.loading = false;
+        toast.success('Payment successful!');
+        // Optionally, remove the paid ride from pendingPayments
+        state.pendingPayments = state.pendingPayments.filter(
+          (ride) => ride.payment.id !== action.meta.arg.paymentId
+        );
+      })
+      .addCase(payPendingPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Payment failed';
+      })
       .addCase(getTripHistory.pending, (state) => {
         state.loading = true;
         state.error = null;

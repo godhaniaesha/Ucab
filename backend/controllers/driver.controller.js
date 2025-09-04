@@ -3,6 +3,7 @@ const Booking = require("../models/Booking");
 const { USER_STATUS, BOOKING_STATUS } = require("../utils/constants");
 const Vehicle = require("../models/Vehicle");
 const Payment = require("../models/Payment");
+const { passengerSockets } = require("../sockets/booking.socket");
 
 exports.updateLocation = async (req, res) => {
   try {
@@ -119,7 +120,8 @@ exports.setAvailability = async (req, res) => {
 exports.checkNewRequests = async (req, res) => {
   try {
     const driverId = req.user.id;
-
+    console.log("Driver checking new requests:", driverId);
+    
     // Include no_drivers if you want to see them
     const statusesToCheck = [
       BOOKING_STATUS.PENDING,
@@ -179,7 +181,8 @@ exports.driverCancelBooking = async (req, res) => {
   try {
     const driverId = req.user && req.user.id;
     const bookingId = req.params.id;
-
+    console.log('driverCancelBooking called with bookingId:', bookingId); // Debug log
+    
     // 🔹 Find booking
     const booking = await Booking.findById(bookingId);
     if (!booking) {

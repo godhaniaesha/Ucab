@@ -1,3 +1,4 @@
+import P_ActiveRideContent from "./passengerTabs/ActiveRideContent";
 import React, { useState, useEffect } from "react";
 import Pages from "./Pages";
 import D_DashboardContent from "./driverTabs/DashboardContent";
@@ -180,6 +181,15 @@ export default function Tab() {
           onStartTrip={handleStartTrip}
           onCompleteTrip={handleCompleteTrip}
         />
+      ),
+    },
+    // Passenger Payment Tab
+    {
+      id: "passenger-payment",
+      name: "Payment",
+      iconClass: "bi bi-geo-alt-fill",
+      component: (
+        <P_ActiveRideContent />
       ),
     },
     {

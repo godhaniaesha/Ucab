@@ -79,7 +79,8 @@ export const cancelBooking = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const config = getAuthConfig();
-            const res = await axios.post(`${API_URL}/cancel/${id}`, {}, config);
+            console.log('cancelBooking id:', id); // Debug log
+            const res = await axios.post(`${API_URL}/cancle/${id}`, {}, config);
             return res.data.booking;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || 'Error canceling booking');
