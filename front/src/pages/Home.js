@@ -241,14 +241,38 @@ export default function Home({ car }) {
       const pickupLocation = formData.get('pickup');
       const dropLocation = formData.get('drop');
       const pickupDate = formData.get('date');
-      // const pickupTime = formData.get('time');
+      const pickupTime = formData.get('time');
       const ratePerKm = formData.get('ratePerKm');
 
       // Validate required fields
-      if (!pickupLocation || !dropLocation) {
+      if (!pickupLocation || !dropLocation || !pickupDate || !pickupTime) {
         toast.error("Please fill all required fields.");
         return;
       }
+
+      // Date and time validation
+      const today = new Date();
+      const selectedDate = new Date(pickupDate);
+      selectedDate.setHours(0,0,0,0);
+      today.setHours(0,0,0,0);
+
+      if (selectedDate < today) {
+        toast.error("Pickup date cannot be in the past.");
+        return;
+      }
+
+      if (selectedDate.getTime() === today.getTime()) {
+        // Today selected, check time
+        const now = new Date();
+        const [hour, minute] = pickupTime.split(":");
+        const selectedTime = new Date();
+        selectedTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+        if (selectedTime < now) {
+          toast.error("Pickup time cannot be in the past for today.");
+          return;
+        }
+      }
+      // If future date, any time is allowed
 
       // Geocode addresses
       const pickupCoords = await getCoordinates(pickupLocation);
@@ -274,8 +298,8 @@ export default function Home({ car }) {
         vehicleType: selectedCar?.type || "standard",
         preferredVehicleId: selectedCar?._id,
         preferredVehicleModel: selectedCar?.model || selectedCar?.name,
-        // pickupDate: pickupDate,
-        // pickupTime: pickupTime,
+        pickupDate: pickupDate,
+        pickupTime: pickupTime,
         ratePerKm: selectedCar?.perKmRate || ratePerKm,
       };
 

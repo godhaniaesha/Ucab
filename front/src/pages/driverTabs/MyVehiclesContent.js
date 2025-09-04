@@ -62,10 +62,19 @@ const D_MyVehiclesContent = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData((prev) => ({
-      ...prev,
-      images: files,
-    }));
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+        const validFiles = files.filter(f => allowedTypes.includes(f.type));
+        if (validFiles.length !== files.length) {
+          e.target.setCustomValidity("Only JPEG, JPG, PNG images are allowed.");
+          e.target.reportValidity();
+          return;
+        } else {
+          e.target.setCustomValidity("");
+        }
+        setFormData((prev) => ({
+          ...prev,
+          images: validFiles,
+        }));
   };
 
   const handleRemoveImage = (index) => {
@@ -78,8 +87,79 @@ const D_MyVehiclesContent = () => {
   // Save vehicle
   const handleSave = (e) => {
     e.preventDefault();
-    const data = new FormData();
+    // Inline browser-style validation
+    const form = e.target;
+    let valid = true;
 
+    // Helper to set custom error
+    const setError = (name, message) => {
+      const input = form.querySelector(`[name="${name}"]`);
+      if (input) {
+        input.setCustomValidity(message);
+        input.reportValidity();
+        valid = false;
+      }
+    };
+
+    // Reset all custom errors
+    Array.from(form.elements).forEach(el => {
+      if (el.setCustomValidity) el.setCustomValidity("");
+    });
+
+    // All fields required
+    if (!formData.make.trim()) setError("make", "Please enter vehicle make.");
+    if (!formData.model.trim()) setError("model", "Please enter vehicle model.");
+    if (!formData.year || isNaN(formData.year) || formData.year < 1900 || formData.year > new Date().getFullYear() + 1) setError("year", "Please enter a valid year (1900 to next year).");
+    if (!formData.plate.trim()) setError("plate", "Please enter license plate.");
+    if (!formData.type) setError("type", "Please select vehicle type.");
+    if (!formData.taxiDoors || isNaN(formData.taxiDoors) || formData.taxiDoors < 2 || formData.taxiDoors > 6) setError("taxiDoors", "Please enter number of doors (2-6).");
+    if (!formData.passengers || isNaN(formData.passengers) || formData.passengers < 1 || formData.passengers > 8) setError("passengers", "Please enter number of passengers (1-8).");
+    if (formData.luggageCarry === "" || isNaN(formData.luggageCarry) || formData.luggageCarry < 0 || formData.luggageCarry > 10) setError("luggageCarry", "Please enter luggage capacity (0-10).");
+    // Per Km Rate validation
+    if (
+      !formData.perKmRate ||
+      isNaN(formData.perKmRate) ||
+      Number(formData.perKmRate) < 1 ||
+      Number(formData.perKmRate) > 9999 ||
+      !/^\d+(\.\d{1,2})?$/.test(formData.perKmRate)
+    ) {
+      setError("perKmRate", "Please enter a valid amount (min 1, max 9999, up to 2 decimals).");
+    }
+    // Extra Km Rate validation
+    if (
+      formData.extraKmRate === "" ||
+      isNaN(formData.extraKmRate) ||
+      Number(formData.extraKmRate) < 0 ||
+      Number(formData.extraKmRate) > 9999 ||
+      !/^\d+(\.\d{1,2})?$/.test(formData.extraKmRate)
+    ) {
+      setError("extraKmRate", "Please enter a valid amount (min 0, max 9999, up to 2 decimals).");
+    }
+    if (!formData.airCondition) setError("airCondition", "Please select air condition option.");
+    if (!formData.gpsNavigation) setError("gpsNavigation", "Please select GPS navigation option.");
+    if (!formData.description.trim()) setError("description", "Please enter vehicle description.");
+    // Images validation
+    if (formData.images.length === 0) {
+      const imgInput = form.querySelector("#imageUploadInput");
+      if (imgInput) {
+        imgInput.setCustomValidity("Please upload at least one vehicle image.");
+        imgInput.reportValidity();
+      }
+      valid = false;
+    }
+    if (formData.images.length > 5) {
+      const imgInput = form.querySelector("#imageUploadInput");
+      if (imgInput) {
+        imgInput.setCustomValidity("Maximum 5 images allowed.");
+        imgInput.reportValidity();
+      }
+      valid = false;
+    }
+
+    // Prevent submit if any error or browser validation fails
+    if (!valid || !form.checkValidity()) return;
+
+    const data = new FormData();
     data.append("make", formData.make);
     data.append("model", formData.model);
     data.append("year", formData.year);
