@@ -138,6 +138,7 @@ export default function Contact() {
                   <div className="z_cntct_form_group">
                     <input
                       type="text"
+                      name="name"
                       placeholder="Your Name"
                       value={formik.values.name}
                       onChange={formik.handleChange}

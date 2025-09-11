@@ -57,7 +57,7 @@ const D_TripHistoryContent = () => {
                       PSNGR TRIP
                     </span>
                   )}
-                  <p className="fw-semibold text-dark">Ride ID: #{trip._id}</p>
+                  <p className="fw-semibold text-dark mt-sm-0 mt-3">Ride ID: #{trip._id}</p>
                   <p className="text-secondary">
                     Date: {new Date(trip.createdAt).toLocaleDateString()} | Time:{" "}
                     {new Date(trip.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} | Fare: ${trip.fare.toFixed(2)}

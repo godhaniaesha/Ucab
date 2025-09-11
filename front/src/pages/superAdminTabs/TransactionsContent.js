@@ -11,7 +11,7 @@ export default function SA_TransactionsContent() {
   );
 
   console.log("Transactions State:", payouts, loading, error, totals, stats);
-  
+
   const [db_selectedTransaction, db_setSelectedTransaction] = useState(null);
   const [db_showModal, db_setShowModal] = useState(false);
 
@@ -27,7 +27,6 @@ export default function SA_TransactionsContent() {
 
   return (
     <div className="d_tab_page w-100 h-100 p-3 bg-white rounded-3 border border-light w-100">
-      {/* Header */}
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
         <div>
@@ -45,7 +44,6 @@ export default function SA_TransactionsContent() {
       >
         {loading ? (
           <div className="text-center py-4">
-            {/* Spinner only, no table cell here */}
             <Spinner animation="border" variant="success" />
           </div>
         ) : error ? (
@@ -68,10 +66,9 @@ export default function SA_TransactionsContent() {
                 <th>Drop</th>
                 <th>Vehicle Type</th>
                 <th>Fare</th>
-                <th>Amount</th>
+                <th>Earning</th>
                 <th>Status</th>
-               
-                <th>Transaction ID</th>
+                {/* <th>Transaction ID</th> */}
                 <th>Action</th>
               </tr>
             </thead>
@@ -80,26 +77,28 @@ export default function SA_TransactionsContent() {
                 payouts.map((txn, index) => (
                   <tr key={txn._id || index}>
                     <td>{index + 1}</td>
-                    <td>{txn.booking?.passenger?.name}</td>
+                    <td>{txn.booking?.passenger?.name || "N/A"}</td>
                     <td>{txn.booking?.assignedDriver?.name || "-"}</td>
-                    <td>{txn.booking?.pickup?.address}</td>
-                    <td>{txn.booking?.drop?.address}</td>
+                    <td>{txn.booking?.pickup?.address || "N/A"}</td>
+                    <td>{txn.booking?.drop?.address || "N/A"}</td>
                     <td>
                       <Badge bg="secondary">
                         {txn.booking?.vehicleType?.toUpperCase() || "N/A"}
                       </Badge>
                     </td>
-                    <td>${txn.booking?.fare}</td>
-                    <td>${txn.amount ? txn.amount.toFixed(2) : "0.00"}</td>
+                    <td>${txn.booking?.fare ?? 0}</td>
+                    <td>${txn.booking?.fare
+                      ? (txn.booking.fare * 0.2).toFixed(2)
+                      : "0.00"}</td>
+                   
                     <td>
                       <Badge
                         bg={txn.status === "completed" ? "success" : "warning"}
                       >
-                        {txn.status?.toUpperCase()}
+                        {txn.status?.toUpperCase() || "N/A"}
                       </Badge>
                     </td>
-                    
-                    <td>{txn.transactionId}</td>
+                    {/* <td>{txn.transactionId || "N/A"}</td> */}
                     <td>
                       <Button
                         size="sm"
@@ -130,14 +129,18 @@ export default function SA_TransactionsContent() {
       {totals && (
         <div className="mt-3 p-3 border rounded bg-light">
           <h6 className="fw-bold">Summary</h6>
-          <p>Total Received: ${totals.totalReceived.toFixed(2)}</p>
-          <p>Total Sent: ${totals.totalSent.toFixed(2)}</p>
+          <p>Total Received: ${(totals?.totalReceived ?? 0).toFixed(2)}</p>
+          {/* <p>Total Sent: ${(totals?.totalSent ?? 0).toFixed(2)}</p> */}
           <p>
-            Driver/Owner Earnings: ${totals.driverOwner.totalAmount.toFixed(2)} (
-            {totals.driverOwner.totalBookings} bookings)
+            Driver Earnings: $
+            {(totals?.driverOwner?.totalAmount ?? 0).toFixed(2)} (
+            {totals?.driverOwner?.totalBookings ?? 0} bookings)
           </p>
-          <p>Passengers Total Sent: ${totals.passenger.totalSent.toFixed(2)}</p>
-          <p>Total Passengers: {stats?.totalPassengers}</p>
+          {/* <p>
+            Passengers Total Sent: $
+            {(totals?.passenger?.totalSent ?? 0).toFixed(2)}
+          </p> */}
+          <p>Total Passengers: {stats?.totalPassengers ?? 0}</p>
         </div>
       )}
 
@@ -154,84 +157,98 @@ export default function SA_TransactionsContent() {
             Transaction Details
           </Modal.Title>
         </Modal.Header>
-      <Modal.Body className="d_modal_body">
-  {db_selectedTransaction && (
-    <div className="d_transaction_modal_wrapper">
-      <div className="d-flex flex-column flex-lg-row gap-3">
-        {/* Booking Info */}
-        <div
-          className="d_card p-3 border rounded w-100"
-          style={{ backgroundColor: "#f9f9f9" }}
-        >
-          <h6 className="mb-3 text-dark fw-bold">Booking Info</h6>
-          <p className="mb-0">
-            <strong>Passenger:</strong>{" "}
-            {db_selectedTransaction.booking?.passenger?.name || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Pickup:</strong>{" "}
-            {db_selectedTransaction.booking?.pickup?.address || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Drop:</strong>{" "}
-            {db_selectedTransaction.booking?.drop?.address || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Vehicle Type:</strong>{" "}
-            {db_selectedTransaction.booking?.vehicleType || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Preferred Model:</strong>{" "}
-            {db_selectedTransaction.booking?.preferredVehicleModel || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Distance:</strong>{" "}
-            {(db_selectedTransaction.booking?.distanceKm).toFixed(2) || "0"} km
-          </p>
-          <p className="mb-0">
-            <strong>Fare:</strong> ${db_selectedTransaction.booking?.fare || "0"}
-          </p>
-        </div>
+        <Modal.Body className="d_modal_body">
+          {db_selectedTransaction && (
+            <div className="d_transaction_modal_wrapper">
+              <div className="d-flex flex-column flex-lg-row gap-3">
+                {/* Booking Info */}
+                <div
+                  className="d_card p-3 border rounded w-100"
+                  style={{ backgroundColor: "#f9f9f9" }}
+                >
+                  <h6 className="mb-3 text-dark fw-bold">Booking Info</h6>
+                  <p className="mb-0">
+                    <strong>Passenger:</strong>{" "}
+                    {db_selectedTransaction.booking?.passenger?.name || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Pickup:</strong>{" "}
+                    {db_selectedTransaction.booking?.pickup?.address || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Drop:</strong>{" "}
+                    {db_selectedTransaction.booking?.drop?.address || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Vehicle Type:</strong>{" "}
+                    {db_selectedTransaction.booking?.vehicleType || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Preferred Model:</strong>{" "}
+                    {db_selectedTransaction.booking?.preferredVehicleModel ||
+                      "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Distance:</strong>{" "}
+                    {db_selectedTransaction.booking?.distanceKm !== undefined
+                      ? db_selectedTransaction.booking.distanceKm.toFixed(2)
+                      : "0.00"}{" "}
+                    km
+                  </p>
+                  <p className="mb-0">
+                    <strong>Fare:</strong> $
+                    {db_selectedTransaction.booking?.fare ?? 0}
+                  </p>
+                </div>
 
-        {/* Transaction Info */}
-        <div
-          className="d_card p-3 border rounded w-100"
-          style={{ backgroundColor: "#f9f9f9" }}
-        >
-          <h6 className="mb-3 text-dark fw-bold">Transaction Info</h6>
-          <p className="mb-0">
-            <strong>Total Amount:</strong> ${(db_selectedTransaction.amount).toFixed(2) || "0"}
-          </p>
-          <p className="mb-0">
-            <strong>Owner Commission (20%):</strong> ${(db_selectedTransaction.booking?.fare * 0.1).toFixed(2) || "0"}
-          </p>
-          <p className="mb-0">
-            <strong>Driver Earnings (80%):</strong> ${(db_selectedTransaction.booking?.fare * 0.9).toFixed(2) || "0"}
-          </p>
-          <p className="mb-0">
-            <strong>Status:</strong>{" "}
-            {db_selectedTransaction.status?.toUpperCase() || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Payout To:</strong>{" "}
-
-          
-            {db_selectedTransaction.booking?.assignedDriver.name || "N/A"}
-         
-          </p>
-          <p className="mb-0">
-            <strong>Transaction ID:</strong>{" "}
-            {db_selectedTransaction.transactionId || "N/A"}
-          </p>
-          <p className="mb-0">
-            <strong>Completed At:</strong>{" "}
-            {db_selectedTransaction.completedAt ? new Date(db_selectedTransaction.completedAt).toLocaleString() : "Not completed"}
-          </p>
-        </div>
-      </div>
-    </div>
-  )}
-</Modal.Body>
+                {/* Transaction Info */}
+                <div
+                  className="d_card p-3 border rounded w-100"
+                  style={{ backgroundColor: "#f9f9f9" }}
+                >
+                  <h6 className="mb-3 text-dark fw-bold">Transaction Info</h6>
+                  <p className="mb-0">
+                    <strong>Total Amount:</strong> $
+                    {(db_selectedTransaction.amount ?? 0).toFixed(2)}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Owner Commission (10%):</strong> $
+                    {db_selectedTransaction.booking?.fare
+                      ? (db_selectedTransaction.booking.fare * 0.2).toFixed(2)
+                      : "0.00"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Driver Earnings (90%):</strong> $
+                    {db_selectedTransaction.booking?.fare
+                      ? (db_selectedTransaction.booking.fare * 0.9).toFixed(2)
+                      : "0.00"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Status:</strong>{" "}
+                    {db_selectedTransaction.status?.toUpperCase() || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Payout To:</strong>{" "}
+                    {db_selectedTransaction.booking?.assignedDriver?.name ||
+                      "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Transaction ID:</strong>{" "}
+                    {db_selectedTransaction.transactionId || "N/A"}
+                  </p>
+                  <p className="mb-0">
+                    <strong>Completed At:</strong>{" "}
+                    {db_selectedTransaction.completedAt
+                      ? new Date(
+                          db_selectedTransaction.completedAt
+                        ).toLocaleString()
+                      : "Not completed"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
     </div>
   );

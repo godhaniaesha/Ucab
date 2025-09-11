@@ -6,8 +6,10 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import {
   FaAngleLeft,
   FaCalendarAlt,
+  FaChevronDown,
   FaChevronLeft,
   FaChevronRight,
+  FaChevronUp,
   FaClock,
   FaEnvelope,
   FaMapMarkerAlt,
@@ -35,6 +37,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { getVehicles } from '../redux/slice/vehicles.slice';
 import { createBooking, resetBookingStatus } from "../redux/slice/passengers.slice";
+import CustomDropdown from "./CustomDropdown";
 
 // Helper to decode JWT and extract userId
 const getUserIdFromToken = () => {
@@ -253,8 +256,8 @@ export default function Home({ car }) {
       // Date and time validation
       const today = new Date();
       const selectedDate = new Date(pickupDate);
-      selectedDate.setHours(0,0,0,0);
-      today.setHours(0,0,0,0);
+      selectedDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
 
       if (selectedDate < today) {
         toast.error("Pickup date cannot be in the past.");
@@ -335,6 +338,9 @@ export default function Home({ car }) {
 
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleVehicles = showAll ? vehicles : vehicles.slice(0, 8);
 
   const testimonials = [
     {
@@ -502,67 +508,53 @@ export default function Home({ car }) {
             />
           </div>
 
-          {/* Makes */}
-          <div className="form_group">
-            <select
-              className="z_drpdwn_select"
-              value={selectedMake}
-              onChange={(e) => {
-                setSelectedMake(e.target.value);
-                setSelectedModel("");
-                setPassengers("");
-                setSelectedRate("");
-              }}
-              required
-            >
-              <option value="">Choose Cab</option>
-              {makes.map((make, index) => (
-                <option key={index} value={make}>
-                  {make}
-                </option>
-              ))}
-            </select>
-          </div>
+         {/* Makes */}
+  <div className="form_group p-0">
+    <CustomDropdown
+      options={makes}
+      value={selectedMake}
+      onChange={(val) => {
+        setSelectedMake(val);
+        setSelectedModel("");
+        setPassengers("");
+        setSelectedRate("");
+      }}
+      placeholder="Choose Cab"
+    />
+  </div>
 
-          {/* Models */}
-          <div className="form_group">
-            <select
-              className="z_drpdwn_select"
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              disabled={!selectedMake}
-              required
-            >
-              <option value="">Choose Model</option>
-              {models.map((model, index) => (
-                <option key={index} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select>
-          </div>
+  {/* Models */}
+  <div className="form_group p-0">
+    <CustomDropdown
+      options={models}
+      value={selectedModel}
+      onChange={(val) => setSelectedModel(val)}
+      placeholder="Choose Model"
+      disabled={!selectedMake}
+    />
+  </div>
 
-          {/* Passengers */}
-          <div className="form_group">
-            <input
-              type="number"
-              min={1}
-              placeholder="Passengers"
-              value={passengers}
-              readOnly
-            />
-          </div>
+  {/* Passengers */}
+  <div className="form_group">
+    <input
+      type="number"
+      min={1}
+      placeholder="Passengers"
+      value={passengers}
+      readOnly
+    />
+  </div>
 
-          {/* Rate */}
-          <div className="form_group">
-            <input
-              type="text"
-              className="z_drpdwn_select"
-              value={selectedRate ? `₹${selectedRate}/km` : ""}
-              placeholder="Rate/km"
-              readOnly
-            />
-          </div>
+  {/* Rate */}
+  <div className="form_group">
+    <input
+      type="text"
+      className="z_drpdwn_select"
+      value={selectedRate ? `₹${selectedRate}/km` : ""}
+      placeholder="Rate/km"
+      readOnly
+    />
+  </div>
 
 
           <div className="z_book_btn">
@@ -635,97 +627,114 @@ export default function Home({ car }) {
               {vehiclesLoading ? (
                 <div className="text-center">Loading...</div>
               ) : vehicles && vehicles.length > 0 ? (
-                vehicles.map((car) => (
-                  <div
-                    key={car._id}
-                    className={`z_car_card ${hoveredCard === car._id ? "z_car_card_hover" : ""}`}
-                    onMouseEnter={() => setHoveredCard(car._id)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="z_car_image_container">
-                      <img
-                        src={`http://localhost:5000${car.images}`}
-                        alt={car.name}
-                        className="z_car_image"
-                      />
-                    </div>
-
-                    <div className="z_car_card_body">
-                      <h5 className="z_car_name">{car.model || car.name}</h5>
-                      <div className="z_car_price">{car.price}</div>
-                      <div className="z_car_separator"></div>
-
-                      <div className="z_car_features">
-                        <div className="z_car_feature">
-                          <div className="z_car_feature_left">
-                            <div className="z_car_feature_icon">
-                              <FaDoorClosed size={16} />
-                            </div>
-                            <span>Taxi Doors:</span>
-                          </div>
-                          <span className="z_car_feature_value">{car.taxiDoors || car.doors}</span>
-                        </div>
-
-                        <div className="z_car_feature">
-                          <div className="z_car_feature_left">
-                            <div className="z_car_feature_icon">
-                              <FaUsers size={16} />
-                            </div>
-                            <span>Passengers:</span>
-                          </div>
-                          <span className="z_car_feature_value">{car.passengers}</span>
-                        </div>
-
-                        <div className="z_car_feature">
-                          <div className="z_car_feature_left">
-                            <div className="z_car_feature_icon">
-                              <FaSuitcaseRolling size={16} />
-                            </div>
-                            <span>Luggage Carry:</span>
-                          </div>
-                          <span className="z_car_feature_value">{car.luggageCarry}</span>
-                        </div>
-
-                        <div className="z_car_feature">
-                          <div className="z_car_feature_left">
-                            <div className="z_car_feature_icon">
-                              <FaSnowflake size={16} />
-                            </div>
-                            <span>Air Condition:</span>
-                          </div>
-                          <span className="z_car_feature_value">
-                            {car.airCondition ? 'Yes' : 'No'}
-                          </span>
-                        </div>
-
-                        <div className="z_car_feature">
-                          <div className="z_car_feature_left">
-                            <div className="z_car_feature_icon">
-                              <FaMapMarkerAlt size={16} />
-                            </div>
-                            <span>GPS Navigation:</span>
-                          </div>
-                          <span className="z_car_feature_value">
-                            {car.gpsNavigation ? 'Yes' : 'No'}
-                          </span>
-                        </div>
+                <>
+                  {visibleVehicles.map((car) => (
+                    <div
+                      key={car._id}
+                      className={`z_car_card ${hoveredCard === car._id ? "z_car_card_hover" : ""}`}
+                      onMouseEnter={() => setHoveredCard(car._id)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                    >
+                      <div className="z_car_image_container">
+                        <img
+                          src={`http://localhost:5000${car.images}`}
+                          alt={car.name}
+                          className="z_car_image"
+                        />
                       </div>
 
-                      {/* Book Taxi Button */}
-                      <button
-                        className={`z_car_book_button ${hoveredButton === car._id ? "z_car_book_button_hover" : ""}`}
-                        onMouseEnter={() => setHoveredButton(car._id)}
-                        onMouseLeave={() => setHoveredButton(null)}
-                        onClick={() => {
-                          console.log("Button clicked for vehicle:", car._id);
-                          handleShow(car);
-                        }}
-                      >
-                        Book Taxi Now →
-                      </button>
+                      <div className="z_car_card_body">
+                        <h5 className="z_car_name">{car.model || car.name}</h5>
+                        <div className="z_car_price">{car.price}</div>
+                        <div className="z_car_separator"></div>
+
+                        <div className="z_car_features">
+                          <div className="z_car_feature">
+                            <div className="z_car_feature_left">
+                              <div className="z_car_feature_icon">
+                                <FaDoorClosed size={16} />
+                              </div>
+                              <span>Taxi Doors:</span>
+                            </div>
+                            <span className="z_car_feature_value">{car.taxiDoors || car.doors}</span>
+                          </div>
+
+                          <div className="z_car_feature">
+                            <div className="z_car_feature_left">
+                              <div className="z_car_feature_icon">
+                                <FaUsers size={16} />
+                              </div>
+                              <span>Passengers:</span>
+                            </div>
+                            <span className="z_car_feature_value">{car.passengers}</span>
+                          </div>
+
+                          <div className="z_car_feature">
+                            <div className="z_car_feature_left">
+                              <div className="z_car_feature_icon">
+                                <FaSuitcaseRolling size={16} />
+                              </div>
+                              <span>Luggage Carry:</span>
+                            </div>
+                            <span className="z_car_feature_value">{car.luggageCarry}</span>
+                          </div>
+
+                          <div className="z_car_feature">
+                            <div className="z_car_feature_left">
+                              <div className="z_car_feature_icon">
+                                <FaSnowflake size={16} />
+                              </div>
+                              <span>Air Condition:</span>
+                            </div>
+                            <span className="z_car_feature_value">
+                              {car.airCondition ? "Yes" : "No"}
+                            </span>
+                          </div>
+
+                          <div className="z_car_feature">
+                            <div className="z_car_feature_left">
+                              <div className="z_car_feature_icon">
+                                <FaMapMarkerAlt size={16} />
+                              </div>
+                              <span>GPS Navigation:</span>
+                            </div>
+                            <span className="z_car_feature_value">
+                              {car.gpsNavigation ? "Yes" : "No"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Book Taxi Button */}
+                        <button
+                          className={`z_car_book_button ${hoveredButton === car._id ? "z_car_book_button_hover" : ""}`}
+                          onMouseEnter={() => setHoveredButton(car._id)}
+                          onMouseLeave={() => setHoveredButton(null)}
+                          onClick={() => {
+                            console.log("Button clicked for vehicle:", car._id);
+                            handleShow(car);
+                          }}
+                        >
+                          Book Taxi Now →
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+
+                  {/* Show More / Show Less button */}
+                  {vehicles.length > 6 && (
+                    <div className="text-center mt-4 col-12">
+                      {showAll ? (
+                        <button className="z_show_more_btn" onClick={() => setShowAll(false)}>
+                          Show Less <FaChevronUp />
+                        </button>
+                      ) : (
+                        <button className="z_show_more_btn" onClick={() => setShowAll(true)}>
+                          Show More <FaChevronDown />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center">No vehicles available</div>
               )}
@@ -768,7 +777,7 @@ export default function Home({ car }) {
               </Col>
             </Row>
 
-            <Row className="mb-3">
+            {/* <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="date">
                   <Form.Label>Pickup Date</Form.Label>
@@ -781,7 +790,7 @@ export default function Home({ car }) {
                   <Form.Control name="time" type="time" required />
                 </Form.Group>
               </Col>
-            </Row>
+            </Row> */}
 
             <Form.Group controlId="ratePerKm" className="mb-3">
               <Form.Label>Rate/km</Form.Label>

@@ -75,9 +75,27 @@ export default function SA_ManageVehiclesContent() {
                 <td>
                   {vehicle.make} {vehicle.model} ({vehicle.year})
                 </td>
-                <td>
-                  <Badge bg="secondary">{vehicle.type.toUpperCase()}</Badge>
-                </td>
+               <td>
+  <Badge
+    bg=""
+    style={{
+      backgroundColor:
+        vehicle.type?.toUpperCase() === "PREMIUM"
+          ? "#ceb946ff" // Gold for Premium
+          : vehicle.type?.toUpperCase() === "STANDARD"
+          ? "#0f6e55" // Green for Standard
+          : vehicle.type?.toUpperCase() === "LUXURY"
+          ? "#2165beff" // Purple for Luxury
+          : "#6c757d", // Default gray
+      color: "#fff",
+      padding: "6px 12px",
+      borderRadius: "8px",
+      fontWeight: "600",
+    }}
+  >
+    {vehicle.type?.toUpperCase()}
+  </Badge>
+</td>
                 <td>${vehicle.perKmRate}</td>
                 <td>${vehicle.extraKmRate}</td>
                 <td>{new Date(vehicle.createdAt).toLocaleDateString()}</td>

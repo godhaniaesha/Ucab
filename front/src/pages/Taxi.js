@@ -753,7 +753,7 @@ export default function Taxi() {
               </Col>
             </Row>
 
-            <Row className="mb-3">
+            {/* <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="date">
                   <Form.Label>Pickup Date</Form.Label>
@@ -766,7 +766,7 @@ export default function Taxi() {
                   <Form.Control name="time" type="time" required />
                 </Form.Group>
               </Col>
-            </Row>
+            </Row> */}
 
             <Form.Group controlId="ratePerKm" className="mb-3">
               <Form.Label>Rate/km</Form.Label>

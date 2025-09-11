@@ -1568,3 +1568,30 @@
   border-color: #6c757d !important;
   cursor: not-allowed;
 }
+
+.z_show_more_btn{
+  /* background: linear-gradient(90deg, #0f6e55, #199675); */
+    color: #0f6e55;
+    font-weight: 600;
+    border: none;
+    padding: 4px 25px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 20px auto 0 auto;
+}
+
+.z_drpdwn_select option {
+  background-color: #fff;   /* normal option background */
+  color: #333;              /* normal option text */
+}
+
+.z_drpdwn_select option:checked,
+.z_drpdwn_select option:hover,
+.z_drpdwn_select option:focus {
+  background-color: #0f6e55 !important; /* theme background */
+  color: #fff !important;               /* white text */
+}

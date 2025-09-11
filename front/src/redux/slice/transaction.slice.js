@@ -16,6 +16,7 @@ export const fetchTransactions = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(res.data, "Fetched Transactions");
 
       return res.data; // full object (payouts, passengerPayments, totals, stats)
     } catch (err) {
@@ -45,11 +46,59 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.loading = false;
-        state.payouts = action.payload?.payouts || [];
-        state.passengerPayments = action.payload?.passengerPayments || [];
-        state.totals = action.payload?.totals || null;
-        state.stats = action.payload?.stats || null;
+
+        if (action.payload?.role === "superadmin") {
+          // superadmin response handle karo
+          const txns = action.payload?.transactions || [];
+          state.payouts = txns;
+
+          // 🔹 Totals calculate karo
+          let totalReceived = 0;
+          let totalPlatformFee = 0;
+          let driverTotal = 0;
+          let driverBookings = 0;
+          let passengers = new Set();
+
+          txns.forEach((txn) => {
+            const fare = txn.booking?.fare ?? 0;
+            const platformFee = txn.platformFee ?? (fare * 0.2); // fallback 20%
+            const driverEarning = fare - platformFee;
+
+            totalReceived += fare * 0.2; // 80% to drivers
+            totalPlatformFee += platformFee;
+            driverTotal += driverEarning;
+            if (fare > 0) driverBookings++;
+
+            if (txn.booking?.passenger?._id) {
+              passengers.add(txn.booking.passenger._id);
+            }
+          });
+
+          state.totals = {
+            totalReceived,
+            totalPlatformFee,
+            driverOwner: {
+              totalAmount: driverTotal,
+              totalBookings: driverBookings,
+            },
+          };
+
+          state.stats = {
+            totalPassengers: passengers.size,
+            totalTransactions: txns.length,
+          };
+
+          state.passengerPayments = [];
+        }
+         else {
+          // driver / passenger response
+          state.payouts = action.payload?.payouts || [];
+          state.passengerPayments = action.payload?.passengerPayments || [];
+          state.totals = action.payload?.totals || null;
+          state.stats = action.payload?.stats || null;
+        }
       })
+
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

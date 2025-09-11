@@ -384,9 +384,15 @@ export default function Header() {
       {/* Main Nav */}
       <div className="x_navbar">
         <div className="x_container">
-          <div className="x_logo">
-            <img src={require("../image/img.png")} className="z_taxi_logo" alt="Taxi Logo" />
-          </div>
+       <div className="x_logo">
+  <Link to="/">
+    <img
+      src={require("../image/img.png")}
+      className="z_taxi_logo"
+      alt="Taxi Logo"
+    />
+  </Link>
+</div>
 
           {/* Navigation Menu */}
           <nav className={`x_menu ${menuOpen ? "x_menu-open" : ""}`}>

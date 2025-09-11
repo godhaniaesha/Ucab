@@ -79,8 +79,10 @@ export default function Footer() {
                     {/* Col 1 - Logo & Description */}
                     <div className="x_footer-col">
                         <div className="x_footer-logo">
-                            <img src={require("../image/img.png")} alt="Taxi Logo" />
-                        </div>
+  <Link to="/">
+    <img src={require("../image/img.png")} alt="Taxi Logo" />
+  </Link>
+</div>
                         <p>
                             We are many variations of passages available but the majority have
                             suffered alteration in some form by injected humour words believable.

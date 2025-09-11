@@ -56,7 +56,7 @@ export default function P_MyRides() {
               {booking.status}
             </Badge>
 
-            <div style={metaStyle}>
+            <div className="mt-sm-0 mt-2" style={metaStyle}>
               <strong>Pickup:</strong> {booking.pickup?.address || "N/A"}
             </div>
             <div style={metaStyle}>

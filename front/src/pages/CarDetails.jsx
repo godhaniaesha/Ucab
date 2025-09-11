@@ -476,7 +476,7 @@ export default function CarDetails() {
               </Col>
             </Row>
 
-            <Row className="mb-3">
+            {/* <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="date">
                   <Form.Label>Pickup Date</Form.Label>
@@ -489,7 +489,7 @@ export default function CarDetails() {
                   <Form.Control type="time" required />
                 </Form.Group>
               </Col>
-            </Row>
+            </Row> */}
 
             <Form.Group controlId="passengers" className="mb-3">
               <Form.Label>Number of Passengers</Form.Label>
