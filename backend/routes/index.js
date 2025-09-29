@@ -8,5 +8,8 @@ router.use('/vehicle', require('./vehicles.routes'));
 router.use('/blog', require('./blog.route'));
 router.use('/contact', require('./contact.routes'));
 router.use('/subscribe', require('./subscribe.routes'));
+router.use('/acc', require('./myaccount.routes'));
+router.use('/bank', require('./bank.routes'));
+
 
 module.exports = router;

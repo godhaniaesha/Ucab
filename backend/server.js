@@ -28,6 +28,7 @@ const io = require('socket.io')(server, {
   },
 });
 app.use(passport.initialize());
+app.use(express.json());
 // ✅ Helmet configured ONCE (fixes CSP)
 // Helmet CSP fix
 app.use(
@@ -53,6 +54,7 @@ app.use(
     credentials: true,
   })
 );
+app.use('/api/acc/myaccount', require('./routes/myaccount.routes'));
 // ✅ Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

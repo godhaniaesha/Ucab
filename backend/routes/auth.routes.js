@@ -12,8 +12,8 @@ router.get('/google', authController.googleLogin);
 router.get('/google/callback', passport.authenticate('google', { session: false }), authController.googleCallback);
 
 // Facebook OAuth
-router.get('/facebook', authController.facebookLogin);
-   router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), authController.facebookCallback);
+// router.get('/facebook', authController.facebookLogin);
+//    router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), authController.facebookCallback);
 
 
 // ✅ Register
