@@ -3,7 +3,18 @@ const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
 const { validate } = require('../middlewares/validation.middleware');
 const upload = require('../middlewares/upload');
+const passport = require("passport");
 const { authMiddleware } = require('../middlewares/auth.middleware');
+
+
+// Google OAuth
+router.get('/google', authController.googleLogin);
+router.get('/google/callback', passport.authenticate('google', { session: false }), authController.googleCallback);
+
+// Facebook OAuth
+router.get('/facebook', authController.facebookLogin);
+   router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), authController.facebookCallback);
+
 
 // ✅ Register
 router.post(
@@ -35,7 +46,7 @@ router.post('/logout', authController.logout);
 router.post(
   '/forgot-password',
   upload.none(),
-  [ body('phone').notEmpty().withMessage('Phone number is required') ],
+  [body('phone').notEmpty().withMessage('Phone number is required')],
   validate,
   authController.forgotPassword
 );
@@ -43,7 +54,7 @@ router.post(
 // ✅ Verify OTP
 router.post(
   '/verify-otp',
-   upload.none(),
+  upload.none(),
   [
     body('phone').notEmpty().withMessage('Phone number is required'),
     body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
@@ -55,11 +66,11 @@ router.post(
 // ✅ Reset Password
 router.post(
   '/reset-password',
-   upload.none(),
+  upload.none(),
   [
     body('phone').notEmpty().withMessage('Phone number is required'),
     body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
-    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'), 
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
     body('confirmPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
   ],
   validate,
@@ -71,11 +82,11 @@ router.get('/passengers', authController.getAllPassengers);
 // Get all drivers  
 router.get('/drivers', authController.getAllDrivers);
 
-router.get('/getAdminStats',authController.getAdminStats);
+router.get('/getAdminStats', authController.getAdminStats);
 
 
 
 
-router.get('/getuser',authMiddleware(['superadmin','passenger','driver']),authController.getUser)
+router.get('/getuser', authMiddleware(['superadmin', 'passenger', 'driver']), authController.getUser)
 
 module.exports = router;

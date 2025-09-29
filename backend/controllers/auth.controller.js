@@ -1,3 +1,79 @@
+// Passport.js setup for Google and Facebook
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+
+// Configure Google Strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "/api/auth/google/callback"
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    let user = await User.findOne({ email: profile.emails[0].value });
+    if (!user) {
+      user = await User.create({
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        password: '',
+        role: 'passenger',
+        profileImage: profile.photos[0]?.value || null
+      });
+    }
+    return done(null, user);
+  } catch (err) {
+    return done(err, null);
+  }
+}));
+
+// Configure Facebook Strategy
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_CLIENT_ID,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+  callbackURL: "/api/auth/facebook/callback",
+  profileFields: ['id', 'displayName', 'photos', 'email']
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    let user = await User.findOne({ email: profile.emails[0].value });
+    if (!user) {
+      user = await User.create({
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        password: '',
+        role: 'passenger',
+        profileImage: profile.photos[0]?.value || null
+      });
+    }
+    return done(null, user);
+  } catch (err) {
+    return done(err, null);
+  }
+}));
+
+// Serialize/Deserialize user
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findById(id);
+  done(null, user);
+});
+
+// Google login API
+exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
+exports.googleCallback = (req, res) => {
+  // Successful login, send JWT or redirect
+  const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.json({ token, user: req.user });
+};
+
+// Facebook login API
+exports.facebookLogin = passport.authenticate('facebook', { scope: ['email'] });
+exports.facebookCallback = (req, res) => {
+  // Successful login, send JWT or redirect
+  const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.json({ token, user: req.user });
+};
 const User = require('../models/User');
 const Vehicle = require('../models/Vehicle');
 const bcrypt = require('bcryptjs');
