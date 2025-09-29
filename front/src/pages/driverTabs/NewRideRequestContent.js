@@ -159,11 +159,10 @@ const D_NewRideRequestContent = () => {
             <p className="text-success">
               Status:{" "}
               <span
-                className={`fw-bold ${
-                  rideRequest.status === "cancelled"
+                className={`fw-bold ${rideRequest.status === "cancelled"
                     ? "text-danger"
                     : "text-success"
-                }`}
+                  }`}
               >
                 {rideRequest.status}
               </span>

@@ -1,3 +1,5 @@
+// Update only bankDetails and paymentMethods
+
 const User = require("../models/User");
 const Booking = require("../models/Booking");
 const { USER_STATUS, BOOKING_STATUS } = require("../utils/constants");
@@ -121,7 +123,7 @@ exports.checkNewRequests = async (req, res) => {
   try {
     const driverId = req.user.id;
     console.log("Driver checking new requests:", driverId);
-    
+
     // Include no_drivers if you want to see them
     const statusesToCheck = [
       BOOKING_STATUS.PENDING,
@@ -182,7 +184,7 @@ exports.driverCancelBooking = async (req, res) => {
     const driverId = req.user && req.user.id;
     const bookingId = req.params.id;
     console.log('driverCancelBooking called with bookingId:', bookingId); // Debug log
-    
+
     // 🔹 Find booking
     const booking = await Booking.findById(bookingId);
     if (!booking) {
@@ -240,9 +242,9 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // in km
 };
@@ -380,9 +382,8 @@ exports.updateProfile = async (req, res) => {
         }
       }
 
-      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${
-        req.files.profileImage[0].filename
-      }`;
+      updateData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${req.files.profileImage[0].filename
+        }`;
     }
 
     // Parse JSON fields if present
@@ -426,6 +427,42 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+exports.updatePaymentInfo = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bankDetails, paymentMethods } = req.body;
+    const updateData = {};
+
+    if (bankDetails) {
+      try {
+        updateData.bankDetails = typeof bankDetails === 'string' ? JSON.parse(bankDetails) : bankDetails;
+      } catch {
+        return res.status(400).json({ message: "Invalid bankDetails JSON" });
+      }
+    }
+
+    if (paymentMethods) {
+      try {
+        const parsedPayments = typeof paymentMethods === 'string' ? JSON.parse(paymentMethods) : paymentMethods;
+        if (Array.isArray(parsedPayments)) {
+          updateData.paymentMethods = parsedPayments;
+        } else {
+          return res.status(400).json({ message: "paymentMethods must be an array" });
+        }
+      } catch {
+        return res.status(400).json({ message: "Invalid paymentMethods JSON" });
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+    res.json({ message: "Payment info updated", user });
+  } catch (err) {
+    console.error("updatePaymentInfo error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 exports.getDriverStats = async (req, res) => {
   try {
     const driverId = req.user.id;

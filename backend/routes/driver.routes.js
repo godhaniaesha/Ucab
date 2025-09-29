@@ -33,6 +33,9 @@ upload.fields([
   ]),
 driverController.updateProfile);
 
+// Update only bankDetails and paymentMethods
+router.put('/update-payment-info', authMiddleware(['driver','passenger','superadmin']), driverController.updatePaymentInfo);
+
 router.get('/getDriverStats',authMiddleware(['driver']),driverController.getDriverStats);
 
 
