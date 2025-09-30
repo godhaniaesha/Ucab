@@ -8,7 +8,6 @@ const { connectDB } = require('./config/db');
 const routes = require('./routes');
 const { initSockets } = require('./sockets/booking.socket');
 const logger = require('./utils/logger');
-const passport = require("passport");
 const path = require('path');
 // const { checkDriverActivity } = require('./utils/driverActivity');
 
@@ -27,7 +26,6 @@ const io = require('socket.io')(server, {
     credentials: true,
   },
 });
-app.use(passport.initialize());
 app.use(express.json());
 // ✅ Helmet configured ONCE (fixes CSP)
 // Helmet CSP fix
@@ -128,3 +126,4 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => logger.info(`Server listening on ${PORT}`));
 
 module.exports = { app, server };
+

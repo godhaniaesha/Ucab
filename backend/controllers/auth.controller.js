@@ -1,30 +1,28 @@
-// Passport.js setup for Google and Facebook
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 // const FacebookStrategy = require('passport-facebook').Strategy;
 
 // Configure Google Strategy
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/api/auth/google/callback"
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    let user = await User.findOne({ email: profile.emails[0].value });
-    if (!user) {
-      user = await User.create({
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        password: '',
-        role: 'passenger',
-        profileImage: profile.photos[0]?.value || null
-      });
-    }
-    return done(null, user);
-  } catch (err) {
-    return done(err, null);
-  }
-}));
+// passport.use(new GoogleStrategy({
+//   clientID: process.env.GOOGLE_CLIENT_ID,
+//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//   callbackURL: "/api/auth/google/callback"
+// }, async (accessToken, refreshToken, profile, done) => {
+//   try {
+//     let user = await User.findOne({ email: profile.emails[0].value });
+//     if (!user) {
+//       user = await User.create({
+//         name: profile.displayName,
+//         email: profile.emails[0].value,
+//         password: '',
+//         role: 'passenger',
+//         profileImage: profile.photos[0]?.value || null
+//       });
+//     }
+//     return done(null, user);
+//   } catch (err) {
+//     return done(err, null);
+//   }
+// }));
 
 // Configure Facebook Strategy
 // passport.use(new FacebookStrategy({
@@ -51,21 +49,26 @@ passport.use(new GoogleStrategy({
 // }));
 
 // Serialize/Deserialize user
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
-});
+// passport.serializeUser((user, done) => {
+//   done(null, user.id);
+// });
+// passport.deserializeUser(async (id, done) => {
+//   const user = await User.findById(id);
+//   done(null, user);
+// });
 
 // Google login API
-exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
-exports.googleCallback = (req, res) => {
-  // Successful login, send JWT or redirect
-  const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token, user: req.user });
-};
+
+
+// exports.googleCallback = (req, res) => {
+//   // Successful login, send success, token, and user
+//   const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+//   res.json({
+//     success: true,
+//     token,
+//     user: req.user
+//   });
+// };
 
 // Facebook login API
 // exports.facebookLogin = passport.authenticate('facebook', { scope: ['email'] });
@@ -273,81 +276,120 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
+// Verify OTP API
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+
+    // Find user by phone
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if OTP matches
+    if (user.otp !== parseInt(otp)) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if OTP is expired
+    if (Date.now() > user.otpExpires) {
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    res.json({
+      success: true,
+      message: 'OTP verified successfully',
+      phone: user.phone
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Reset Password API
+exports.resetPassword = async (req, res) => {
+  try {
+    const { phone, otp, newPassword, confirmPassword } = req.body;
+
+    // Find user by phone
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if OTP matches
+    if (user.otp !== parseInt(otp)) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if OTP is expired
+    if (Date.now() > user.otpExpires) {
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user password and clear OTP data
+    user.password = hashedPassword;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 
 /**
  * 2️⃣ Verify OTP
  */
-exports.verifyOtp = async (req, res) => {
+exports.googleLogin = async (req, res) => {
   try {
-    var { phone, otp } = req.body;
-    const newphone = '+91' + phone;
-    var phone = newphone;
-    const user = await User.findOne({ phone });
-    if (!user || !user.otp) return res.status(400).json({ message: 'OTP not found. Please request again.' });
-    if (Date.now() > user.otpExpires) {
-      user.otp = null;
-      user.otpExpires = null;
-      await user.save();
-      return res.status(400).json({ message: 'OTP expired. Please request again.' });
+    const { email, firstName, lastName, photo } = req.body;
+
+    let checkUser = await User.findOne({ email });
+
+    if (!checkUser) {
+      checkUser = await User.create({ email, firstName, lastName, photo, role: "passenger" });
     }
-    if (parseInt(otp) !== user.otp) return res.status(400).json({ message: 'Invalid OTP' });
 
+    // If checkUser is an array (from find), get the first user object
+    const userObj = Array.isArray(checkUser) ? checkUser[0] : checkUser;
 
-    await user.save();
+    const token = jwt.sign(
+      { id: userObj._id, role: userObj.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
-    res.json({ message: 'OTP verified successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return res
+      .cookie("accessToken", token, { httpOnly: true, secure: true, maxAge: 24 * 60 * 60 * 1000, sameSite: "Strict" })
+      .status(200)
+      .json({
+        success: true,
+        user: checkUser,
+        message: "User Login successfully",
+        token
+      });
+  } catch (error) {
+    return res.status(500).json({ status: 500, message: error.message });
   }
-};
-
-
-/**
- * 3️⃣ Reset Password
- */
-exports.resetPassword = async (req, res) => {
-  try {
-    var { phone, otp, newPassword, confirmPassword } = req.body;
-    const newphone = '+91' + phone;
-    var phone = newphone;
-    // Check if newPassword and confirmPassword match
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: 'New password and confirm password do not match.' });
-    }
-
-    const user = await User.findOne({ phone });
-    if (!user || !user.otp) {
-      return res.status(400).json({ message: 'OTP not found. Please request again.' });
-    }
-
-    // Check if OTP has expired
-    if (Date.now() > user.otpExpires) {
-      user.otp = null;
-      user.otpExpires = null;
-      await user.save();
-      return res.status(400).json({ message: 'OTP expired. Please request again.' });
-    }
-
-    // Check if OTP is correct
-    if (parseInt(otp) !== user.otp) {
-      return res.status(400).json({ message: 'Invalid OTP' });
-    }
-
-    // Hash new password
-    user.password = await bcrypt.hash(newPassword, 12);
-
-    // Clear OTP
-    user.otp = null;
-    user.otpExpires = null;
-
-    await user.save();
-    res.json({ message: 'Password reset successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};
+}
 exports.getUser = async (req, res) => {
   try {
     // Get token from header
