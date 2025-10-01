@@ -10,18 +10,27 @@ import {
   FaLinkedinIn,
   FaTimes,
   FaRegEyeSlash,
-  FaRegEye
+  FaRegEye,
+  FaGoogle,
 } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { GiMoneyStack } from "react-icons/gi";
 import { IoMailUnreadOutline, IoClose } from "react-icons/io5";
 import { PiPhoneCallBold } from "react-icons/pi";
 import { LuAlarmClock } from "react-icons/lu";
 import "../style/x_app.css";
-import { loginUser, registerUser, forgotPassword, verifyOTP, resetPassword, logoutUser } from "../redux/slice/auth.slice";
+import {
+  loginUser,
+  registerUser,
+  forgotPassword,
+  verifyOTP,
+  resetPassword,
+  logoutUser,
+} from "../redux/slice/auth.slice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function Header() {
   // Generic input change handler for all formData fields
@@ -29,7 +38,7 @@ export default function Header() {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
   const dispatch = useDispatch();
@@ -44,19 +53,20 @@ export default function Header() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [formData, setFormData] = useState({
-    email: '',
-    phone: '',
-    password: '',
-    role: 'user',
-    confirmPassword: '',
-    otp: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    email: "",
+    phone: "",
+    password: "",
+    role: "user",
+    confirmPassword: "",
+    otp: "",
+    newPassword: "",
+    confirmNewPassword: "",
   });
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const [showConfirmResetPassword, setShowConfirmResetPassword] = useState(false);
+  const [showConfirmResetPassword, setShowConfirmResetPassword] =
+    useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem("token");
@@ -75,44 +85,48 @@ export default function Header() {
   // Listen for global event to open login modal (works from any page)
   useEffect(() => {
     const openLogin = () => setShowLoginModal(true);
-    window.addEventListener('showLoginModal', openLogin);
-    return () => window.removeEventListener('showLoginModal', openLogin);
+    window.addEventListener("showLoginModal", openLogin);
+    return () => window.removeEventListener("showLoginModal", openLogin);
   }, []);
 
   // Close menu/profile when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       // For menu
-      const clickedInsideMenu = event.target.closest('.x_menu') || event.target.closest('.x_filter-btn');
+      const clickedInsideMenu =
+        event.target.closest(".x_menu") ||
+        event.target.closest(".x_filter-btn");
       if (menuOpen && !clickedInsideMenu) {
         setMenuOpen(false);
       }
 
       // For profile dropdown
-      const clickedInsideProfile = event.target.closest('.x_profile');
+      const clickedInsideProfile = event.target.closest(".x_profile");
       if (profileOpen && !clickedInsideProfile) {
         setProfileOpen(false);
       }
     };
 
     if (menuOpen || profileOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
       // Prevent scroll if menu is open
-      if (menuOpen) document.body.style.overflow = 'hidden';
+      if (menuOpen) document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
     };
   }, [menuOpen, profileOpen]);
 
-
   // Active link checker
   const isActive = (path) => {
-    if (path === "/home" && (location.pathname === "/" || location.pathname === "/home")) {
+    if (
+      path === "/home" &&
+      (location.pathname === "/" || location.pathname === "/home")
+    ) {
       return true;
     }
     return location.pathname === path;
@@ -123,22 +137,62 @@ export default function Header() {
     if (window.innerWidth <= 850) {
       setMenuOpen(false);
     }
-
   };
+   const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const payload = {
+        email: decoded.email,
+        firstName: decoded.given_name,
+        lastName: decoded.family_name,
+        photo: decoded.picture,
+      };
+
+      const res = await fetch("http://localhost:5000/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Google login failed");
+
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
+      toast.success("Login successful!");
+           setShowLoginModal(false);
+      setShowRegisterModal(false); 
+
+      if (data.user.role === "driver") navigate("/tab");
+      else if (data.user.role === "passenger") navigate("/PassengerTab");
+      else navigate("/SuperAdminTab");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
+  };
+const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleLogin,
+    onError: () => toast.error("Google Login Failed"),
+  });
+   const handleCustomGoogleClick = () => {
+    googleLogin(); // Call the hook function to start the OAuth flow
+  };
+ 
+
   const handleLinktaxiClick = () => {
     if (window.innerWidth <= 850) {
       setMenuOpen(false);
     }
-    window.location.href = '/taxi'
-  }
+    window.location.href = "/taxi";
+  };
   // Handle Pages link click to show login modal (navigate to /pages then open modal)
   const handlePagesClick = (e) => {
     e.preventDefault();
     handleLinkClick();
-    navigate('/pages');
+    navigate("/pages");
     // Trigger login modal after navigation
     setTimeout(() => {
-      const event = new CustomEvent('showLoginModal');
+      const event = new CustomEvent("showLoginModal");
       window.dispatchEvent(event);
     }, 100);
   };
@@ -177,7 +231,7 @@ export default function Header() {
     if (token) {
       try {
         // JWT format: header.payload.signature
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = jwtDecode(token);
         user = { role: payload.role };
         console.log("Decoded user from token:", user);
       } catch (err) {
@@ -197,7 +251,7 @@ export default function Header() {
     closeProfileMenu();
     closeMenuIfMobile();
     handleLinkClick();
-    navigate('/faq');
+    navigate("/faq");
   };
 
   const onClickLogout = (e) => {
@@ -218,10 +272,18 @@ export default function Header() {
     setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
 
-  const resetLoginForm = () => setLoginForm({ email: '', password: '' });
-  const resetFormData = () => setFormData({
-    email: '', phone: '', password: '', role: 'user', confirmPassword: '', otp: '', newPassword: '', confirmNewPassword: ''
-  });
+  const resetLoginForm = () => setLoginForm({ email: "", password: "" });
+  const resetFormData = () =>
+    setFormData({
+      email: "",
+      phone: "",
+      password: "",
+      role: "user",
+      confirmPassword: "",
+      otp: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
 
   const closeLoginModal = () => {
     setShowLoginModal(false);
@@ -243,36 +305,36 @@ export default function Header() {
     dispatch(loginUser(loginForm))
       .unwrap()
       .then((res) => {
-        console.log('Login successful:', res);
+        console.log("Login successful:", res);
         setShowLoginModal(false);
         resetLoginForm();
       })
       .catch((err) => {
-        console.log('Login error:', err);
-        toast.error(err || 'Login failed');
+        console.log("Login error:", err);
+        toast.error(err || "Login failed");
       });
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     const payload = {
-      name: (formData.email && formData.email.split('@')[0]) || 'User',
+      name: (formData.email && formData.email.split("@")[0]) || "User",
       email: formData.email,
       password: formData.password,
-      role: formData.role === 'driver' ? 'driver' : 'passenger',
-      phone: formData.phone
+      role: formData.role === "driver" ? "driver" : "passenger",
+      phone: formData.phone,
     };
     dispatch(registerUser(payload))
       .unwrap()
       .then((res) => {
-        console.log('Registration successful:', res);
+        console.log("Registration successful:", res);
         setShowRegisterModal(false);
         // setShowLoginModal(true);
         resetFormData();
       })
       .catch((err) => {
-        console.log('Registration error:', err);
-        toast.error(err || 'Registration failed');
+        console.log("Registration error:", err);
+        toast.error(err || "Registration failed");
       });
   };
 
@@ -285,20 +347,20 @@ export default function Header() {
 
   const handleSendOtp = () => {
     if (!formData.phone) {
-      toast.error('Please enter phone number');
+      toast.error("Please enter phone number");
       return;
     }
     dispatch(forgotPassword(formData.phone))
       .unwrap()
       .then((res) => {
-        console.log('OTP sent successfully:', res);
+        console.log("OTP sent successfully:", res);
         setShowForgotModal(false);
         setShowOtpVerifyModal(true);
-        setFormData((prev) => ({ ...prev, otp: '' }));
+        setFormData((prev) => ({ ...prev, otp: "" }));
       })
       .catch((err) => {
-        console.log('OTP send error:', err);
-        toast.error(err || 'Failed to send OTP');
+        console.log("OTP send error:", err);
+        toast.error(err || "Failed to send OTP");
       });
   };
 
@@ -307,40 +369,44 @@ export default function Header() {
     dispatch(verifyOTP({ phone: formData.phone, otp: formData.otp }))
       .unwrap()
       .then((res) => {
-        console.log('OTP verified successfully:', res);
+        console.log("OTP verified successfully:", res);
         setShowOtpVerifyModal(false);
         setShowResetPasswordModal(true);
-        setFormData((prev) => ({ ...prev, newPassword: '', confirmNewPassword: '' }));
+        setFormData((prev) => ({
+          ...prev,
+          newPassword: "",
+          confirmNewPassword: "",
+        }));
       })
       .catch((err) => {
-        console.log('OTP verification error:', err);
-        toast.error(err || 'Invalid OTP');
+        console.log("OTP verification error:", err);
+        toast.error(err || "Invalid OTP");
       });
   };
 
   const handlePasswordReset = (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmNewPassword) {
-      toast.error('Passwords do not match!');
+      toast.error("Passwords do not match!");
       return;
     }
     const resetPayload = {
       phone: formData.phone,
       otp: formData.otp,
       newPassword: formData.newPassword,
-      confirmPassword: formData.confirmNewPassword
+      confirmPassword: formData.confirmNewPassword,
     };
     dispatch(resetPassword(resetPayload))
       .unwrap()
       .then((res) => {
-        console.log('Password reset successful:', res);
+        console.log("Password reset successful:", res);
         setShowResetPasswordModal(false);
         setShowLoginModal(true);
         resetFormData();
       })
       .catch((err) => {
-        console.log('Password reset error:', err);
-        toast.error(err || 'Failed to reset password');
+        console.log("Password reset error:", err);
+        toast.error(err || "Failed to reset password");
       });
   };
 
@@ -348,7 +414,6 @@ export default function Header() {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
-
 
   return (
     <header>
@@ -358,8 +423,11 @@ export default function Header() {
           <div className="x_container">
             <div className="x_top-left">
               <span>
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
-                  target="_blank" className="contact-link">
+                <a
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=info@kalathiyainfotech.com"
+                  target="_blank"
+                  className="contact-link"
+                >
                   <IoMailUnreadOutline fontSize={"18px"} /> info@cabbooking.com
                 </a>
               </span>
@@ -369,10 +437,11 @@ export default function Header() {
                   <PiPhoneCallBold fontSize={"18px"} /> +61 2 3456 7890
                 </a>
               </span>
-
             </div>
             <div className="x_top-right">
-              <span><LuAlarmClock fontSize={"18px"} /> Sun - Fri (08AM - 10PM)</span>
+              <span>
+                <LuAlarmClock fontSize={"18px"} /> Sun - Fri (08AM - 10PM)
+              </span>
               <span>
                 <GiMoneyStack fontSize={"22px"} /> Currency : AU$
               </span>
@@ -384,53 +453,125 @@ export default function Header() {
       {/* Main Nav */}
       <div className="x_navbar">
         <div className="x_container">
-       <div className="x_logo">
-  <Link to="/">
-    <img
-      src={require("../image/img.png")}
-      className="z_taxi_logo"
-      alt="Taxi Logo"
-    />
-  </Link>
-</div>
+          <div className="x_logo">
+            <Link to="/">
+              <img
+                src={require("../image/img.png")}
+                className="z_taxi_logo"
+                alt="Taxi Logo"
+              />
+            </Link>
+          </div>
 
           {/* Navigation Menu */}
           <nav className={`x_menu ${menuOpen ? "x_menu-open" : ""}`}>
             <button className="x_close-btn" onClick={() => setMenuOpen(false)}>
               <FaTimes />
             </button>
-            <Link to="/home" onClick={handleLinkClick} className={isActive("/home") ? "active" : ""}>Home</Link>
-            <Link to="/taxi" onClick={handleLinkClick} className={isActive("/taxi") ? "active" : ""}>Taxi</Link>
-            <Link to="/service" onClick={handleLinkClick} className={isActive("/service") ? "active" : ""}>Service</Link>
-            <Link to="/about" onClick={handleLinkClick} className={isActive("/about") ? "active" : ""}>About</Link>
-            <Link to="/blog" onClick={handleLinkClick} className={isActive("/blog") ? "active" : ""}>Blog</Link>
-            <Link to="/contact" onClick={handleLinkClick} className={isActive("/contact") ? "active" : ""}>Contact</Link>
-            <div className={`x_profile ${profileOpen ? 'x_open' : ''}`}>
-              <a href="#" className={`x_profile_btn ${isActive('/pages') ? 'active' : ''}`} onClick={toggleProfileMenu}>Profile ▾</a>
+            <Link
+              to="/home"
+              onClick={handleLinkClick}
+              className={isActive("/home") ? "active" : ""}
+            >
+              Home
+            </Link>
+            <Link
+              to="/taxi"
+              onClick={handleLinkClick}
+              className={isActive("/taxi") ? "active" : ""}
+            >
+              Taxi
+            </Link>
+            <Link
+              to="/service"
+              onClick={handleLinkClick}
+              className={isActive("/service") ? "active" : ""}
+            >
+              Service
+            </Link>
+            <Link
+              to="/about"
+              onClick={handleLinkClick}
+              className={isActive("/about") ? "active" : ""}
+            >
+              About
+            </Link>
+            <Link
+              to="/blog"
+              onClick={handleLinkClick}
+              className={isActive("/blog") ? "active" : ""}
+            >
+              Blog
+            </Link>
+            <Link
+              to="/contact"
+              onClick={handleLinkClick}
+              className={isActive("/contact") ? "active" : ""}
+            >
+              Contact
+            </Link>
+            <div className={`x_profile ${profileOpen ? "x_open" : ""}`}>
+              <a
+                href="#"
+                className={`x_profile_btn ${
+                  isActive("/pages") ? "active" : ""
+                }`}
+                onClick={toggleProfileMenu}
+              >
+                Profile ▾
+              </a>
               {/* Accordion style for mobile/offcanvas */}
               {profileOpen && (
-                <div className={`x_profile_dropdown${window.innerWidth <= 850 ? ' x_profile_dropdown-accordion' : ''}`}>
-
+                <div
+                  className={`x_profile_dropdown${
+                    window.innerWidth <= 850
+                      ? " x_profile_dropdown-accordion"
+                      : ""
+                  }`}
+                >
                   {!isAuthenticated && (
-                    <button className="x_profile_item" onClick={onClickSignIn}><FaSignInAlt style={{ marginRight: 8 }} />Sign In</button>
+                    <button className="x_profile_item" onClick={onClickSignIn}>
+                      <FaSignInAlt style={{ marginRight: 8 }} />
+                      Sign In
+                    </button>
                   )}
-                  <button className="x_profile_item" onClick={onClickMyProfile}><FaUserPlus style={{ marginRight: 8 }} />My Profile</button>
-                  <button className="x_profile_item" onClick={onClickFaq}><FaFacebookF style={{ marginRight: 8 }} />FAQ's</button>
+                  <button className="x_profile_item" onClick={onClickMyProfile}>
+                    <FaUserPlus style={{ marginRight: 8 }} />
+                    My Profile
+                  </button>
+                  <button className="x_profile_item" onClick={onClickFaq}>
+                    <FaFacebookF style={{ marginRight: 8 }} />
+                    FAQ's
+                  </button>
                   {/* Show Logout only if authenticated */}
                   {isAuthenticated && (
-                    <button className="x_profile_item" onClick={onClickLogout}><FaTimes style={{ marginRight: 8 }} />Logout</button>
+                    <button className="x_profile_item" onClick={onClickLogout}>
+                      <FaTimes style={{ marginRight: 8 }} />
+                      Logout
+                    </button>
                   )}
-
                 </div>
               )}
             </div>
-            <button className="x_book-btn x_mobile-book-btn" onClick={handleLinktaxiClick} >BOOK A TAXI</button>
+            <button
+              className="x_book-btn x_mobile-book-btn"
+              onClick={handleLinktaxiClick}
+            >
+              BOOK A TAXI
+            </button>
           </nav>
 
           {/* Right Actions */}
           <div className="x_actions">
-            <button className="x_book-btn x_desktop-book-btn" onClick={() => window.location.href = '/taxi'}>BOOK A TAXI</button>
-            <button className="x_filter-btn" onClick={toggleMenu}>☰</button>
+            <button
+              className="x_book-btn x_desktop-book-btn"
+              onClick={() => (window.location.href = "/taxi")}
+            >
+              BOOK A TAXI
+            </button>
+            <button className="x_filter-btn" onClick={toggleMenu}>
+              ☰
+            </button>
           </div>
         </div>
       </div>
@@ -442,12 +583,21 @@ export default function Header() {
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Login</h3>
-              <button className="x_modal_close" onClick={closeLoginModal}><IoClose /></button>
+              <button className="x_modal_close" onClick={closeLoginModal}>
+                <IoClose />
+              </button>
             </div>
             <form onSubmit={handleLoginSubmit} className="x_modal_form">
               <div className="x_form_group">
                 <label>Email</label>
-                <input type="email" name="email" value={loginForm.email} onChange={handleLoginInputChange} required placeholder="Enter your email" />
+                <input
+                  type="email"
+                  name="email"
+                  value={loginForm.email}
+                  onChange={handleLoginInputChange}
+                  required
+                  placeholder="Enter your email"
+                />
               </div>
               <div className="x_form_group" style={{ position: "relative" }}>
                 <label>Password</label>
@@ -461,23 +611,63 @@ export default function Header() {
                   style={{ paddingRight: "2.5rem" }}
                 />
                 <span
-                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 38,
+                    cursor: "pointer",
+                  }}
                   onClick={() => setShowLoginPassword((v) => !v)}
                 >
                   {showLoginPassword ? (
-                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEye style={{ fontSize: "20px", color: "#888" }} />
                   ) : (
-                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEyeSlash
+                      style={{ fontSize: "20px", color: "#888" }}
+                    />
                   )}
                 </span>
-               
               </div>
-               <div className="x_modal_links">                  
-              <button type="button" className="x_link_btn text-end mb-1 text-decoration-none" onClick={openForgot}>Forgot Password?</button>
-                </div>
-              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Login'}</button>
               <div className="x_modal_links">
-                <button type="button" className="x_link_btn text-decoration-none" onClick={() => { setShowLoginModal(false); setShowRegisterModal(true); }}>Don't have account? Register</button>
+                <button
+                  type="button"
+                  className="x_link_btn text-end mb-1 text-decoration-none"
+                  onClick={openForgot}
+                >
+                  Forgot Password?
+                </button>
+              </div>
+              <button type="submit" className="x_modal_btn" disabled={loading}>
+                {loading ? "Please wait..." : "Login"}
+              </button>
+              {/* <div className="x_google_login">
+                <GoogleLogin
+                  onSuccess={handleGoogleLogin}
+                  onError={() => toast.error("Google Login Failed")}
+                />
+              </div> */}
+              <div className="x_google_login">
+            {/* REPLACE <GoogleLogin /> with your custom button */}
+            <button 
+                type="button" 
+                onClick={handleCustomGoogleClick} 
+                className="x_custom_google_btn" // ADDED CLASS for styling
+            >
+              <FcGoogle  style={{ marginRight: 8, fontSize: 24 }} />
+              Login with Google
+            </button>
+          </div>
+              <div className="x_modal_links">
+                <button
+                  type="button"
+                  className="x_link_btn text-decoration-none"
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    setShowRegisterModal(true);
+                  }}
+                >
+                  Don't have account? Register
+                </button>
               </div>
             </form>
           </div>
@@ -490,12 +680,21 @@ export default function Header() {
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Register</h3>
-              <button className="x_modal_close" onClick={closeAllModals}><IoClose /></button>
+              <button className="x_modal_close" onClick={closeAllModals}>
+                <IoClose />
+              </button>
             </div>
             <form onSubmit={handleRegister} className="x_modal_form">
               <div className="x_form_group">
                 <label>Email</label>
-                <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="Enter your email" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter your email"
+                />
               </div>
               <div className="x_form_group">
                 <label>Phone Number</label>
@@ -504,7 +703,11 @@ export default function Header() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}
+                  onInput={(e) =>
+                    (e.target.value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10))
+                  }
                   required
                   placeholder="Enter your phone number"
                 />
@@ -521,13 +724,20 @@ export default function Header() {
                   style={{ paddingRight: "2.5rem" }}
                 />
                 <span
-                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 38,
+                    cursor: "pointer",
+                  }}
                   onClick={() => setShowRegisterPassword((v) => !v)}
                 >
                   {showRegisterPassword ? (
-                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEye style={{ fontSize: "20px", color: "#888" }} />
                   ) : (
-                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEyeSlash
+                      style={{ fontSize: "20px", color: "#888" }}
+                    />
                   )}
                 </span>
               </div>
@@ -539,28 +749,54 @@ export default function Header() {
                       type="radio"
                       name="role"
                       value="user"
-                      checked={formData.role === 'user'}
+                      checked={formData.role === "user"}
                       onChange={handleInputChange}
                     />
                     <span className="x_radio_custom"></span>
-                    <span className="x_radio_label"><p className="m-0">User</p></span>
+                    <span className="x_radio_label">
+                      <p className="m-0">User</p>
+                    </span>
                   </label>
                   <label className="x_radio d-flex">
                     <input
                       type="radio"
                       name="role"
                       value="driver"
-                      checked={formData.role === 'driver'}
+                      checked={formData.role === "driver"}
                       onChange={handleInputChange}
                     />
                     <span className="x_radio_custom"></span>
-                    <span className="x_radio_label"><p className="m-0">Driver</p></span>
+                    <span className="x_radio_label">
+                      <p className="m-0">Driver</p>
+                    </span>
                   </label>
                 </div>
               </div>
-              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Register'}</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>
+                {loading ? "Please wait..." : "Register"}
+              </button>
+                <div className="x_google_login">
+            {/* REPLACE <GoogleLogin /> with your custom button */}
+            <button 
+                type="button" 
+                onClick={handleCustomGoogleClick} 
+                className="x_custom_google_btn" // ADDED CLASS for styling
+            >
+              <FcGoogle  style={{ marginRight: 8, fontSize: 24 }} />
+              Register with Google
+            </button>
+          </div>
               <div className="x_modal_links">
-                <button type="button" className="x_link_btn" onClick={() => { setShowRegisterModal(false); setShowLoginModal(true); }}>Already have account? Login</button>
+                <button
+                  type="button"
+                  className="x_link_btn"
+                  onClick={() => {
+                    setShowRegisterModal(false);
+                    setShowLoginModal(true);
+                  }}
+                >
+                  Already have account? Login
+                </button>
               </div>
             </form>
           </div>
@@ -573,7 +809,9 @@ export default function Header() {
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Forgot Password</h3>
-              <button className="x_modal_close" onClick={closeAllModals}><IoClose /></button>
+              <button className="x_modal_close" onClick={closeAllModals}>
+                <IoClose />
+              </button>
             </div>
             <div className="x_modal_form">
               <div className="x_form_group">
@@ -583,14 +821,34 @@ export default function Header() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}
+                  onInput={(e) =>
+                    (e.target.value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10))
+                  }
                   required
                   placeholder="Enter your phone number"
                 />
               </div>
-              <button type="button" onClick={handleSendOtp} className="x_modal_btn" disabled={loading}>{loading ? 'Sending...' : 'Send OTP'}</button>
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                className="x_modal_btn"
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send OTP"}
+              </button>
               <div className="x_modal_links">
-                <button type="button" onClick={() => { setShowForgotModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotModal(false);
+                    setShowLoginModal(true);
+                  }}
+                  className="x_link_btn"
+                >
+                  Back to Login
+                </button>
               </div>
             </div>
           </div>
@@ -603,16 +861,39 @@ export default function Header() {
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Verify OTP</h3>
-              <button className="x_modal_close" onClick={closeAllModals}><IoClose /></button>
+              <button className="x_modal_close" onClick={closeAllModals}>
+                <IoClose />
+              </button>
             </div>
             <form onSubmit={handleOtpVerification} className="x_modal_form">
               <div className="x_form_group">
                 <label>Enter 6-Digit OTP</label>
-                <input type="text" name="otp" inputMode="numeric" pattern="[0-9]*" value={formData.otp} onChange={handleInputChange} required maxLength="6" placeholder="Enter 6-digit OTP" />
+                <input
+                  type="text"
+                  name="otp"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={formData.otp}
+                  onChange={handleInputChange}
+                  required
+                  maxLength="6"
+                  placeholder="Enter 6-digit OTP"
+                />
               </div>
-              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Verifying...' : 'Verify OTP'}</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
               <div className="x_modal_links">
-                <button type="button" onClick={() => { setShowOtpVerifyModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOtpVerifyModal(false);
+                    setShowLoginModal(true);
+                  }}
+                  className="x_link_btn"
+                >
+                  Back to Login
+                </button>
               </div>
             </form>
           </div>
@@ -625,7 +906,9 @@ export default function Header() {
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Reset Password</h3>
-              <button className="x_modal_close" onClick={closeAllModals}><IoClose /></button>
+              <button className="x_modal_close" onClick={closeAllModals}>
+                <IoClose />
+              </button>
             </div>
             <form onSubmit={handlePasswordReset} className="x_modal_form">
               <div className="x_form_group" style={{ position: "relative" }}>
@@ -640,13 +923,20 @@ export default function Header() {
                   style={{ paddingRight: "2.5rem" }}
                 />
                 <span
-                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 38,
+                    cursor: "pointer",
+                  }}
                   onClick={() => setShowResetPassword((v) => !v)}
                 >
                   {showResetPassword ? (
-                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEye style={{ fontSize: "20px", color: "#888" }} />
                   ) : (
-                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEyeSlash
+                      style={{ fontSize: "20px", color: "#888" }}
+                    />
                   )}
                 </span>
               </div>
@@ -662,19 +952,37 @@ export default function Header() {
                   style={{ paddingRight: "2.5rem" }}
                 />
                 <span
-                  style={{ position: "absolute", right: 10, top: 38, cursor: "pointer" }}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 38,
+                    cursor: "pointer",
+                  }}
                   onClick={() => setShowConfirmResetPassword((v) => !v)}
                 >
                   {showConfirmResetPassword ? (
-                    <FaRegEye style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEye style={{ fontSize: "20px", color: "#888" }} />
                   ) : (
-                    <FaRegEyeSlash style={{fontSize:"20px", color:"#888"}}/>
+                    <FaRegEyeSlash
+                      style={{ fontSize: "20px", color: "#888" }}
+                    />
                   )}
                 </span>
               </div>
-              <button type="submit" className="x_modal_btn" disabled={loading}>{loading ? 'Please wait...' : 'Reset Password'}</button>
+              <button type="submit" className="x_modal_btn" disabled={loading}>
+                {loading ? "Please wait..." : "Reset Password"}
+              </button>
               <div className="x_modal_links">
-                <button type="button" onClick={() => { setShowResetPasswordModal(false); setShowLoginModal(true); }} className="x_link_btn">Back to Login</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetPasswordModal(false);
+                    setShowLoginModal(true);
+                  }}
+                  className="x_link_btn"
+                >
+                  Back to Login
+                </button>
               </div>
             </form>
           </div>
@@ -683,11 +991,17 @@ export default function Header() {
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="x_modal_overlay" onClick={() => setShowLogoutModal(false)}>
+        <div
+          className="x_modal_overlay"
+          onClick={() => setShowLogoutModal(false)}
+        >
           <div className="x_modal" onClick={(e) => e.stopPropagation()}>
             <div className="x_modal_header">
               <h3>Confirm Logout</h3>
-              <button className="x_modal_close" onClick={() => setShowLogoutModal(false)}>
+              <button
+                className="x_modal_close"
+                onClick={() => setShowLogoutModal(false)}
+              >
                 <IoClose />
               </button>
             </div>
@@ -697,10 +1011,15 @@ export default function Header() {
                 alt="Open door illustration"
                 className="x_modal_image"
               />
-              <p>Are you sure you want to logout? You can always come back later.</p>
+              <p>
+                Are you sure you want to logout? You can always come back later.
+              </p>
             </div>
             <div className="x_modal_footer">
-              <button className="x_modal_btn cancel" onClick={() => setShowLogoutModal(false)}>
+              <button
+                className="x_modal_btn cancel"
+                onClick={() => setShowLogoutModal(false)}
+              >
                 Cancel
               </button>
               <button
@@ -716,8 +1035,6 @@ export default function Header() {
           </div>
         </div>
       )}
-
-
     </header>
   );
 }
