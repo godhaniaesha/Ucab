@@ -3,13 +3,10 @@ const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
 const { validate } = require('../middlewares/validation.middleware');
 const upload = require('../middlewares/upload');
-const passport = require("passport");
 const { authMiddleware } = require('../middlewares/auth.middleware');
 
 
-// Google OAuth
-router.get('/google', authController.googleLogin);
-router.get('/google/callback', passport.authenticate('google', { session: false }), authController.googleCallback);
+router.post('/google', authController.googleLogin);
 
 // Facebook OAuth
 // router.get('/facebook', authController.facebookLogin);
@@ -24,7 +21,7 @@ router.post(
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
   ],
-  validate,
+  validate, 
   authController.register
 );
 
