@@ -21,7 +21,7 @@ const D_MyVehiclesContent = () => {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         console.log(payload, "payload");
-        
+
         setDriverId(payload.id || payload._id || payload.userId);
       } catch {
         setDriverId(null);
@@ -62,20 +62,42 @@ const D_MyVehiclesContent = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-        const validFiles = files.filter(f => allowedTypes.includes(f.type));
-        if (validFiles.length !== files.length) {
-          e.target.setCustomValidity("Only JPEG, JPG, PNG images are allowed.");
-          e.target.reportValidity();
-          return;
-        } else {
-          e.target.setCustomValidity("");
-        }
-        setFormData((prev) => ({
-          ...prev,
-          images: validFiles,
-        }));
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+    const validFiles = files.filter((f) => allowedTypes.includes(f.type));
+    if (validFiles.length !== files.length) {
+      e.target.setCustomValidity("Only JPEG, JPG, PNG images are allowed.");
+      e.target.reportValidity();
+      return;
+    } else {
+      e.target.setCustomValidity("");
+    }
+
+    setFormData((prev) => {
+      // ✅ Keep old images (URLs) + add new images (Files)
+      const existingImages = Array.isArray(prev.images) ? prev.images : [];
+      const mergedImages = [...existingImages, ...validFiles];
+
+      // ✅ Limit max 5
+      if (mergedImages.length > 5) {
+        e.target.setCustomValidity("Maximum 5 images allowed.");
+        e.target.reportValidity();
+        return prev;
+      }
+
+      return {
+        ...prev,
+        images: mergedImages, // 🟢 old + new together
+      };
+    });
+
+    // reset file input (so same file can be re-selected if needed)
+    e.target.value = "";
   };
+
+
+
+
 
   const handleRemoveImage = (index) => {
     setFormData((prev) => ({
@@ -87,11 +109,10 @@ const D_MyVehiclesContent = () => {
   // Save vehicle
   const handleSave = (e) => {
     e.preventDefault();
-    // Inline browser-style validation
+  
     const form = e.target;
     let valid = true;
-
-    // Helper to set custom error
+  
     const setError = (name, message) => {
       const input = form.querySelector(`[name="${name}"]`);
       if (input) {
@@ -100,49 +121,66 @@ const D_MyVehiclesContent = () => {
         valid = false;
       }
     };
-
-    // Reset all custom errors
-    Array.from(form.elements).forEach(el => {
+  
+    Array.from(form.elements).forEach((el) => {
       if (el.setCustomValidity) el.setCustomValidity("");
     });
-
-    // All fields required
+  
+    // === Validations ===
     if (!formData.make.trim()) setError("make", "Please enter vehicle make.");
     if (!formData.model.trim()) setError("model", "Please enter vehicle model.");
-    if (!formData.year || isNaN(formData.year) || formData.year < 1900 || formData.year > new Date().getFullYear() + 1) setError("year", "Please enter a valid year (1900 to next year).");
+    if (
+      !formData.year ||
+      isNaN(formData.year) ||
+      formData.year < 1900 ||
+      formData.year > new Date().getFullYear() + 1
+    )
+      setError("year", "Please enter a valid year.");
     if (!formData.plate.trim()) setError("plate", "Please enter license plate.");
     if (!formData.type) setError("type", "Please select vehicle type.");
-    if (!formData.taxiDoors || isNaN(formData.taxiDoors) || formData.taxiDoors < 2 || formData.taxiDoors > 6) setError("taxiDoors", "Please enter number of doors (2-6).");
-    if (!formData.passengers || isNaN(formData.passengers) || formData.passengers < 1 || formData.passengers > 8) setError("passengers", "Please enter number of passengers (1-8).");
-    if (formData.luggageCarry === "" || isNaN(formData.luggageCarry) || formData.luggageCarry < 0 || formData.luggageCarry > 10) setError("luggageCarry", "Please enter luggage capacity (0-10).");
-    // Per Km Rate validation
+    if (
+      !formData.taxiDoors ||
+      isNaN(formData.taxiDoors) ||
+      formData.taxiDoors < 2 ||
+      formData.taxiDoors > 6
+    )
+      setError("taxiDoors", "Please enter doors (2–6).");
+    if (
+      !formData.passengers ||
+      isNaN(formData.passengers) ||
+      formData.passengers < 1 ||
+      formData.passengers > 8
+    )
+      setError("passengers", "Please enter passengers (1–8).");
+    if (
+      formData.luggageCarry === "" ||
+      isNaN(formData.luggageCarry) ||
+      formData.luggageCarry < 0 ||
+      formData.luggageCarry > 10
+    )
+      setError("luggageCarry", "Please enter luggage capacity (0–10).");
     if (
       !formData.perKmRate ||
       isNaN(formData.perKmRate) ||
       Number(formData.perKmRate) < 1 ||
-      Number(formData.perKmRate) > 9999 ||
-      !/^\d+(\.\d{1,2})?$/.test(formData.perKmRate)
-    ) {
-      setError("perKmRate", "Please enter a valid amount (min 1, max 9999, up to 2 decimals).");
-    }
-    // Extra Km Rate validation
+      Number(formData.perKmRate) > 9999
+    )
+      setError("perKmRate", "Please enter valid Per Km Rate.");
     if (
       formData.extraKmRate === "" ||
       isNaN(formData.extraKmRate) ||
       Number(formData.extraKmRate) < 0 ||
-      Number(formData.extraKmRate) > 9999 ||
-      !/^\d+(\.\d{1,2})?$/.test(formData.extraKmRate)
-    ) {
-      setError("extraKmRate", "Please enter a valid amount (min 0, max 9999, up to 2 decimals).");
-    }
-    if (!formData.airCondition) setError("airCondition", "Please select air condition option.");
-    if (!formData.gpsNavigation) setError("gpsNavigation", "Please select GPS navigation option.");
-    if (!formData.description.trim()) setError("description", "Please enter vehicle description.");
+      Number(formData.extraKmRate) > 9999
+    )
+      setError("extraKmRate", "Please enter valid Extra Km Rate.");
+    if (!formData.description.trim())
+      setError("description", "Please enter vehicle description.");
+  
     // Images validation
     if (formData.images.length === 0) {
       const imgInput = form.querySelector("#imageUploadInput");
       if (imgInput) {
-        imgInput.setCustomValidity("Please upload at least one vehicle image.");
+        imgInput.setCustomValidity("Please upload at least one image.");
         imgInput.reportValidity();
       }
       valid = false;
@@ -155,10 +193,10 @@ const D_MyVehiclesContent = () => {
       }
       valid = false;
     }
-
-    // Prevent submit if any error or browser validation fails
+  
     if (!valid || !form.checkValidity()) return;
-
+  
+    // === Build FormData ===
     const data = new FormData();
     data.append("make", formData.make);
     data.append("model", formData.model);
@@ -173,21 +211,28 @@ const D_MyVehiclesContent = () => {
     data.append("perKmRate", formData.perKmRate);
     data.append("extraKmRate", formData.extraKmRate);
     data.append("description", formData.description);
-
-    formData.images.forEach((img) => {
-      if (img instanceof File) {
-        data.append("images", img);
-      }
+  
+    // ✅ Combine old + new images (everything visible in preview)
+    const allImages = formData.images.map((img) => {
+      if (img instanceof File) return img; // new image file
+      return img; // existing image path (string)
     });
-
+  
+    allImages.forEach((img) => {
+      // append both new files and string URLs
+      data.append("images", img);
+    });
+  
     if (editingVehicleId) {
       dispatch(updateVehicle({ id: editingVehicleId, formData: data }));
-      dispatch(getVehicles());
     } else {
       dispatch(createVehicle(data));
     }
+  
     resetForm();
   };
+  
+  
 
   const resetForm = () => {
     setEditingVehicleId(null);
@@ -217,22 +262,23 @@ const D_MyVehiclesContent = () => {
       ...vehicle,
       airCondition: vehicle.airCondition ? "Yes" : "No",
       gpsNavigation: vehicle.gpsNavigation ? "Yes" : "No",
-      images: [],
+      images: vehicle.images || [], // ✅ Keep old images
     });
   };
+
 
   const handleDelete = (id) => {
     dispatch(deleteVehicle(id));
   };
 
   const handleAddClick = () => {
-    console.log(isAdding,'isAdding');
-    
+    console.log(isAdding, 'isAdding');
+
     setIsAdding(true);
-    console.log(isAdding,'isAdding');
+    console.log(isAdding, 'isAdding');
 
     setEditingVehicleId(null);
-   
+
   };
 
   const handleCancel = () => {
@@ -241,84 +287,84 @@ const D_MyVehiclesContent = () => {
 
   // Vehicle card
   const renderVehicleCard = (vehicle) =>
-    
+
     driverId && vehicle.provider && vehicle.provider._id === driverId
- ? (
-      // console.log(vehicle),
-      <div key={vehicle._id} className="p-3 rounded-3 border bg-light">
-        <div className="d-flex flex-column flex-md-row gap-3">
-          <div className="flex-grow-1">
-            <h6 className="fw-bold text-dark mb-2">
-              {vehicle.make} {vehicle.model}
-            </h6>
-            <div className="row g-1 small text-secondary">
-              <div className="col-6">
-                <div>
-                  <strong>Year:</strong> {vehicle.year}
+      ? (
+        // console.log(vehicle),
+        <div key={vehicle._id} className="p-3 rounded-3 border bg-light">
+          <div className="d-flex flex-column flex-md-row gap-3">
+            <div className="flex-grow-1">
+              <h6 className="fw-bold text-dark mb-2">
+                {vehicle.make} {vehicle.model}
+              </h6>
+              <div className="row g-1 small text-secondary">
+                <div className="col-6">
+                  <div>
+                    <strong>Year:</strong> {vehicle.year}
+                  </div>
+                  <div>
+                    <strong>Doors:</strong> {vehicle.taxiDoors}
+                  </div>
+                  <div>
+                    <strong>Passengers:</strong> {vehicle.passengers}
+                  </div>
+                  <div>
+                    <strong>Luggage:</strong> {vehicle.luggageCarry}
+                  </div>
                 </div>
-                <div>
-                  <strong>Doors:</strong> {vehicle.taxiDoors}
-                </div>
-                <div>
-                  <strong>Passengers:</strong> {vehicle.passengers}
-                </div>
-                <div>
-                  <strong>Luggage:</strong> {vehicle.luggageCarry}
+                <div className="col-6">
+                  <div>
+                    <strong>Plate:</strong> {vehicle.plate}
+                  </div>
+                  <div>
+                    <strong>Type:</strong> {vehicle.type}
+                  </div>
+                  <div>
+                    <strong>AC:</strong> {vehicle.airCondition ? "Yes" : "No"}
+                  </div>
+                  <div>
+                    <strong>GPS:</strong> {vehicle.gpsNavigation ? "Yes" : "No"}
+                  </div>
                 </div>
               </div>
-              <div className="col-6">
-                <div>
-                  <strong>Plate:</strong> {vehicle.plate}
-                </div>
-                <div>
-                  <strong>Type:</strong> {vehicle.type}
-                </div>
-                <div>
-                  <strong>AC:</strong> {vehicle.airCondition ? "Yes" : "No"}
-                </div>
-                <div>
-                  <strong>GPS:</strong> {vehicle.gpsNavigation ? "Yes" : "No"}
-                </div>
+              <div className="mt-2 small text-secondary">
+                <strong>Per Km:</strong> {vehicle.perKmRate} |{" "}
+                <strong>Extra Km:</strong> {vehicle.extraKmRate}
               </div>
+              {vehicle.description && (
+                <div className="mt-1 small text-muted">{vehicle.description}</div>
+              )}
             </div>
-            <div className="mt-2 small text-secondary">
-              <strong>Per Km:</strong> {vehicle.perKmRate} |{" "}
-              <strong>Extra Km:</strong> {vehicle.extraKmRate}
+            <div className="d-flex flex-wrap gap-2">
+              {vehicle.images &&
+                vehicle.images.map((src, i) => (
+                  <img
+                    key={i}
+                    src={`http://localhost:5000${src}`
+                    }
+                    alt={`Vehicle ${i + 1}`}
+                    className="rounded-2 border"
+                    style={{ width: "120px", height: "80px", objectFit: "cover" }}
+                  />
+                ))}
             </div>
-            {vehicle.description && (
-              <div className="mt-1 small text-muted">{vehicle.description}</div>
-            )}
           </div>
-          <div className="d-flex flex-wrap gap-2">
-            {vehicle.images &&
-              vehicle.images.map((src, i) => (
-                <img
-                  key={i}
-                  src={`http://localhost:5000${src}`
-                  }
-                  alt={`Vehicle ${i + 1}`}
-                  className="rounded-2 border"
-                  style={{ width: "120px", height: "80px", objectFit: "cover" }}
-                />
-              ))}
+          <div className="d-flex justify-content-end mt-3">
+            <button
+              className="btn btn-sm btn-outline-danger me-2 px-3"
+              onClick={() => handleDelete(vehicle._id)}
+            >
+              Delete
+            </button>
+            <button
+              className="btn btn-sm btn-warning px-3"
+              onClick={() => handleEditClick(vehicle)}
+            >
+              Edit
+            </button>
           </div>
         </div>
-        <div className="d-flex justify-content-end mt-3">
-          <button
-            className="btn btn-sm btn-outline-danger me-2 px-3"
-            onClick={() => handleDelete(vehicle._id)}
-          >
-            Delete
-          </button>
-          <button
-            className="btn btn-sm btn-warning px-3"
-            onClick={() => handleEditClick(vehicle)}
-          >
-            Edit
-          </button>
-        </div>
-      </div>
-    ) : null;
+      ) : null;
 
   // Form
   const renderVehicleForm = () => (
@@ -369,6 +415,7 @@ const D_MyVehiclesContent = () => {
               onChange={handleFormChange}
               required
             />
+
 
             <label className="form-label mt-2">Vehicle Type</label>
             <select
@@ -510,15 +557,17 @@ const D_MyVehiclesContent = () => {
                 style={{ width: "110px", height: "80px" }}
               >
                 <img
-                  src={img instanceof File ? URL.createObjectURL(img) : img}
+                  src={img instanceof File ? URL.createObjectURL(img) : `http://localhost:5000${img}`}
                   alt={`Preview ${index}`}
-                  className="rounded border"
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    height: "100px",
+                    width: "100px",
                     objectFit: "cover",
+                    borderRadius: "6px",
+                    border: "1px solid #ddd",
                   }}
                 />
+
                 <button
                   type="button"
                   className="btn btn-sm btn-danger position-absolute top-0 end-0"
@@ -530,6 +579,7 @@ const D_MyVehiclesContent = () => {
               </div>
             ))}
           </div>
+
         </div>
 
         <div className="d-flex justify-content-end mt-4">
@@ -573,7 +623,7 @@ const D_MyVehiclesContent = () => {
               try {
                 let payload = JSON.parse(atob(token.split(".")[1]));
                 myId = payload.id || payload._id || payload.userId;
-              } catch {}
+              } catch { }
             }
             // Check if any vehicle exists for this driver
             const hasVehicle = vehicles.some(v => v.provider === myId || (v.provider && v.provider._id === myId));
@@ -599,3 +649,4 @@ const D_MyVehiclesContent = () => {
 };
 
 export default D_MyVehiclesContent;
+

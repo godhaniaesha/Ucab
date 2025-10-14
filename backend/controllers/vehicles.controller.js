@@ -81,46 +81,44 @@ exports.getVehicleById = async (req, res) => {
 // Update Vehicle
 exports.updateVehicle = async (req, res) => {
   try {
-    const updateData = { ...req.body };
-
     const existingVehicle = await Vehicle.findById(req.params.id);
     if (!existingVehicle) {
       return res.status(404).json({ message: "Vehicle not found" });
     }
 
-    // Only delete images if images exist and req.files is an array
-    if (Array.isArray(existingVehicle.images) && req.files?.length > 0) {
-      existingVehicle.images.forEach((imagePath) => {
-        if (!imagePath) return; // Skip invalid entries
+    // Parse incoming body data
+    const updateData = { ...req.body };
 
-        const fullPath = path.join(__dirname, '..', imagePath);
-        console.log("Attempting to delete:", fullPath);
+    // ✅ Collect old + new images together
+    let allImages = [];
 
-        // Ensure this is actually a file, not a folder
-        if (fs.existsSync(fullPath) && fs.lstatSync(fullPath).isFile()) {
-          try {
-            fs.unlinkSync(fullPath);
-          } catch (err) {
-            console.error("Failed to delete file:", fullPath, err);
-          }
-        } else {
-          console.warn("Skipping non-file path:", fullPath);
-        }
-      });
-
-
-
-      updateData.images = req.files.map((file) => `/uploads/${file.filename}`);
+    // Old image URLs (from req.body.images) — strings
+    if (Array.isArray(req.body.images)) {
+      allImages = [...req.body.images];
+    } else if (typeof req.body.images === "string") {
+      allImages = [req.body.images];
     }
 
-    const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    // New uploaded files (from req.files)
+    if (Array.isArray(req.files) && req.files.length > 0) {
+      const newFilePaths = req.files.map((file) => `/uploads/${file.filename}`);
+      allImages = [...allImages, ...newFilePaths];
+    }
+
+    updateData.images = allImages;
+
+    // ✅ No deleting existing images anymore
+    const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
 
     res.json({ message: "Vehicle updated successfully", vehicle });
   } catch (err) {
-    console.error("Update vehicle error:", err); // Log the error for debugging
+    console.error("Update vehicle error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // Delete Vehicle
 exports.deleteVehicle = async (req, res) => {
