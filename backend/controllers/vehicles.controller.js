@@ -79,27 +79,48 @@ exports.getVehicleById = async (req, res) => {
 };
 
 // Update Vehicle
-exports.updateVehicle = async (req, res) => {
-  try {
-    const updateData = { ...req.body };
-
-    const existingVehicle = await Vehicle.findById(req.params.id);
-    if (!existingVehicle) {
-      return res.status(404).json({ message: "Vehicle not found" });
+exports.updateVehicle = async (req, res) => { 
+  try { 
+    const updateData = { ...req.body }; 
+ 
+    const existingVehicle = await Vehicle.findById(req.params.id); 
+    if (!existingVehicle) { 
+      return res.status(404).json({ message: "Vehicle not found" }); 
+    } 
+ 
+    // Parse existing images from frontend
+    let existingImages = [];
+    if (req.body.existingImages) {
+      try {
+        existingImages = JSON.parse(req.body.existingImages);
+      } catch (err) {
+        console.error("Error parsing existingImages:", err);
+        existingImages = [];
+      }
     }
 
-    // Only delete images if images exist and req.files is an array
-    if (Array.isArray(existingVehicle.images) && req.files?.length > 0) {
-      existingVehicle.images.forEach((imagePath) => {
-        if (!imagePath) return; // Skip invalid entries
+    // Get new uploaded files
+    const newImages = req.files?.length > 0 
+      ? req.files.map((file) => `/uploads/${file.filename}`)
+      : [];
+
+    // Find images to delete (old images that are NOT in existingImages)
+    const imagesToDelete = existingVehicle.images.filter(
+      (oldImage) => !existingImages.includes(oldImage)
+    );
+
+    // Delete removed images from filesystem
+    if (imagesToDelete.length > 0) {
+      imagesToDelete.forEach((imagePath) => {
+        if (!imagePath) return;
 
         const fullPath = path.join(__dirname, '..', imagePath);
         console.log("Attempting to delete:", fullPath);
 
-        // Ensure this is actually a file, not a folder
         if (fs.existsSync(fullPath) && fs.lstatSync(fullPath).isFile()) {
           try {
             fs.unlinkSync(fullPath);
+            console.log("Successfully deleted:", fullPath);
           } catch (err) {
             console.error("Failed to delete file:", fullPath, err);
           }
@@ -107,19 +128,25 @@ exports.updateVehicle = async (req, res) => {
           console.warn("Skipping non-file path:", fullPath);
         }
       });
-
-
-
-      updateData.images = req.files.map((file) => `/uploads/${file.filename}`);
     }
 
-    const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    // Combine existing images + new images
+    updateData.images = [...existingImages, ...newImages];
 
-    res.json({ message: "Vehicle updated successfully", vehicle });
-  } catch (err) {
-    console.error("Update vehicle error:", err); // Log the error for debugging
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
+    // Remove existingImages from updateData (it was just a helper field)
+    delete updateData.existingImages;
+
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      req.params.id, 
+      updateData, 
+      { new: true }
+    ); 
+ 
+    res.json({ message: "Vehicle updated successfully", vehicle }); 
+  } catch (err) { 
+    console.error("Update vehicle error:", err);
+    res.status(500).json({ message: "Server error", error: err.message }); 
+  } 
 };
 
 // Delete Vehicle

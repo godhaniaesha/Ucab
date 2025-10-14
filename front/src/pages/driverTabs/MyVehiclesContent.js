@@ -60,22 +60,36 @@ const D_MyVehiclesContent = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-        const validFiles = files.filter(f => allowedTypes.includes(f.type));
-        if (validFiles.length !== files.length) {
-          e.target.setCustomValidity("Only JPEG, JPG, PNG images are allowed.");
-          e.target.reportValidity();
-          return;
-        } else {
-          e.target.setCustomValidity("");
-        }
-        setFormData((prev) => ({
-          ...prev,
-          images: validFiles,
-        }));
-  };
+const handleImageChange = (e) => {
+  const files = Array.from(e.target.files);
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+  const validFiles = files.filter((f) => allowedTypes.includes(f.type));
+  if (validFiles.length !== files.length) {
+    e.target.setCustomValidity("Only JPEG, JPG, PNG images are allowed.");
+    e.target.reportValidity();
+    return;
+  } else {
+    e.target.setCustomValidity("");
+  }
+
+  setFormData((prev) => {
+    // ✅ merge old + new images
+    const newImages = [...prev.images, ...validFiles];
+    // ✅ enforce max 5
+    if (newImages.length > 5) {
+      e.target.setCustomValidity("Maximum 5 images allowed.");
+      e.target.reportValidity();
+      return prev;
+    }
+    return {
+      ...prev,
+      images: newImages,
+    };
+  });
+};
+
+
 
   const handleRemoveImage = (index) => {
     setFormData((prev) => ({
@@ -211,15 +225,16 @@ const D_MyVehiclesContent = () => {
   };
 
   const handleEditClick = (vehicle) => {
-    setEditingVehicleId(vehicle._id);
-    setIsAdding(false);
-    setFormData({
-      ...vehicle,
-      airCondition: vehicle.airCondition ? "Yes" : "No",
-      gpsNavigation: vehicle.gpsNavigation ? "Yes" : "No",
-      images: [],
-    });
-  };
+  setEditingVehicleId(vehicle._id);
+  setIsAdding(false);
+  setFormData({
+    ...vehicle,
+    airCondition: vehicle.airCondition ? "Yes" : "No",
+    gpsNavigation: vehicle.gpsNavigation ? "Yes" : "No",
+    images: vehicle.images || [], // ✅ Keep old images
+  });
+};
+
 
   const handleDelete = (id) => {
     dispatch(deleteVehicle(id));
@@ -509,16 +524,12 @@ const D_MyVehiclesContent = () => {
                 className="position-relative"
                 style={{ width: "110px", height: "80px" }}
               >
-                <img
-                  src={img instanceof File ? URL.createObjectURL(img) : img}
-                  alt={`Preview ${index}`}
-                  className="rounded border"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
+               <img
+  src={img instanceof File ? URL.createObjectURL(img) : `http://localhost:5000${img}`}
+  alt={`Preview ${index}`}
+ style={{ height: '100px', width: '100px', objectFit: 'cover' }}
+/>
+
                 <button
                   type="button"
                   className="btn btn-sm btn-danger position-absolute top-0 end-0"
