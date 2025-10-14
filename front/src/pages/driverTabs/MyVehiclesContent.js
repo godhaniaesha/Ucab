@@ -408,6 +408,7 @@ const D_MyVehiclesContent = () => {
             <input
               type="number"
               min={0}
+              max={10}
               name="luggageCarry"
               className="form-control"
               value={formData.luggageCarry}
