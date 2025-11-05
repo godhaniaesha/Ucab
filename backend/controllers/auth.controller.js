@@ -485,6 +485,62 @@ exports.getAllPassengers = async (req, res) => {
  * Admin Stats API
  * Returns: total drivers, total passengers, rides today, today's revenue, pending verification
  */
+// Get all users API
+exports.getAllUsers = async (req, res) => {
+  try {
+    // Exclude sensitive information
+    const users = await User.find()
+      .select('-password -otp -otpExpires')
+      .populate('vehicle');
+
+    res.json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Find Email API
+exports.findEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      return res.status(200).json({
+        success: true,
+        message: 'Email already exists',
+        exists: true
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Email not found',
+        exists: false
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      error: err.message 
+    });
+  }
+};
+
 exports.getAdminStats = async (req, res) => {
   try {
     const todayStart = new Date();

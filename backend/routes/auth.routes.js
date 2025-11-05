@@ -8,6 +8,15 @@ const { authMiddleware } = require('../middlewares/auth.middleware');
 
 router.post('/google', authController.googleLogin);
 
+// Find email route
+router.post('/find-email', 
+  validate,
+  authController.findEmail
+);
+
+// Get all users (accessible by passenger, driver, and superadmin)
+
+
 // Facebook OAuth
 // router.get('/facebook', authController.facebookLogin);
 //    router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), authController.facebookCallback);
@@ -82,7 +91,9 @@ router.get('/drivers', authController.getAllDrivers);
 router.get('/getAdminStats', authController.getAdminStats);
 
 
-
+router.get('/users', 
+  authController.getAllUsers
+);
 
 router.get('/getuser', authMiddleware(['superadmin', 'passenger', 'driver']), authController.getUser)
 
