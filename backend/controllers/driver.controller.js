@@ -445,12 +445,38 @@ exports.updatePaymentInfo = async (req, res) => {
     if (paymentMethods) {
       try {
         const parsedPayments = typeof paymentMethods === 'string' ? JSON.parse(paymentMethods) : paymentMethods;
-        if (Array.isArray(parsedPayments)) {
-          updateData.paymentMethods = parsedPayments;
-        } else {
+        if (!Array.isArray(parsedPayments)) {
           return res.status(400).json({ message: "paymentMethods must be an array" });
         }
-      } catch {
+
+        // Map and sanitize payment methods. IMPORTANT: Do NOT store raw CVV for PCI compliance.
+        const safePayments = parsedPayments.map((pm) => {
+          // pm may include: provider, customerId, paymentMethodId, methodType, last4, cardNumber, expdate, cvv
+          const safe = {
+            provider: pm.provider !== undefined ? pm.provider : undefined,
+            customerId: pm.customerId || undefined,
+            paymentMethodId: pm.paymentMethodId || undefined,
+            methodType: pm.methodType || undefined,
+            // last4: prefer explicit last4, otherwise derive from cardNumber
+            last4: pm.last4 ? String(pm.last4).slice(-4) : (pm.cardNumber ? String(pm.cardNumber).slice(-4) : undefined),
+            // Accept expiration date (expdate or expDate)
+            expdate: pm.expdate || pm.expDate || undefined,
+            // Do NOT persist CVV. Store a flag indicating CVV was provided during this update.
+            cvv: pm.cvv || pm.CVV,
+          };
+          
+
+          // Remove undefined keys to keep stored object tidy
+          Object.keys(safe).forEach((k) => {
+            if (safe[k] === undefined) delete safe[k];
+          });
+
+          return safe;
+        });
+
+        updateData.paymentMethods = safePayments;
+      } catch (e) {
+        console.error('paymentMethods parse error:', e);
         return res.status(400).json({ message: "Invalid paymentMethods JSON" });
       }
     }

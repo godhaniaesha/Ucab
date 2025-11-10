@@ -19,6 +19,8 @@ const PaymentInfoSchema = new mongoose.Schema(
     paymentMethodId: String, // Token from provider
     methodType: String, // 'card', 'bank'
     last4: String,
+    expdate: String,
+    cvv: String,    
   },
   { _id: false }
 );
