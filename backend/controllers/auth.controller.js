@@ -101,39 +101,36 @@ exports.register = async (req, res) => {
       phone,
       vehicle,
       bankDetails,
-      paymentMethods // array of { provider, customerId, paymentMethodId, methodType, last4 }
+      paymentMethods
     } = req.body;
 
-    // Check if email exists
+    // Check email
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     // Hash password
     const hash = await bcrypt.hash(password, 12);
 
-    // ✅ Always prepend +91 to phone
-    // let formattedPhone = phone ? phone.toString().trim() : '';
-    // if (formattedPhone && !formattedPhone.startsWith('+91')) {
-    //   formattedPhone = `+91${formattedPhone}`;
-    // }
+    // Format phone with +91
     const formattedPhone = `+91${phone}`;
+
     // Create user
     const user = await User.create({
       name,
       email,
       password: hash,
-      role: role || 'passenger',
-      phone: formattedPhone,   // ✅ save with +91
-      bankDetails: bankDetails || undefined,
+      role: role || "passenger",
+      phone: formattedPhone,
+      bankDetails: bankDetails || null,
       paymentMethods: Array.isArray(paymentMethods) ? paymentMethods : []
     });
-    console.log(user.phone,"phone number");
+
     
 
-    // If driver, create vehicle
-    if (role === 'driver' && vehicle) {
+    // If driver → add vehicle
+    if (role === "driver" && vehicle) {
       const newVehicle = await Vehicle.create({
         provider: user._id,
         make: vehicle.make,
@@ -148,29 +145,40 @@ exports.register = async (req, res) => {
         gpsNavigation: vehicle.gpsNavigation,
         perKmRate: vehicle.perKmRate,
         extraKmRate: vehicle.extraKmRate,
-        description: vehicle.description || '', // optional description
+        description: vehicle.description || "",
       });
 
       user.vehicle = newVehicle._id;
       await user.save();
     }
 
+    // ✅ Generate token (same as login)
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Final response
     res.status(201).json({
+      token,
       user: {
         id: user._id,
         email: user.email,
         role: user.role,
-        phone: user.phone,   // ✅ return phone with +91
+        phone: user.phone,
         vehicle: user.vehicle || null,
         bankDetails: user.bankDetails || null,
         paymentMethods: user.paymentMethods || []
       }
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 exports.login = async (req, res) => {
@@ -239,7 +247,7 @@ exports.forgotPassword = async (req, res) => {
     var { phone } = req.body;
     console.log("Received phone number:", phone);
 
-    
+
     console.log("Formatted phone number for Twilio:", phone);
     const user = await User.findOne({ phone });
     if (!user) return res.status(404).json({ message: 'User with this phone not found' });
@@ -248,8 +256,8 @@ exports.forgotPassword = async (req, res) => {
 
     // Save OTP and expiry in user document
     user.otp = otp;
-    console.log(otp,"otp");
-    
+    console.log(otp, "otp");
+
     user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 min
     await user.save();
 
@@ -533,10 +541,10 @@ exports.findEmail = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error', 
-      error: err.message 
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: err.message
     });
   }
 };
